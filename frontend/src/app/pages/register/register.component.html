@@ -1,0 +1,95 @@
+<section class="main-container">
+    <mat-toolbar>
+        <button (click)="goHome()" mat-icon-button>
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <section>
+            <span>Bici Árbol</span>
+        </section>
+        
+    </mat-toolbar>
+    <main>
+        <section class="form-container">
+            <form [formGroup]="registerForm">
+                <section class="form-elements-container">
+                    <h2>Resgistrarse</h2>
+                    <mat-form-field>
+                        <mat-label>Usuario:</mat-label>
+                        <input matInput placeholder="Ingresar usuario" formControlName="username">
+                        <mat-error *ngIf="username?.hasError('required')">Ingrese usuario</mat-error>
+                        <mat-error *ngIf="username?.hasError('minlength')">Mínimo de 3 caracteres</mat-error>
+                        <mat-error *ngIf="username?.hasError('maxlength')">Máximo de 15 caracteres</mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Email:</mat-label>
+                        <input matInput placeholder="Ingresar email" formControlName="email">
+                        <mat-error *ngIf="email?.hasError('email')">Ingrese email válido</mat-error>
+                        <mat-error *ngIf="email?.hasError('required')">Ingrese email</mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Password:</mat-label>
+                        <button mat-icon-button matSuffix (click)="visibilityToggle()">
+                            <mat-icon>{{getVisibility()}}</mat-icon>
+                        </button>
+                        <input [type]="getInputType()" matInput placeholder="Ingresar password" formControlName="password">
+                    </mat-form-field>
+                    <section class="validation">
+                        <p [ngClass]="
+                            password?.value.length === 0 ? 'information' : password?.hasError('minlength') ? 'fail' : 'success'" >
+                            <mat-icon style="margin-bottom: -7px; margin-right: 7px;">
+                               {{  getIconToMinLength() }}
+                            </mat-icon>
+                            Mínmio 8 caractares
+                        </p>
+                        <p [ngClass]="
+                            this.password?.value.length === 0 ? 'information' : this.password?.hasError('maxlength') ? 'fail' : 'success'" >
+                            <mat-icon style="margin-bottom: -7px; margin-right: 7px;">
+                               {{  getIconToMaxLength() }}
+                            </mat-icon>
+                            Máximo 50 caracteres
+                        </p>
+                        <p [ngClass]="
+                            this.password?.value.length === 0 ? 'information' : this.password?.hasError('capitalLetterError') ? 'fail' : 'success'" >
+                            <mat-icon style="margin-bottom: -7px; margin-right: 7px;">
+                               {{  getIconUpperCase() }}
+                            </mat-icon>
+                            Debe contener mayúscula
+                        </p>
+                        <p [ngClass]="
+                            this.password?.value.length === 0 ? 'information' : this.password?.hasError('lowerCaseError') ? 'fail' : 'success'" >
+                            <mat-icon style="margin-bottom: -7px; margin-right: 7px;">
+                               {{  getIconLowerCase() }}
+                            </mat-icon>
+                            Debe contener minúscula
+                        </p>
+                        <p [ngClass]="
+                            this.password?.value.length === 0 ? 'information' : this.password?.hasError('numberError') ? 'fail' : 'success'" >
+                            <mat-icon style="margin-bottom: -7px; margin-right: 7px;">
+                               {{  getIconNumber() }}
+                            </mat-icon>
+                            Debe contenern al menos un número
+                        </p>
+                    </section>
+                    <mat-form-field class="example-full-width">
+                        <mat-label>Confirmación de password:</mat-label>
+                        <button mat-icon-button matSuffix (click)="visibilityTogglePasswordConfirm()">
+                            <mat-icon>{{getVisibilityPasswordConfirm()}}</mat-icon>
+                        </button>
+                        <input matInput placeholder="Confirmar password" formControlName="passwordConfirm" [type]="getInputTypePasswordConfirm()">
+                    </mat-form-field>
+                    <section class="validation">
+                        <p *ngIf="this.passwordConfirm?.value.length > 0 && this.registerForm.hasError('passwordConfirmedError') ? 'fail' : null" class="fail">
+                            <mat-icon style="margin-bottom: -7px; margin-right: 7px;">
+                               cancel
+                            </mat-icon>
+                            Los password no coinciden
+                        </p>
+                    </section>
+                    <button [disabled]="registerForm.invalid" mat-raised-button (click)="register()">Registrarse</button>
+                </section>
+               
+            </form>
+        </section>
+    </main>
+</section>
+

@@ -1,0 +1,67 @@
+version: "3.8"
+
+networks:
+  web:
+    external: true
+  internal:
+    external: false
+services:
+  servicefrontend2:
+    container_name: angular-frontend
+    build: 
+      dockerfile: production.Dockerfile
+      context: ./frontend
+      target: production
+    volumes:
+      - ./frontend:/alberto/frontend/src/app
+      - /alberto/src/app/node_modules
+    ports:
+      - "9000:80"
+    labels:
+      - traefik.http.routers.servicefrontend2.rule=Host(`bici-arbol.com`)
+      - traefik.http.routers.servicefrontend2.tls=true
+      - traefik.http.routers.servicefrontend2.tls.certresolver=lets-encrypt
+      - traefik.port=9000
+    networks:
+      - internal
+      - web
+  
+  backend:
+    build: 
+      context: ./backend-vlad
+      dockerfile: production.Dockerfile
+      target: production
+    container_name: nest-backend
+    volumes:
+      - ./backend-vlad:/alberto/backend/src/app
+      - /alberto/backend/src/app/node_modules
+    # command: npx prisma generate
+    # command: npx prisma migrate deploy
+    command: npm run start:prod
+    ports:
+      - '3333:3333'
+    depends_on: 
+      - postgres
+    env_file: "./backend-vlad/.my-env-production"
+    labels:
+      - traefik.http.routers.distfrontend.rule=Host(`api.bici-arbol.com`)
+      - traefik.http.routers.distfrontend.tls=true
+      - traefik.http.routers.distfrontend.tls.certresolver=lets-encrypt
+      - traefik.port=3333
+    networks:
+      - internal
+      - web
+  # Our Postgres Database for NestJS to connect to
+  postgres:
+    image: postgres:10.4
+    environment:
+      POSTGRES_USER: SuzukiDr350
+      POSTGRES_PASSWORD: iendlshLANDHG423423480
+      POSTGRES_DB: biciarbol
+    ports:
+      - 5432:5432
+    labels:
+      - traefik.enable=false
+    networks:
+      - internal
+

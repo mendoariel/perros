@@ -1,0 +1,8 @@
+{
+    "/biciArbolApi/*": {
+      "target": "https://api.bici-arbol.com",
+      "secure": false,
+      "logLevel": "debug",
+      "changeOrigin": true
+    }
+  }

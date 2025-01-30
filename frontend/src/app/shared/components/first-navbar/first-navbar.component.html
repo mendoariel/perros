@@ -1,0 +1,18 @@
+<mat-toolbar>
+    <span>Bici Árbol</span>
+    <section *ngIf="!authenticated" class="unauthenticated">
+        <button (click)="login()" mat-button>Ingresar</button>
+        <button (click)="register()" mat-button>Registrarse</button>
+    </section>
+    <section *ngIf="authenticated">
+        <button mat-button [matMenuTriggerFor]="menu">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="addFriasElement()">Agregar elemento frias</button>
+            <button mat-menu-item (click)="logout()">Cerrar </button>
+          </mat-menu>
+    </section>
+</mat-toolbar>
+
+  

@@ -1,0 +1,58 @@
+<section class="main-box">
+  <div class="alfa">
+    <header>
+      <h1>Desarrollador WEB</h1>
+    </header>
+   <section class="container-box">
+    <!-- <p>El desarrollo web es una profesión con mucho futuro, 
+      en cierto modo es tan poderoso como poder escribir, 
+      estoy aprendiento esta profesión luego de reconocer que
+      me gusta, me devierte, y siento que es la mejor manera que 
+      tengo de servir.
+    </p>
+    <p>Se necesitan muchos conocimiento para poner un sitio en producción, 
+      para que sepas de mi te comento como esta armado este sitio.</p> -->
+    <p>Esta es mi historia de vida referido a mi profesión de programador 
+      la cual disfruto mucho a diario.
+    </p>
+    
+    <!-- <h4>Dominio</h4>  
+    <p>
+      Este sitio esta corriendo en el dominio bici-arbol.com el cual es un proyecto que
+      estoy creando en mi tiempo libre, y se trata de representar la combinación que 
+      surge entre téconología aplicada para facilitar el transito y visita
+      de lugares donde la naturaleza prevalece ante la misma.
+    </p>
+    <h4>Servidor</h4>
+    <p>
+      El dominio esta apuntado a droplet de digital ocean corriendo con Docker. 
+      Si estoy usando Docker en este desarrollo, tengo dos archivos docker file
+      corriendo en el servidor. El primero tiene la responsabilidad de correr
+      traefik, para utilizar de proxy se encarga de habilitar seguridad al sitio 
+      con certificados ssl, haciendo que mis apis esten protegidas.
+    </p> -->
+
+    
+    
+
+    <article *ngFor="let boxData of bici">
+      <app-ba-element-box [element]="boxData"></app-ba-element-box>
+    </article>
+   </section>
+   
+  </div>
+  <div class="beta">
+    <header>
+      <h2>Albert A3</h2>
+    </header>
+
+    <section class="container-box">
+      <h3>Email: </h3>
+      <p>albertdesarrolloweb@gmail.com</p>
+      <article class="container-box" *ngFor="let boxArbol of arbol">
+        <app-ba-element-box [element]="boxArbol"></app-ba-element-box>
+      </article>
+    </section>
+    
+  </div>
+</section>

@@ -1,0 +1,28 @@
+section.publication-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: white;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1.3em;
+    img {
+        max-width: 100%;
+        display: block;
+        border: solid 1px #aaa;
+        padding: .4em;
+        margin-bottom: 1.3em;
+    }
+    h1 {
+        padding-top: 4em;
+        font-size: 2em;
+    }
+    h3 {
+        font-size: 1.8em;
+    }
+    p {
+        font-size: 1.3em;
+        line-height: 1.4em;
+    }
+ }

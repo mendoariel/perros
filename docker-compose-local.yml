@@ -1,0 +1,58 @@
+version: "3.8"
+services:
+  frontend-perros:
+    build: 
+      dockerfile: Dockerfile
+      context: ./frontend
+      target: development
+    command: npm run start
+    volumes:
+      - ./frontend:/alberto/frontend/src/app
+      - /alberto/frontend/src/app/node_modules
+    ports:
+      - "4200:4200"
+      # - "49153:49153"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+  backend-perros:
+    build: 
+      context: ./backend-vlad
+      dockerfile: Dockerfile
+      target: development
+    container_name: backenk-perros
+    volumes:
+      - ./backend-vlad:/alberto/backend/src/app
+      - /alberto/backend/src/app/node_modules/
+    command: npm run start:dev
+    ports:
+      - '3333:3333'
+      - '5555:5555'
+      - 9229:9229
+    depends_on: 
+      - postgres
+    env_file: "./backend-vlad/.my-env-local"
+
+    # environment:
+    #   DATABASE_URL: postgres://user:password@postgres:5432/biciarbol?schema=public
+    #   NODE_ENV: development
+    #   JWT_SECRET: hard_to_guess_secret_123
+    #   PORT: 3333
+    #   FRONTEND_URL: 'http://localhost:4200'
+  postgres:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: mendoariel
+      POSTGRES_PASSWORD: casadesara
+      POSTGRES_DB: perros
+    ports:
+      -  5432:5432  
+  # The Postgres Admin tool if we want to run some custom queries and so on against our Database
+  postgres_admin-perros:
+    image: dpage/pgadmin4:4.28
+    depends_on: 
+       - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - 5050:80

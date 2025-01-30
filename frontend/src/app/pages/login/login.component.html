@@ -1,0 +1,34 @@
+<mat-toolbar>
+    <button (click)="goHome()" mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+    <section>
+        <span>Bici Árbol</span>
+    </section>
+</mat-toolbar>
+<main>
+    <section>
+        <form [formGroup]="loginForm">
+            <h2>Ingresar</h2>
+            <mat-form-field class="example-full-width">
+                <mat-label>Email:</mat-label>
+                <input matInput placeholder="Ingresar email" formControlName="email">
+                <mat-error *ngIf="email?.hasError('email')">Ingrese email válido</mat-error>
+                <mat-error *ngIf="email?.hasError('required')">Ingrese email</mat-error>
+            </mat-form-field>
+            <mat-form-field class="example-full-width">
+                <mat-label>Password:</mat-label>
+                <button mat-icon-button matSuffix (click)="visibilityToggle()">
+                    <mat-icon>{{getVisibility()}}</mat-icon>
+                </button>
+                <input [type]="getIputType()" matInput placeholder="Ingresar password" formControlName="password" >
+                <mat-error *ngIf="password?.hasError('minlength')">Mínimo 8 caracteres</mat-error>
+            </mat-form-field>
+            
+            <button [disabled]="loginForm.invalid" type="submit" mat-raised-button (click)="login()">Ingresar</button>
+
+            <p (click)="recoveryPassword()" class="recovery-password">Recuperar contraseña</p>
+        </form>
+    </section>
+</main>
+

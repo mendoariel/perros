@@ -1,0 +1,22 @@
+main {
+    display: flex;
+    flex-direction: column;
+    //background: url('/assets/pic_1900/el-filo-del-chinche-25.jpg');
+    //background-position: center;
+    section.portland-frias {
+        background-color: white;
+    //     background: url('/assets/frias/rivers/pink-river.JPG');
+    //     background-position: center;
+    //     background-size: cover;
+    //     width: 100vw;
+    //     height: 100vh;
+        border: solid 1px red;
+    }
+    div.death-things {
+        background-color: white;
+        padding: 1em;
+        img {
+            max-width: 100%;
+        }
+    }
+}
