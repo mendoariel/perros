@@ -15,7 +15,7 @@ import { WebDeveloperComponent } from "../pages/web-developer/web-developer.comp
 export const routes: Route[] = [
     {
         path: '',
-        component: HomeComponent
+        component: WellcomeComponent
     },
     {
         path: 'web-developer/3956-albert',
