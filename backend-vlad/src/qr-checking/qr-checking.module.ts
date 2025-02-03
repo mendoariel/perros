@@ -1,24 +1,22 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { QRCheckingController } from './qr-checking.controller';
 import { AtStrategy, RtStrategy } from './strategies';
 import { JwtModule } from '@nestjs/jwt';
 import { MailService } from 'src/mail/mail.service';
 import { UtilService } from 'src/services/util.service';
+import { QrService } from './qr-checking.service';
 
 @Module({
   imports: [
     JwtModule.register({})
   ],
-  controllers: [
-    AuthController
-  ],
+  controllers: [QRCheckingController],
   providers: [
-    AuthService, 
+    QrService, 
     AtStrategy, 
     RtStrategy,
     MailService,
     UtilService
   ]
 })
-export class AuthModule {}
+export class QrCheckingModule {}
