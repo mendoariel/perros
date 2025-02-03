@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
 import {  QRCheckingDto } from './dto/qr-checking.dto';
 import { MedalStatus } from './types';
@@ -9,13 +9,14 @@ var bcrypt = require('bcryptjs');
 export class QrService {
     constructor(private prisma: PrismaService) {}
     
-    async QRCheking(dto: QRCheckingDto):Promise<MedalStatus | string> {
+    async QRCheking(dto: QRCheckingDto):Promise<any> {
         const medal = await this.prisma.medal.findFirst({
             where: {
                 hash: dto.stringQr
             }
         });
-
-        return medal ? { status: medal.status, stringQr: medal.hash } : "hash no registrado"
+        if (!medal) throw new NotFoundException('No se encontro la medalla');
+        
+        return {status: medal.status, stringQr: medal.hash };
     }
 }
