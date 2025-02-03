@@ -1,5 +1,5 @@
 {
-    "/biciArbolApi/*": {
+    "/perrosQrApi/*": {
       "target": "https://api.bici-arbol.com",
       "secure": false,
       "logLevel": "debug",

@@ -12,7 +12,7 @@ export class QRCheckingController {
     @Public()
     @Post('')
     @HttpCode(HttpStatus.CREATED)
-    signupLocal(@Body() dto: QRCheckingDto): Promise<MedalStatus> {
+    signupLocal(@Body() dto: QRCheckingDto): Promise<MedalStatus | string> {
         return this.qrService.QRCheking(dto);
     }
 }

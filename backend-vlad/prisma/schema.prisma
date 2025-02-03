@@ -23,8 +23,24 @@ model User {
   @@map("users")
 }
 
+model Medal {
+  id      Int @id @default(autoincrement())
+  email   String?
+  hash    String @unique
+  status  State
+
+  @@map("medals")
+}
+
 enum Role {
   VISITOR
   FRIAS_EDITOR
   REGISTER
+}
+
+enum State {
+  VIRGIN
+  ENABLED
+  DISABLED
+  DEAD
 }

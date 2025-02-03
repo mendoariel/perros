@@ -8,6 +8,6 @@ export class WellcomeService {
     constructor(private httpService: HttpClient){}
 
     getWellcome(): Observable<any> {
-        return this.httpService.get(environment.biciArbolApi);
+        return this.httpService.get(environment.perrosQrApi);
     }
 }
