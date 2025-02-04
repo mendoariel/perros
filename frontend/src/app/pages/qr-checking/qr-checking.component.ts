@@ -4,7 +4,7 @@ import { MaterialModule } from 'src/app/material/material.module';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { Subscription } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-qr-checking',
@@ -24,7 +24,8 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
 
   constructor(
     private qrService: QrChekingService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -41,7 +42,7 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
       next: (res: any) => {
         console.log(res);
         this.spinner = false;
-        if(res.status === 'VIRGIN') this.goToAddMedal();
+        if(res.status === 'VIRGIN') this.goToAddPed();
         if(res.status === 'ENABLED') this.goToMyPet();
         if(res.status === 'DISABLED') {
           this.message = 'Medalla desactivada';
@@ -55,17 +56,20 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
       },
       error: (error: any) => {
         console.log(error);
+        this.message = 'Medalla sin registro';
         this.spinner = false;
       }
     })
   }
 
-  goToAddMedal() {
-    this.message = 'carga tu mascota'
+  goToAddPed() {
+    this.message = 'carga tu mascota';
+    this.router.navigate(['/', 'agregar-mascota'])
   }
 
   goToMyPet() {
-    this.message = 'bienvenido al sitio de tu mascota'
+    this.message = 'bienvenido al sitio de tu mascota';
+    this.router.navigate(['/', 'mi-mascota'])
   }
     
   ngOnDestroy(): void {

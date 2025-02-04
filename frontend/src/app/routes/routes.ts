@@ -12,6 +12,8 @@ import { PasswordRecoveryComponent } from "../pages/password-recovery/password-r
 import { NewPasswordComponent } from "../pages/new-password/new-password.component";
 import { WebDeveloperComponent } from "../pages/web-developer/web-developer.component";
 import { QrCheckingComponent } from "../pages/qr-checking/qr-checking.component";
+import { AddPetComponent } from "../pages/add-pet/add-pet.component";
+import { MyPetComponent } from "../pages/my-pet/my-pet.component";
 
 export const routes: Route[] = [
     {
@@ -23,32 +25,12 @@ export const routes: Route[] = [
         component: QrCheckingComponent
     },
     {
-        path: 'web-developer/3956-albert',
-        component: WebDeveloperComponent
+        path: 'agregar-mascota',
+        component: AddPetComponent
     },
     {
-        path: 'wellcome',
-        component: WellcomeComponent
-    },
-    {
-        path: 'frias',
-        component: FriasComponent
-    },
-    {
-        path: 'add-frias-element',
-        component: AddFriasElementComponent,
-        canActivate: [RoleGuardService],
-        data: {
-            expectedRole: 'FRIAS_EDITOR'
-        }
-    },
-    {
-        path: 'create-bike-park',
-        component: BikeParkCreatorComponent,
-        canActivate: [RoleGuardService],
-        data: {
-            expectedRole: 'admin'
-        }
+        path: 'mi-mascota',
+        component: MyPetComponent
     },
     {
         path: 'login',
@@ -68,6 +50,6 @@ export const routes: Route[] = [
     },
     {
         path: '**',
-        redirectTo: '/home'
+        redirectTo: ''
     }
 ];
