@@ -17,14 +17,14 @@ export class UserService {
     constructor(private http: HttpClient) {}
 
     setUser() {
-        this.http.get(environment.biciArbolApi).subscribe(
-            res => {
-                console.log(res)
-            },
-            error => {
-                console.log(error)
-            }
-        );
+        // this.http.get(environment.perrosQrApi).subscribe(
+        //     next => {
+        //         console.log(next)
+        //     },
+        //     error => {
+        //         console.log(error)
+        //     }
+        // );
     }
 
 }

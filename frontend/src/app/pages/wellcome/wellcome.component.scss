@@ -1,8 +1,15 @@
 main {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: url('/assets/pic_1900/el-filo-del-chinche-25.jpg');
-    background-position: center;
+    background-color: darkgreen;
+    min-height: 100vh;
+    section.main-content {
+        border: 1px solid grey;
+        padding: 1em;
+        margin: 1em;
+        background-color: white;
+        mat-card {
+            max-width: 300px;
+        }
+    }
+
 }
 

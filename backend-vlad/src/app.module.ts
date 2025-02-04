@@ -5,9 +5,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './common/guards';
 import { MailModule } from './mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
+import { QrCheckingModule } from './qr-checking/qr-checking.module';
 @Module({
   imports: [
     AuthModule, 
+    QrCheckingModule,
     PrismaModule, 
     MailModule,
     ConfigModule.forRoot({

@@ -1,0 +1,37 @@
+{
+	"info": {
+		"_postman_id": "8b4afb79-e283-4342-9f8b-1bcf2883ad1c",
+		"name": "PetsQR",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2576667"
+	},
+	"item": [
+		{
+			"name": "QR Checking",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"stringQr\": \"23j4ñ2l3j4ñlkaslkdfjasñlkdf\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3333/qr-checking",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"qr-checking"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
