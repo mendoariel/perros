@@ -1,5 +1,5 @@
 export const environment = {
     title: 'development',
     production: false,
-    biciArbolApi: 'http://localhost:3333/'
+    perrosQrApi: 'http://localhost:3333/'
 };

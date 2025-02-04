@@ -35,11 +35,11 @@ export class AuthService {
   }
 
   login(body: LoginInterface) {
-    return this.http.post(`${environment.biciArbolApi}auth/local/signin`,body)
+    return this.http.post(`${environment.perrosQrApi}auth/local/signin`,body)
   }
 
   register(user: UserInterface) {
-    return this.http.post(`${environment.biciArbolApi}auth/local/signup`, user, )
+    return this.http.post(`${environment.perrosQrApi}auth/local/signup`, user, )
   }
 
   logout() {
@@ -47,16 +47,16 @@ export class AuthService {
     let header = {
       headers: new HttpHeaders().set('Authorization', `Bearer ${token}`)
     }
-    return this.http.post(`${environment.biciArbolApi}auth/logout`, {}, header)
+    return this.http.post(`${environment.perrosQrApi}auth/logout`, {}, header)
   }
   
   recoveryPassword(email: any) {
     console.log(email);
-    return this.http.post(`${environment.biciArbolApi}auth/password-recovery`, email);
+    return this.http.post(`${environment.perrosQrApi}auth/password-recovery`, email);
   }
 
   newPassword(newPassord: NewPasswordInterface) {
     console.log('new password ===> ', newPassord)
-    return this.http.post(`${environment.biciArbolApi}auth/new-password`, newPassord);
+    return this.http.post(`${environment.perrosQrApi}auth/new-password`, newPassord);
   }
 }

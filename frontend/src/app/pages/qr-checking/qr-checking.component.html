@@ -1,0 +1,12 @@
+<mat-toolbar>Mascotas QR</mat-toolbar>
+<main>
+    <section class="checking" *ngIf="spinner">
+        <h1>Buscando QR</h1>
+        <mat-spinner></mat-spinner>
+    </section>
+    <section class="no-found" *ngIf="!spinner">
+        <h1>{{ message }}</h1>
+        <!-- posibles problemas y soluciones -->
+    </section>
+    
+</main>

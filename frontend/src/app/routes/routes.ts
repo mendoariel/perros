@@ -11,11 +11,16 @@ import { AddFriasElementComponent } from "../pages/add-frias-element/add-frias-e
 import { PasswordRecoveryComponent } from "../pages/password-recovery/password-recovey.component";
 import { NewPasswordComponent } from "../pages/new-password/new-password.component";
 import { WebDeveloperComponent } from "../pages/web-developer/web-developer.component";
+import { QrCheckingComponent } from "../pages/qr-checking/qr-checking.component";
 
 export const routes: Route[] = [
     {
         path: '',
         component: WellcomeComponent
+    },
+    {
+        path: 'analizando-qr-de-su-mascota',
+        component: QrCheckingComponent
     },
     {
         path: 'web-developer/3956-albert',

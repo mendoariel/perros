@@ -12,6 +12,7 @@ import {MatCardModule} from '@angular/material/card';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 
@@ -30,7 +31,8 @@ import {MatListModule} from '@angular/material/list';
     MatCardModule,
     MatExpansionModule,
     MatDividerModule,
-    MatListModule
+    MatListModule,
+    MatProgressSpinnerModule
   ],
   exports: [
     MatToolbarModule,
@@ -44,7 +46,8 @@ import {MatListModule} from '@angular/material/list';
     MatCardModule,
     MatExpansionModule,
     MatDividerModule,
-    MatListModule
+    MatListModule,
+    MatProgressSpinnerModule
   ]
 })
 export class MaterialModule { }

@@ -11,6 +11,7 @@ import { leastOneCapitalLetterValidator } from 'src/app/shared/custom-validators
 import { leastOneLowerCaseValidator } from 'src/app/shared/custom-validators/least-one-lower-case.directive';
 import { leastOneNumberValidator } from 'src/app/shared/custom-validators/least-one-number.directive';
 import { confirmedValidator } from 'src/app/shared/custom-validators/confirmed-validator.directive';
+import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 
 @Component({
   selector: 'app-register',
@@ -19,7 +20,8 @@ import { confirmedValidator } from 'src/app/shared/custom-validators/confirmed-v
     CommonModule,
     MaterialModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FirstNavbarComponent
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
