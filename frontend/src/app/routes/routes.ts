@@ -14,6 +14,7 @@ import { WebDeveloperComponent } from "../pages/web-developer/web-developer.comp
 import { QrCheckingComponent } from "../pages/qr-checking/qr-checking.component";
 import { AddPetComponent } from "../pages/add-pet/add-pet.component";
 import { MyPetComponent } from "../pages/my-pet/my-pet.component";
+import { PageNotFoundComponent } from "../pages/page-not-found/page-not-found.component";
 
 export const routes: Route[] = [
     {
@@ -49,7 +50,11 @@ export const routes: Route[] = [
         component: NewPasswordComponent
     },
     {
+        path: 'pagina-no-encontrada',
+        component: PageNotFoundComponent
+    },
+    {
         path: '**',
-        redirectTo: ''
+        redirectTo: 'pagina-no-encontrada'
     }
 ];
