@@ -42,7 +42,7 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
       next: (res: any) => {
         console.log(res);
         this.spinner = false;
-        if(res.status === 'VIRGIN') this.goToAddPed();
+        if(res.status === 'VIRGIN') this.goToAddPed(res.hash);
         if(res.status === 'ENABLED') this.goToMyPet();
         if(res.status === 'DISABLED') {
           this.message = 'Medalla desactivada';
@@ -62,9 +62,9 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
     })
   }
 
-  goToAddPed() {
+  goToAddPed(hash: string) {
     this.message = 'carga tu mascota';
-    this.router.navigate(['/', 'agregar-mascota'])
+    this.router.navigate(['/', `agregar-mascota?hast=${hash}`])
   }
 
   goToMyPet() {
