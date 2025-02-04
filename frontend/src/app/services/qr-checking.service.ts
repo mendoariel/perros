@@ -7,12 +7,8 @@ export class QrChekingService {
     constructor(private http: HttpClient){}
 
     checkingQr(hash: string): any {
-        this.http.post(`${environment.perrosQrApi}qr-checking`, {"stringQr": hash}).subscribe({
-            next:res => {console.log(res)},
-            error:error => {
-                console.log(error)
-            }
-        });
+        console.log('before call service ', hash)
+        return this.http.post(`${environment.perrosQrApi}qr-checking`, {"stringQr": hash});
     }
 
     nextFunction() {
