@@ -28,6 +28,7 @@ model Medal {
   email   String?
   hash    String @unique
   status  State
+  registerHash String?
 
   @@map("medals")
 }
@@ -43,4 +44,5 @@ enum State {
   ENABLED
   DISABLED
   DEAD
+  REGISTER_PROCESS
 }
