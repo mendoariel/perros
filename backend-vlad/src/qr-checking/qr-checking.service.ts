@@ -3,6 +3,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import {  QRCheckingDto } from './dto/qr-checking.dto';
 import { MedalStatus } from './types';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { State } from '@prisma/client';
 
 var bcrypt = require('bcryptjs');
 var createHash = require('hash-generator');
@@ -15,35 +16,49 @@ export class QrService {
     async QRCheking(dto: QRCheckingDto):Promise<any> {
         const medal = await this.prisma.medal.findFirst({
             where: {
-                hash: dto.stringQr
+                medalHash: dto.medalHash
             }
         });
         
-        let registerHash = createHash(36);
+        if (!medal) throw new NotFoundException('No se encontro la medalla');
+
+
+        
         
         if(medal.status === 'VIRGIN') {
-            let update = await this.prisma.medal.update({
+            const registerHashVar = createHash(36);
+            const medalhash = medal.medalHash;
+            const update = await this.prisma.medal.update({
                 where: {
-                    hash: medal.hash
+                    medalHash: medalhash
                 },
                 data: {
-                    registerHash: registerHash,
-                    status: "REGISTER_PROCESS"
+                    registerHash: registerHashVar,
+                    status: State.REGISTER_PROCESS
                 }
             });
+
+            const modifyMedal = await this.prisma.medal.findFirst({
+                where: {
+                    medalHash: dto.medalHash
+                }
+            });
+    
+            return {
+                status: modifyMedal.status, 
+                medalHash: modifyMedal.medalHash,
+                registerHash: modifyMedal.registerHash
+             };
         }
-        if (!medal) throw new NotFoundException('No se encontro la medalla');
-        
-        const modifyMedal = await this.prisma.medal.findFirst({
-            where: {
-                hash: dto.stringQr
-            }
-        });
 
         return {
-            status: modifyMedal.status, 
-            stringQr: modifyMedal.hash,
-            registerHas: modifyMedal.registerHash
+            status: medal.status, 
+            medalHash: medal.medalHash,
+            registerHash: medal.registerHash
          };
+        
+       
+        
+        
     }
 }

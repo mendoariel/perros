@@ -14,12 +14,14 @@ import { MaterialModule } from 'src/app/material/material.module';
   styleUrls: ['./add-pet.component.scss']
 })
 export class AddPetComponent implements OnInit{
-  hash = '';
+  medalHash = '';
+  registerHash = '';
 
   constructor(private router: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.hash = this.router.snapshot.params['hash'];
-    console.log(this.hash)
+    this.medalHash = this.router.snapshot.params['medalHash'];
+    this.registerHash = this.router.snapshot.params['registerHash'];
+    console.log(this.medalHash, '    ',this.registerHash)
   }
 }
