@@ -8,7 +8,6 @@ export class SidenavService {
 
     openSidenav() {
         this.sidenavStatus.next(true)
-        console.log('openig sidenav')
     }
 
     closeSidenav() {

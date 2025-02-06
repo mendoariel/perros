@@ -22,6 +22,5 @@ export class AddPetComponent implements OnInit{
   ngOnInit(): void {
     this.medalHash = this.router.snapshot.params['medalHash'];
     this.registerHash = this.router.snapshot.params['registerHash'];
-    console.log(this.medalHash, '    ',this.registerHash)
   }
 }

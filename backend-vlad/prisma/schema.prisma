@@ -44,7 +44,7 @@ enum Role {
 enum State {
   VIRGIN
   ENABLED
-  DISABLED
+  DISABLEDn
   DEAD
   REGISTER_PROCESS
 }
