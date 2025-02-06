@@ -26,7 +26,7 @@ export const routes: Route[] = [
         component: QrCheckingComponent
     },
     {
-        path: 'agregar-mascota/:hash',
+        path: 'agregar-mascota/:medalHash/:registerHash',
         component: AddPetComponent
     },
     {

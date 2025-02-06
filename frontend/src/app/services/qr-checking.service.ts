@@ -8,7 +8,7 @@ export class QrChekingService {
 
     checkingQr(hash: string): any {
         console.log('before call service ', hash)
-        return this.http.post(`${environment.perrosQrApi}qr-checking`, {"stringQr": hash});
+        return this.http.post(`${environment.perrosQrApi}qr-checking`, {"medalHash": hash});
     }
 
     nextFunction() {
