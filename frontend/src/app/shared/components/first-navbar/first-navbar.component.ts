@@ -40,7 +40,6 @@ export class FirstNavbarComponent implements OnInit {
   }
   
   addFriasElement() {
-    console.log('add method')
     this.router.navigate(['/add-frias-element'])
   }
   login() {
@@ -58,7 +57,7 @@ export class FirstNavbarComponent implements OnInit {
         localStorage.removeItem('access_token');
         this.router.navigate(['frias'])
       },
-      error : (error)=> {console.log(error)}
+      error : (error)=> {console.error(error)}
     });
   }
 
