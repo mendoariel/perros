@@ -1,18 +1,24 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { QrService } from "./qr-checking.service";
 import { Public } from "src/common/decorators";
-import { QRCheckingDto } from "./dto";
+import { PostMedalDto, QRCheckingDto } from "./dto";
 import { MedalStatus } from "./types";
 
 
-@Controller('qr-checking')
+@Controller('qr')
 export class QRCheckingController {
     constructor(private qrService: QrService) {}
 
     @Public()
-    @Post('')
+    @Post('checking')
     @HttpCode(HttpStatus.CREATED)
-    signupLocal(@Body() dto: QRCheckingDto): Promise<MedalStatus | string> {
+    chekingMedal(@Body() dto: QRCheckingDto): Promise<MedalStatus | string> {
         return this.qrService.QRCheking(dto);
+    }
+    @Public()
+    @Post('dog')
+    @HttpCode(HttpStatus.CREATED)
+    loadMedal(@Body() dto: PostMedalDto): Promise<any> {
+        return this.qrService.postMedal(dto);
     }
 }
