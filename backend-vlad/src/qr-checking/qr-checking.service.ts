@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
-import {  QRCheckingDto } from './dto/qr-checking.dto';
+import {  PostMedalDto, QRCheckingDto } from './dto/qr-checking.dto';
 import { MedalStatus } from './types';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { State } from '@prisma/client';
@@ -14,9 +14,9 @@ export class QrService {
     ) {}
     
     async QRCheking(dto: QRCheckingDto):Promise<any> {
-        const medal = await this.prisma.medal.findFirst({
+        const medal = await this.prisma.virginMedal.findFirst({
             where: {
-                medalHash: dto.medalHash
+                medalSring: dto.medalHash
             }
         });
         
@@ -27,10 +27,10 @@ export class QrService {
         
         if(medal.status === 'VIRGIN') {
             const registerHashVar = createHash(36);
-            const medalhash = medal.medalHash;
-            const update = await this.prisma.medal.update({
+            const medalString = medal.medalSting;
+            const update = await this.prisma.virginMedal.update({
                 where: {
-                    medalHash: medalhash
+                    medalString: medalString
                 },
                 data: {
                     registerHash: registerHashVar,
@@ -46,7 +46,7 @@ export class QrService {
     
             return {
                 status: modifyMedal.status, 
-                medalHash: modifyMedal.medalHash,
+                medalString: modifyMedal.medalString,
                 registerHash: modifyMedal.registerHash
              };
         }
@@ -56,9 +56,9 @@ export class QrService {
             medalHash: medal.medalHash,
             registerHash: medal.registerHash
          };
-        
-       
-        
-        
+    }
+
+    async postMedal(dto: PostMedalDto): Promise<any> {
+        return "return from service post medal"
     }
 }
