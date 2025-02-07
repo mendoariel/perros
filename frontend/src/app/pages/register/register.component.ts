@@ -68,7 +68,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
           data: 'Usuario registrado correctamente, ya puede ingresar por login'
         })
       }, error => {
-        console.log(error)
+        console.error(error)
         if(error.error && error.status === 500)  this._snackBar.openFromComponent(MessageSnackBarComponent,{
           duration: 5000, 
           verticalPosition: 'top',
@@ -123,7 +123,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   visibilityTogglePasswordConfirm() {
     this.pwdConfirmHide = !this.pwdConfirmHide;
-    console.log('newpasswordform.hasError ===> ',this.registerForm.hasError('passwordConfirmedError'))
   }
 
   getVisibilityPasswordConfirm() {
