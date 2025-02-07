@@ -24,7 +24,6 @@ export class RoleGuardService implements CanActivate {
     let tokenPayload: any;
     if(token) {
         tokenPayload = jwtDecode(token);
-        console.log(tokenPayload)
     }
     if(!this.auth.isAuthenticated()) {
         this.router.navigate(['frias']);

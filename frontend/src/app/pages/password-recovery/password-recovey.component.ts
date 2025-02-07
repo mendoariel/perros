@@ -48,7 +48,6 @@ export class PasswordRecoveryComponent implements OnInit, OnDestroy {
   passwordRecovery() {
     this.recoveryPasswordSubscription = this.authService.recoveryPassword(this.passwordRecoveryForm.value).subscribe({
       next: (res: any)=> {
-        console.log(res);
         this._snackBar.openFromComponent(MessageSnackBarComponent,{
           duration: 5000, 
           verticalPosition: 'top',
@@ -57,7 +56,7 @@ export class PasswordRecoveryComponent implements OnInit, OnDestroy {
         this.goHome();
       },
       error : (error)=> {
-        console.log(error);
+        console.error(error);
         this.openSnackBar();
       }
     });

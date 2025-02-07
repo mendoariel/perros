@@ -30,7 +30,6 @@ export class AuthController {
     @Get('is-frias-editor')
     @HttpCode(HttpStatus.OK)
     currentUser(@GetCurrentUser() user: any) {
-        console.log(user);
         return this.authService.isFriasEditor(user.email);
     }
     
@@ -62,7 +61,6 @@ export class AuthController {
     @Post('password-recovery')
     @HttpCode(HttpStatus.OK)
     passwordRecovery(@Body() dto: PasswordRecoveryDto): Promise<Message> {
-        console.log('into controller')
         return this.authService.passwordRecovery(dto)
     }
 

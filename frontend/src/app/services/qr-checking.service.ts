@@ -7,7 +7,6 @@ export class QrChekingService {
     constructor(private http: HttpClient){}
 
     checkingQr(hash: string): any {
-        console.log('before call service ', hash)
         return this.http.post(`${environment.perrosQrApi}qr-checking`, {"medalHash": hash});
     }
 

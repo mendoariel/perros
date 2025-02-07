@@ -51,12 +51,10 @@ export class AuthService {
   }
   
   recoveryPassword(email: any) {
-    console.log(email);
     return this.http.post(`${environment.perrosQrApi}auth/password-recovery`, email);
   }
 
   newPassword(newPassord: NewPasswordInterface) {
-    console.log('new password ===> ', newPassord)
     return this.http.post(`${environment.perrosQrApi}auth/new-password`, newPassord);
   }
 }

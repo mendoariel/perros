@@ -79,7 +79,6 @@ export class NewPasswordComponent {
 
     this.newPasswordSubscription = this.authService.newPassword(newPassword).subscribe({
       next: (res: any)=> {
-        console.log(res);
         this._snackBar.openFromComponent(MessageSnackBarComponent,{
           duration: 5000, 
           verticalPosition: 'top',
@@ -88,7 +87,7 @@ export class NewPasswordComponent {
         this.router.navigate(['/login']);
       },
       error : (error)=> {
-        console.log(error);
+        console.error(error);
         this._snackBar.openFromComponent(MessageSnackBarComponent,{
             duration: 3000, 
             verticalPosition: 'top',
@@ -133,7 +132,6 @@ export class NewPasswordComponent {
 
   visibilityTogglePasswordConfirm() {
     this.pwdConfirmHide = !this.pwdConfirmHide;
-    console.log('newpasswordform.hasError ===> ',this.newPasswordForm.hasError('passwordConfirmedError'))
   }
 
   getVisibilityPasswordConfirm() {
