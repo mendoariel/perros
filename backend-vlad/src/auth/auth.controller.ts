@@ -14,12 +14,12 @@ import { AuthSignInDto } from './dto/auth-signin.dto';
 export class AuthController {
     constructor(private authService: AuthService) {}
 
-    @Public()
-    @Post('local/signup')
-    @HttpCode(HttpStatus.CREATED)
-    signupLocal(@Body() dto: AuthDto): Promise<Tokens> {
-        return this.authService.signupLocal(dto);
-    }
+    // @Public()
+    // @Post('local/signup')
+    // @HttpCode(HttpStatus.CREATED)
+    // signupLocal(@Body() dto: AuthDto): Promise<Tokens> {
+    //     /return this.authService.signupLocal(dto);
+    // }
 
     @Post('user')
     @HttpCode(HttpStatus.OK)

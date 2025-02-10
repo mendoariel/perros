@@ -19,6 +19,7 @@ export class QRCheckingController {
     @Post('dog')
     @HttpCode(HttpStatus.CREATED)
     loadMedal(@Body() dto: PostMedalDto): Promise<any> {
+        console.log('dto====> ', dto)
         return this.qrService.postMedal(dto);
     }
 }

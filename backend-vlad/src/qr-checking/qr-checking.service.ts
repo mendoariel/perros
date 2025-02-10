@@ -3,20 +3,22 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import {  PostMedalDto, QRCheckingDto } from './dto/qr-checking.dto';
 import { MedalStatus } from './types';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { State } from '@prisma/client';
+import { Prisma, Role, MedalState, UserStatus } from '@prisma/client';
+import { MailService } from 'src/mail/mail.service';
 
 var bcrypt = require('bcryptjs');
 var createHash = require('hash-generator');
 @Injectable()
 export class QrService {
     constructor(
-        private prisma: PrismaService
+        private prisma: PrismaService,
+        private mailService: MailService
     ) {}
     
     async QRCheking(dto: QRCheckingDto):Promise<any> {
         const medal = await this.prisma.virginMedal.findFirst({
             where: {
-                medalSring: dto.medalHash
+                medalString: dto.medalString
             }
         });
         
@@ -27,20 +29,20 @@ export class QrService {
         
         if(medal.status === 'VIRGIN') {
             const registerHashVar = createHash(36);
-            const medalString = medal.medalSting;
+            const medalStringV = medal.medalString;
             const update = await this.prisma.virginMedal.update({
                 where: {
-                    medalString: medalString
+                    medalString: medalStringV
                 },
                 data: {
                     registerHash: registerHashVar,
-                    status: State.REGISTER_PROCESS
+                    status: MedalState.REGISTER_PROCESS
                 }
             });
 
-            const modifyMedal = await this.prisma.medal.findFirst({
+            const modifyMedal = await this.prisma.virginMedal.findFirst({
                 where: {
-                    medalHash: dto.medalHash
+                    medalString: dto.medalString
                 }
             });
     
@@ -53,12 +55,64 @@ export class QrService {
 
         return {
             status: medal.status, 
-            medalHash: medal.medalHash,
+            medalString: medal.medalString,
             registerHash: medal.registerHash
          };
     }
 
     async postMedal(dto: PostMedalDto): Promise<any> {
-        return "return from service post medal"
+        console.log('dto from post medal into checking service ===> ',dto)
+        const virginMedal = await this.prisma.virginMedal.findUnique({
+            where: {
+               medalString: dto.medalString 
+            }
+        })
+        
+        if (!virginMedal) throw new NotFoundException('No se encontro la medalla');
+        if (virginMedal.status !== MedalState.REGISTER_PROCESS) throw new NotFoundException('Esta medalla ya no esta disponible para registrar');
+        if(virginMedal.registerHash !== dto.medalRegister) throw new NotFoundException('No se puede cargar esta medalla error codigo de rgistro');
+        const medalsJson = {
+                status: MedalState.REGISTER_PROCESS,
+                registerHash:  virginMedal.registerHash,
+                medalString: virginMedal.medalString,
+                namePet: dto.namePet
+        };
+        const hash = await this.hashData(dto.password)
+
+        const userCreated: any = await this.prisma.user.create({
+            data: {
+                hashToRegister: createHash(36),
+                email: dto.ownerEmail,
+                userStatus: UserStatus.PENDING,
+                hash: hash,
+                role: Role.VISITOR,
+                medals: {
+                    create: [
+                        medalsJson
+                    ]
+                }
+            }
+        });
+
+        // send email to confirm account
+        if(userCreated) {
+            await this.sendEmailConfirmAccount(userCreated.email, userCreated.hashToRegister, virginMedal.registerHash);
+            let message = { text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta su cuenta.'};
+            userCreated.message = message;  
+            return userCreated;
+        }
+
+        return 'no pudimos procsar la informacion vovler a intentar';
+    
+    }
+
+    async sendEmailConfirmAccount(userEmail: string, hashToRegister: string, medalRegisterHash: string) {
+        const url = `${process.env.FRONTEND_URL}/confirmar-cuenta?hashEmail=${userEmail}&hashToRegister=${hashToRegister}&medalRegisterHash=${medalRegisterHash}`;
+        //const url = `${process.env.FRONTEND_URL}/crear-nueva-clave`;
+        await this.mailService.sendConfirmAccount(userEmail, url);
+    }
+
+    hashData(data: string) {
+        return bcrypt.hashSync(data, 10);
     }
 }

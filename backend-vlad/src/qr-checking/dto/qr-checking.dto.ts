@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 export class QRCheckingDto {
     @IsString()
     @IsNotEmpty()
-    medalHash: string;
+    medalString: string;
 }
 
 export class PostMedalDto {
@@ -13,15 +13,18 @@ export class PostMedalDto {
     ownerEmail: string;
 
     @IsString()
-    @IsEmail()
     namePet: string;
     
     @IsString()
     @IsNotEmpty()
-    medalHash: string;
+    medalString: string;
 
     @IsString()
     @IsNotEmpty()
     medalRegister: string;
+
+    @IsNotEmpty()
+    @IsString()
+    password: string;
 
 }

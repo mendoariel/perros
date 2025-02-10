@@ -16,4 +16,16 @@ export class MailService {
             }
         });
     }
+
+    async sendConfirmAccount(email: string, url) {
+        Logger.log('before send email')
+        await this.mailerService.sendMail({
+            to: email,
+            subject: 'Confirmacion de cuenta Scan my dog',
+            template: './confirm-password',
+            context: {
+                url: url
+            }
+        });
+    }
 }
