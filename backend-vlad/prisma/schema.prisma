@@ -9,39 +9,44 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  email      String   @unique
-  hash       String
-  hashedRt   String?
-  username   String   @unique
-  superpower String?
-  role       Role
+  id                   Int        @id @default(autoincrement())
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+  email                String     @unique
+  hash                 String
+  hashedRt             String?
+  username             String?
+  role                 Role
   hashPasswordRecovery String?
-  medals    Medal[]
+  hashToRegister       String
+  userStatus           UserStatus
+  medals               Medal[]
+
   @@map("users")
 }
 
 model Medal {
-  id            Int @id @default(autoincrement())
-  medalString   String? @unique
-  status        State
-  registerHash  String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt()
-  owner         User? @relation(fields: [ownerId], references: [id])
-  ownerId       Int
+  id           Int        @id @default(autoincrement())
+  registerHash String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  ownerId      Int
+  medalString  String     @unique
+  namePet      String
+  status       MedalState
+  owner        User       @relation(fields: [ownerId], references: [id])
+
   @@map("medals")
 }
 
 model VirginMedal {
-  id            Int @id @default(autoincrement())
-  medalString   String @unique
-  registerHash  String? @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt()
-  status        State
+  id           Int        @id @default(autoincrement())
+  medalString  String     @unique
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  registerHash String     @unique
+  status       MedalState
+
   @@map("virgin_medals")
 }
 
@@ -51,10 +56,17 @@ enum Role {
   REGISTER
 }
 
-enum State {
+enum MedalState {
   VIRGIN
   ENABLED
   DISABLEDn
   DEAD
   REGISTER_PROCESS
+  PENDING_CONFIRMATION
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING
+  DISABLED
 }
