@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './dto';
 import { Message, Tokens } from './types';
@@ -7,6 +7,7 @@ import { PasswordRecoveryDto } from './dto/password-recovery.dto';
 import { MailService } from 'src/mail/mail.service';
 import { UtilService } from 'src/services/util.service';
 import { NewPasswordDto } from './dto/new-password.dto';
+import { ConfirmAccountDto } from './dto/confirm-account.dto';
 
 var bcrypt = require('bcryptjs');
 @Injectable()
@@ -67,6 +68,38 @@ export class AuthService {
                 hashedRt: null
             }
         })
+    }
+
+    async confirmAccount(dto: ConfirmAccountDto) {
+        console.log('line 74 dto from service ==> ', dto);
+        //const medal: any = null;
+        
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email: dto.email
+            },
+            include: {
+              medals:   true 
+            }
+            
+            
+        });
+        if(!user) throw new NotFoundException('sin registro');
+        console.log(user);
+        // const medals: any[] = await this.prisma.medals.findMany({
+        //     where: {
+                
+        //     }
+        // });
+        
+        if(user.hashToRegister !== dto.registerHash) throw new NotFoundException('fail key');
+
+        user.medals.forEach(element => {
+            console.log('from forEach ', element)
+        });
+
+
+        return user;
     }
 
     async refreshTokens(userId: number, rt: string ) {
