@@ -68,7 +68,13 @@ export class AuthController {
     @Post('new-password')
     @HttpCode(HttpStatus.OK)
     newPassword(@Body() dto: NewPasswordDto): Promise<Message> {
-        
-        return this.authService.newPassword(dto)
+        return this.authService.newPassword(dto);
+    }
+
+    @Public()
+    @Post('new-password')
+    @HttpCode(HttpStatus.OK)
+    confirmAccount(@Body() dto: NewPasswordDto): Promise<Message> {
+        return this.authService.newPassword(dto);
     }
 }
