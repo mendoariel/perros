@@ -9,6 +9,7 @@ import { GetCurrentUser, GetCurrentUserId, Public } from 'src/common/decorators'
 import { PasswordRecoveryDto } from './dto/password-recovery.dto';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { AuthSignInDto } from './dto/auth-signin.dto';
+import { ConfirmAccountDto } from './dto/confirm-account.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -72,9 +73,9 @@ export class AuthController {
     }
 
     @Public()
-    @Post('new-password')
+    @Post('confirm-account')
     @HttpCode(HttpStatus.OK)
-    confirmAccount(@Body() dto: NewPasswordDto): Promise<Message> {
-        return this.authService.newPassword(dto);
+    confirmAccount(@Body() dto: ConfirmAccountDto): any {
+        return this.authService.confirmAccount(dto);
     }
 }
