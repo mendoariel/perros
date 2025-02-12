@@ -8,6 +8,7 @@ import { MailService } from 'src/mail/mail.service';
 import { UtilService } from 'src/services/util.service';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { ConfirmAccountDto } from './dto/confirm-account.dto';
+import { UserStatus, MedalState } from '@prisma/client';
 
 var bcrypt = require('bcryptjs');
 @Injectable()
@@ -71,7 +72,7 @@ export class AuthService {
     }
 
     async confirmAccount(dto: ConfirmAccountDto) {
-        console.log('line 74 dto from service ==> ', dto);
+
         //const medal: any = null;
         
         const user = await this.prisma.user.findUnique({
@@ -84,22 +85,47 @@ export class AuthService {
             
             
         });
+
         if(!user) throw new NotFoundException('sin registro');
-        console.log(user);
-        // const medals: any[] = await this.prisma.medals.findMany({
-        //     where: {
-                
-        //     }
-        // });
         
         if(user.hashToRegister !== dto.registerHash) throw new NotFoundException('fail key');
 
-        user.medals.forEach(element => {
-            console.log('from forEach ', element)
+        // update user status of the user
+        const userUpdated = await this.prisma.user.update({
+            where: {
+                email: user.email
+            },
+            data: {
+                userStatus: UserStatus.ACTIVE
+            }
+        })
+
+        // udpate medal status
+        const medalUpdate: any = await this.prisma.medal.updateMany({
+            where: {
+                registerHash: dto.medalHash
+            },
+            data: {
+                status: MedalState.INCOMPLETE
+            }
         });
 
+        // find the user alreidy modify
+        const userFinal: any = await this.prisma.user.findUnique({
+            where: {
+                email: dto.email
+            },
+            include: {
+              medals:   true 
+            }
+        });
 
-        return user;
+        const response = {
+            message: "user registered, medal incomplete",
+            code: 5001
+        }
+
+        return response;
     }
 
     async refreshTokens(userId: number, rt: string ) {
