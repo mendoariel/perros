@@ -1,0 +1,23 @@
+mat-toolbar {
+    background-color:rgb(37, 242, 10) !important;
+}
+main {
+
+    background-color: darkgreen;
+    min-width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    section.checking, section.no-found {
+        background-color: white;
+        padding: 3em;
+        margin: 2em;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+}

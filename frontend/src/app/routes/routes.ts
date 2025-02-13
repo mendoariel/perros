@@ -15,6 +15,7 @@ import { QrCheckingComponent } from "../pages/qr-checking/qr-checking.component"
 import { AddPetComponent } from "../pages/add-pet/add-pet.component";
 import { MyPetComponent } from "../pages/my-pet/my-pet.component";
 import { PageNotFoundComponent } from "../pages/page-not-found/page-not-found.component";
+import { ConfirmAccountComponent } from "../pages/confirm-account/confirm-account.component";
 
 export const routes: Route[] = [
     {
@@ -22,12 +23,21 @@ export const routes: Route[] = [
         component: WellcomeComponent
     },
     {
-        path: 'analizando-qr-de-su-mascota',
+        path: 'wellcome',
+        redirectTo: '',
+        pathMatch: 'full'
+    },
+    {
+        path: 'mascota-checking',
         component: QrCheckingComponent
     },
     {
         path: 'agregar-mascota/:medalHash/:registerHash',
         component: AddPetComponent
+    },
+    {
+        path: 'confirmar-cuenta',
+        component: ConfirmAccountComponent
     },
     {
         path: 'mi-mascota',
