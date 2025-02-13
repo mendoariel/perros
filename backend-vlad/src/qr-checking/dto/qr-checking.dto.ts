@@ -13,7 +13,7 @@ export class PostMedalDto {
     ownerEmail: string;
 
     @IsString()
-    namePet: string;
+    petName: string;
     
     @IsString()
     @IsNotEmpty()

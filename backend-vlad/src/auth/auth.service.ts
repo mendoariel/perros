@@ -41,7 +41,8 @@ export class AuthService {
     async signinLocal(dto: AuthDto): Promise<Tokens> {
         const user = await this.prisma.user.findUnique({
             where: {
-                email: dto.email
+                email: dto.email,
+                userStatus: UserStatus.ACTIVE
             }
         });
         if(!user) throw new ForbiddenException("Access Denied"); 
@@ -72,8 +73,6 @@ export class AuthService {
     }
 
     async confirmAccount(dto: ConfirmAccountDto) {
-
-        //const medal: any = null;
         
         const user = await this.prisma.user.findUnique({
             where: {
@@ -82,12 +81,9 @@ export class AuthService {
             include: {
               medals:   true 
             }
-            
-            
         });
 
         if(!user) throw new NotFoundException('sin registro');
-        
         if(user.hashToRegister !== dto.registerHash) throw new NotFoundException('fail key');
 
         // update user status of the user
@@ -98,7 +94,7 @@ export class AuthService {
             data: {
                 userStatus: UserStatus.ACTIVE
             }
-        })
+        });
 
         // udpate medal status
         const medalUpdate: any = await this.prisma.medal.updateMany({
@@ -107,6 +103,16 @@ export class AuthService {
             },
             data: {
                 status: MedalState.INCOMPLETE
+            }
+        });
+
+        // udpate medal status
+        const virginMedalUpdate: any = await this.prisma.virginMedal.updateMany({
+            where: {
+                registerHash: dto.medalHash
+            },
+            data: {
+                status: MedalState.REGISTERED
             }
         });
 

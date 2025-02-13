@@ -32,7 +32,7 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
     this.spinner = true;
     this.route.queryParams.subscribe({
       next: params => {
-        this.callCheckingService(params['hash'])
+        this.callCheckingService(params['medalString'])
       }
     });
   }
@@ -41,14 +41,16 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
     this.checkingSubscriber = this.qrService.checkingQr(hash).subscribe({
       next: (res: any) => {
         this.spinner = false;
-        if(res.status === 'REGISTER_PROCESS') this.goToAddPed(res.medalHash, res.registerHash);
+        if(res.status === 'REGISTER_PROCESS') this.goToAddPed(res.medalString, res.registerHash);
         if(res.status === 'ENABLED') this.goToMyPet();
         if(res.status === 'DISABLED') {
           this.message = 'Medalla desactivada';
         }
+        if(res.status === 'REGISTERED') {
+          this.message = 'Medalla registrada pendiente de cargar foto';
+        }
         if(res.status === 'DEAD') {
           this.message = 'Medalla borrada';
-          
         }
       },
       error: (error: any) => {
@@ -60,6 +62,7 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
 
   goToAddPed(medalHash: string, registerHash: string) {
     this.message = 'carga tu mascota';
+    console.log('before navigate')
     this.router.navigate(['agregar-mascota', medalHash, registerHash])
   }
 

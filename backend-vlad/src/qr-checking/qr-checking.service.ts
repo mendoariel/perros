@@ -16,12 +16,13 @@ export class QrService {
     ) {}
     
     async QRCheking(dto: QRCheckingDto):Promise<any> {
+        console.log('dto from qr checking ', dto)
         const medal = await this.prisma.virginMedal.findFirst({
             where: {
                 medalString: dto.medalString
             }
         });
-        
+        console.log('medal===> ', medal)
         if (!medal) throw new NotFoundException('No se encontro la medalla');
 
 
@@ -75,7 +76,7 @@ export class QrService {
                 status: MedalState.REGISTER_PROCESS,
                 registerHash:  virginMedal.registerHash,
                 medalString: virginMedal.medalString,
-                namePet: dto.namePet
+                petName: dto.petName
         };
         const hash = await this.hashData(dto.password)
 
