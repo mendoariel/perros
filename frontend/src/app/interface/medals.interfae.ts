@@ -11,3 +11,13 @@ export interface ConfirmAccountInterface {
     registerHash: string;
     medalHash: string;
 }
+export interface MedalInterface {
+    medalString: string;
+    petName: string;
+    status: string;
+}
+export interface RegisteredMedalInterface {
+    email: string;
+    message: string;
+    medals: MedalInterface[];
+}

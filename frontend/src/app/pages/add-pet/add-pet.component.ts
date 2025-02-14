@@ -13,6 +13,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
 import { QrChekingService } from 'src/app/services/qr-checking.service';
+import { MedalInterface, RegisteredMedalInterface } from 'src/app/interface/medals.interfae';
 
 @Component({
   selector: 'app-add-pet',
@@ -44,9 +45,11 @@ export class AddPetComponent implements OnInit{
       ]),
         passwordConfirm: new FormControl('', [Validators.required]),
       }, { validators: confirmedValidator('password', 'passwordConfirm')});
-    subscription: Subscription[] = [];
-    pwdHide = true;
-    pwdConfirmHide = true;
+  subscription: Subscription[] = [];
+  pwdHide = true;
+  pwdConfirmHide = true;
+  addPet = false;
+  registeredMedal: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -59,8 +62,6 @@ export class AddPetComponent implements OnInit{
   ngOnInit(): void {
     this.medalHash = this.route.snapshot.params['medalHash'];
     this.registerHash = this.route.snapshot.params['registerHash'];
-    console.log(this.medalHash)
-    console.log(this.registerHash)
   }
 
   goHome() {
@@ -71,15 +72,23 @@ export class AddPetComponent implements OnInit{
       let body: any = this.registerForm.value;
       body.medalString = this.medalHash;
       body.medalRegister = this.registerHash;
+      delete body.passwordConfirm;
 
       let authSubscription: Subscription = this.qrService.medalRegister(body).subscribe(
-        res => {
-          this.router.navigate(['/wellcome']);
+        (res: any) => {
+          //this.router.navigate(['/wellcome']);
+          let registeredMedal: RegisteredMedalInterface = {
+            email: res.email,
+            message: res.message,
+            medals: res.medals
+          };
+          this.registeredMedal = registeredMedal;
           this._snackBar.openFromComponent(MessageSnackBarComponent,{
-            duration: 3000, 
+            duration: 6000, 
             verticalPosition: 'top',
-            data: 'Medalla registrada, por favor confirme su cuenta desde su bandeja de entrada'
-          })
+            data: 'Medalla registrada, por favor confirme su cuenta desde su bandeja de entrada.'
+          });
+          this.addPet = true;
         }, error => {
           console.error(error)
           if(error.error && error.status === 500)  this._snackBar.openFromComponent(MessageSnackBarComponent,{

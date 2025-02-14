@@ -6,10 +6,12 @@ import { AtGuard } from './common/guards';
 import { MailModule } from './mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
 import { QrCheckingModule } from './qr-checking/qr-checking.module';
+import { PetsModule } from './pets/pets.module';
 @Module({
   imports: [
     AuthModule, 
     QrCheckingModule,
+    PetsModule,
     PrismaModule, 
     MailModule,
     ConfigModule.forRoot({

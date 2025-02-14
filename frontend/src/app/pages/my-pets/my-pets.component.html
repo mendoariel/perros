@@ -1,0 +1,27 @@
+<main>
+    <app-first-navbar></app-first-navbar>
+    <section class="main-content">
+        <mat-card *ngFor="let pet of myPets" class="example-card" appearance="outlined">
+            <mat-card-header>
+              <div mat-card-avatar class="example-header-image"></div>
+              <mat-card-title>{{ pet.petName }}</mat-card-title>
+              <mat-card-subtitle>{{ pet.status }}</mat-card-subtitle>
+            </mat-card-header>
+            <div *ngIf="pet.status === 'INCOMPLETE'" class="image-container">
+              <mat-icon>pets</mat-icon>
+            </div>
+            <div *ngIf="!(pet.status === 'INCOMPLETE')">
+              <img mat-card-image src="assets/home-rosa-mosqueta.jpg" alt="Foto de Rosa Mosqueta">
+            </div>
+
+            <mat-card-content style="margin-top: 2em;">
+              <p *ngIf="pet.status === 'INCOMPLETE'">
+                Cargar una imagen de tu mascota para terminar el proceso
+              </p>
+            </mat-card-content>
+            <mat-card-actions>
+              <button style="margin-left: auto;" mat-raised-button color="primary">Completar</button>
+            </mat-card-actions>
+          </mat-card>
+    </section>
+</main>

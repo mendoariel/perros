@@ -75,6 +75,29 @@ main {
             }
         }
     }
-    
+    section.confirm-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        section.info-container {
+            padding: 1.5em 3em;
+            width: 70% !important;
+            max-width: 500px;
+            min-width: 250px;
+            border: 1px solid grey;
+            border-radius: 4px;
+            margin-top: 2em;
+            margin-bottom: 7em;
+            background: white;
+            box-shadow: 1px 1px 12px 4px rgba(200,200,200, 0.7);
+            p {
+               text-align: justify;
+               text-indent: 2em; 
+            }
+        }
+    }
 }
 
