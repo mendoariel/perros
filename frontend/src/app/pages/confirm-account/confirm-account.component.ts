@@ -6,6 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmAccountInterface, MedalRegisterInterface } from 'src/app/interface/medals.interfae';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { MaterialModule } from 'src/app/material/material.module';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
 
 @Component({
   selector: 'app-confirm-account',
@@ -22,18 +24,19 @@ export class ConfirmAccountComponent implements OnInit{
    spinner = false;
     checkingSubscriber: Subscription | undefined;
     message = '';
+    accountConfirmed = false;
   
     constructor(
       private qrService: QrChekingService,
       private route: ActivatedRoute,
-      private router: Router
-    ) {}
+      private router: Router,
+      private _snackBar: MatSnackBar
+        ) {}
 
     ngOnInit(): void {
       this.spinner = true;
       this.route.queryParams.subscribe({
         next: (params: any) => {
-          console.log(params);
           let body: ConfirmAccountInterface = {
             email: params.hashEmail,
             registerHash: params.hashToRegister,
@@ -47,7 +50,6 @@ export class ConfirmAccountComponent implements OnInit{
     confirmAccunt(body: ConfirmAccountInterface) {
       this.checkingSubscriber = this.qrService.confirmAccount(body).subscribe({
         next: (res: any) => {
-          console.log(res);
           if(res.code === 5001) this.confirmAccountTrue()
         },
         error: (error: any) => {
@@ -58,9 +60,12 @@ export class ConfirmAccountComponent implements OnInit{
     }
 
     confirmAccountTrue() {
-      console.log('cuenta confirmada');
-      this.message = 'Cuenta activada'
-      this.spinner = false;
+       this._snackBar.openFromComponent(MessageSnackBarComponent,{
+                duration: 5000, 
+                verticalPosition: 'top',
+                data: 'Ingrese a nuestro sitio, para terminar de configurar su medalla QR'
+              })
+      this.router.navigate(['login']);
     }
 
     goToMyPets() {

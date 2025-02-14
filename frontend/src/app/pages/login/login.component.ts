@@ -72,7 +72,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         localStorage.setItem('access_token', res.access_token);
         this.authService.putAuthenticatedTrue();
         
-        this.router.navigate(['/']);
+        this.router.navigate(['/mis-mascotas']);
       },
       error : (error)=> {
         console.error(error);

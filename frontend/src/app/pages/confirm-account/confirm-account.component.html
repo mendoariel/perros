@@ -6,7 +6,7 @@
     </section>
     <section class="no-found" *ngIf="!spinner">
         <h1>{{ message }}</h1>
-        <button  mat-raised-button color="primary" (click)="goToMyPets()">Mis mascotas</button>
+        <button  *ngIf="accountConfirmed" mat-raised-button color="primary" (click)="goToMyPets()">Mis mascotas</button>
     </section>
     
 </main>

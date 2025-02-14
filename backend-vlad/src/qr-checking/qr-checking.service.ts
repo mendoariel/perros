@@ -16,13 +16,11 @@ export class QrService {
     ) {}
     
     async QRCheking(dto: QRCheckingDto):Promise<any> {
-        console.log('dto from qr checking ', dto)
         const medal = await this.prisma.virginMedal.findFirst({
             where: {
                 medalString: dto.medalString
             }
         });
-        console.log('medal===> ', medal)
         if (!medal) throw new NotFoundException('No se encontro la medalla');
 
 
@@ -62,7 +60,6 @@ export class QrService {
     }
 
     async postMedal(dto: PostMedalDto): Promise<any> {
-        console.log('dto from post medal into checking service ===> ',dto)
         const virginMedal = await this.prisma.virginMedal.findUnique({
             where: {
                medalString: dto.medalString 
@@ -92,7 +89,10 @@ export class QrService {
                         medalsJson
                     ]
                 }
-            }
+            },
+            include: {
+                medals:   true 
+              }
         });
 
         // send email to confirm account

@@ -62,7 +62,6 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
 
   goToAddPed(medalHash: string, registerHash: string) {
     this.message = 'carga tu mascota';
-    console.log('before navigate')
     this.router.navigate(['agregar-mascota', medalHash, registerHash])
   }
 

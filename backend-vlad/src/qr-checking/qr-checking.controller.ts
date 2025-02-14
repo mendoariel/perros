@@ -13,14 +13,12 @@ export class QRCheckingController {
     @Post('checking')
     @HttpCode(HttpStatus.CREATED)
     chekingMedal(@Body() dto: QRCheckingDto): Promise<MedalStatus | string> {
-        console.log('from controller dto ===> ', dto)
         return this.qrService.QRCheking(dto);
     }
     @Public()
     @Post('pet')
     @HttpCode(HttpStatus.CREATED)
     loadMedal(@Body() dto: PostMedalDto): Promise<any> {
-        console.log('dto====> ', dto)
         return this.qrService.postMedal(dto);
     }
 }

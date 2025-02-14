@@ -16,6 +16,9 @@ import { AddPetComponent } from "../pages/add-pet/add-pet.component";
 import { MyPetComponent } from "../pages/my-pet/my-pet.component";
 import { PageNotFoundComponent } from "../pages/page-not-found/page-not-found.component";
 import { ConfirmAccountComponent } from "../pages/confirm-account/confirm-account.component";
+import { MyPetsComponent } from "../pages/my-pets/my-pets.component";
+import { PetsComponent } from "../pages/pets/pets.component";
+import { PetComponent } from "../pages/pet/pet.component";
 
 export const routes: Route[] = [
     {
@@ -42,6 +45,22 @@ export const routes: Route[] = [
     {
         path: 'mi-mascota',
         component: MyPetComponent
+        
+    },
+    {
+        path: 'mis-mascotas',
+        component: MyPetsComponent
+        
+    },
+    {
+        path: 'mascotas',
+        component: PetsComponent
+        
+    },
+    {
+        path: 'mascota',
+        component: PetComponent
+        
     },
     {
         path: 'login',
