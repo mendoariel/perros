@@ -55,6 +55,10 @@ export class MyPetsComponent implements OnInit, OnDestroy {
     });
   }
 
+  complete(registerHash: string) {
+    this.router.navigate(['/mi-mascota', registerHash])
+  }
+
   ngOnDestroy(): void {
     this.petsSubscription ? this.petsSubscription.unsubscribe(): null;
     this.isLoginSubscription ? this.isLoginSubscription.unsubscribe(): null;

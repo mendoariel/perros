@@ -11,4 +11,11 @@ export class PetsService {
         let header = new HttpHeaders().set('Authorization',`Bearer ${token}`);
         return this.http.get(`${environment.perrosQrApi}pets/mine`, {headers: header});
     }
+
+    getMyPet(registerHash: string): any {
+
+        let token = localStorage.getItem('access_token');
+        let header = new HttpHeaders().set('Authorization',`Bearer ${token}`);
+        return this.http.post(`${environment.perrosQrApi}pets/my`, {registerHash}, {headers: header});
+    }
 }
