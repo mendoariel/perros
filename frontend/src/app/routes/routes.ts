@@ -43,7 +43,7 @@ export const routes: Route[] = [
         component: ConfirmAccountComponent
     },
     {
-        path: 'mi-mascota',
+        path: 'mi-mascota/:registerHash',
         component: MyPetComponent
         
     },

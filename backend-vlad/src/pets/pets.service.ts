@@ -18,4 +18,22 @@ export class PetsServicie {
         if(!owner) throw new NotFoundException('Sin registro');
         return owner.medals;
     }
+
+    async getMyPet(email: string, registerHash: string) {
+        let user = await this.prisma.user.findUnique({
+            where: {
+                email: email
+            },
+            include: {
+                medals: {
+                    where: {
+                      registerHash: registerHash 
+                    }
+                }
+            }
+            
+        });
+        if(!user) throw new NotFoundException('Sin registro');
+        return user;
+    }
 }

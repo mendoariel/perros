@@ -1,1 +1,27 @@
-<p>my-pet works!</p>
+<main>
+    <app-first-navbar></app-first-navbar>
+    <section class="main-content">
+        <mat-card  class="example-card" appearance="outlined">
+            <mat-card-header>
+              <div mat-card-avatar class="example-header-image"></div>
+              <mat-card-title>{{ myPet.medals[0].petName }}</mat-card-title>
+              <mat-card-subtitle>{{ myPet.medals[0].status }}</mat-card-subtitle>
+            </mat-card-header>
+            <div *ngIf="myPet.medals[0].status === 'INCOMPLETE'" class="image-container">
+              <mat-icon>pets</mat-icon>
+            </div>
+            <div *ngIf="!(myPet.medals[0].status === 'INCOMPLETE')">
+              <img mat-card-image src="assets/home-rosa-mosqueta.jpg" alt="Foto de Rosa Mosqueta">
+            </div>
+
+            <mat-card-content style="margin-top: 2em;">
+              <p *ngIf="myPet.medals[0].status === 'INCOMPLETE'">
+                Cargar una imagen de tu mascota para terminar el proceso
+              </p>
+            </mat-card-content>
+            <mat-card-actions>
+              <button (click)="complete(myPet.registerHash)" style="margin-left: auto;" mat-raised-button color="primary">Completar</button>
+            </mat-card-actions>
+          </mat-card>
+    </section>
+</main>
