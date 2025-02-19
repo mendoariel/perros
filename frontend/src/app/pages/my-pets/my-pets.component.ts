@@ -32,22 +32,18 @@ export class MyPetsComponent implements OnInit, OnDestroy {
     this.isLoginSubscription = this.authService.isAuthenticatedObservable.subscribe({
       next: (res: any) => {
         if(res) {
-          console.log(res);
         } else {
           this.router.navigate(['login'])
         }
       }
     });
-    console.log('my pets')
     this.getOnlyMyPets();
   }
 
   getOnlyMyPets() {
-    console.log('from method')
     this.petsSubscription = this.petsServices.getMyPets().subscribe({
       next: (myPets: any[]) => {
         this.myPets ? this.myPets = myPets : null;
-        console.log('mypets', this.myPets)
       },
       error: (error: any) => {
         console.error(error)
