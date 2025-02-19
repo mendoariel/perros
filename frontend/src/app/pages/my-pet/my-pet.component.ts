@@ -46,9 +46,7 @@ export class MyPetComponent implements OnInit, OnDestroy{
   getOnlyMyPets(registerHash: string) {
     this.petsSubscription = this.petsServices.getMyPet(registerHash).subscribe({
       next: (myPet: any) => {
-        console.log('myPets===>', myPet)
         this.myPet = myPet;
-        console.log('mypets', this.myPet)
       },
       error: (error: any) => {
         console.error(error)
