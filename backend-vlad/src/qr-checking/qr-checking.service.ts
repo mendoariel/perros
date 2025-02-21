@@ -6,6 +6,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, Role, MedalState, UserStatus } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';
 
+import QRCode from 'qrcode';
+
 var bcrypt = require('bcryptjs');
 var createHash = require('hash-generator');
 @Injectable()
@@ -111,6 +113,41 @@ export class QrService {
         const url = `${process.env.FRONTEND_URL}/confirmar-cuenta?hashEmail=${userEmail}&hashToRegister=${hashToRegister}&medalRegisterHash=${medalRegisterHash}`;
         //const url = `${process.env.FRONTEND_URL}/crear-nueva-clave`;
         await this.mailService.sendConfirmAccount(userEmail, url);
+    }
+
+    async creatQr(): Promise<any>{
+        let timeWaiting;
+        try {
+            console.log(
+                await QRCode.toFile(`${process.cwd()}/src/files/qrs/qr.png `,   'https://wwww.bici-arbol.com', {
+                    errorCorrectionLevel: 'H',
+                    margin: 2,
+                    scale: 4,
+                    color: {
+                      dark: '#00F',  // Blue dots
+                      light: '#0000' // Transparent background
+                    }
+                  }, function (err) {
+                    if (err) throw err
+                    timeWaiting = 'after doing'
+                    console.log('timeWawiting from await', timeWaiting, ' done')
+                    setTimeout(()=> {
+                        timeWaiting = '2 second later'
+                    },2000);
+                  })
+            )
+          } catch (err) {
+            console.error(err)
+        }
+        
+
+        // return await this.prisma.virginMedal.create({
+        //     data: {
+        //         medalString: 'genesis2',
+        //         registerHash: 'genesis2',
+        //         status: MedalState.VIRGIN
+        //     }
+        // });
     }
 
     hashData(data: string) {
