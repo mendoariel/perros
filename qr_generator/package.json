@@ -1,0 +1,17 @@
+{
+  "name": "qr_generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "pg": "^8.13.3",
+    "qrcode": "^1.5.4"
+  }
+}

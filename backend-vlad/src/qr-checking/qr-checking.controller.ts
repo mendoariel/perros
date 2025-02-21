@@ -21,4 +21,10 @@ export class QRCheckingController {
     loadMedal(@Body() dto: PostMedalDto): Promise<any> {
         return this.qrService.postMedal(dto);
     }
+
+    @Public()
+    @Post('creator')
+    qrCreator() {
+        return this.qrService.creatQr()
+    }
 }
