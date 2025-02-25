@@ -35,6 +35,7 @@ model Medal {
   medalString  String     @unique
   status       MedalState
   petName      String
+  image        String?
   owner        User       @relation(fields: [ownerId], references: [id])
 
   @@map("medals")
@@ -44,7 +45,7 @@ model VirginMedal {
   id           Int        @id @default(autoincrement())
   medalString  String     @unique
   createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  updatedAt    DateTime?  @updatedAt
   registerHash String     @unique
   status       MedalState
 

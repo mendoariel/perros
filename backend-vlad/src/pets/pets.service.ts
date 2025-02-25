@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma, MedalState } from "@prisma/client";
 import { Response } from "express";
 import { join } from "path";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -43,5 +43,21 @@ export class PetsServicie {
     getFileByFileName(fileName: string, res: Response) {
         const filePath = join(process.cwd(), 'public', 'files', fileName)
         return res.sendFile(filePath)
+    }
+
+    loadImage(filename: string, medalString: string) {
+        console.log('medal string ===', medalString)
+        //save database the images to then i can getting from frontend
+        const updateMedal = this.prisma.medal.update({
+            where: {
+                medalString: medalString
+            },
+            data: {
+                image: filename,
+                status: MedalState.ENABLED
+            }
+        })
+        if(!updateMedal)  throw new NotFoundException('Sin registro de esa medalla');
+        return updateMedal;
     }
 }

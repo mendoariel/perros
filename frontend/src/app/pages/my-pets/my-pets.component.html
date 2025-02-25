@@ -10,8 +10,8 @@
           <div *ngIf="pet.status === 'INCOMPLETE'" class="image-container">
             <mat-icon>pets</mat-icon>
           </div>
-          <div *ngIf="!(pet.status === 'INCOMPLETE')">
-            <img mat-card-image src="assets/home-rosa-mosqueta.jpg" alt="Foto de Rosa Mosqueta">
+          <div *ngIf="(pet.status === 'ENABLED')" class="image-container">
+            <img mat-card-image [src]="env.perrosQrApi + 'pets/files/' + pet.image" alt="Foto de Rosa Mosqueta">
           </div>
 
           <mat-card-content style="margin-top: 2em;">
@@ -19,8 +19,11 @@
               Cargar una imagen de tu mascota para terminar el proceso
             </p>
           </mat-card-content>
-          <mat-card-actions>
+          <mat-card-actions *ngIf="pet.status === 'INCOMPLETE'">
             <button (click)="complete(pet.registerHash)" style="margin-left: auto;" mat-raised-button color="primary">Completar</button>
+          </mat-card-actions>
+          <mat-card-actions *ngIf="(pet.status === 'ENABLED')">
+            <button (click)="complete(pet.registerHash)" style="margin-left: auto;" mat-raised-button color="primary">Ver Detalles</button>
           </mat-card-actions>
         </mat-card>
   </section>

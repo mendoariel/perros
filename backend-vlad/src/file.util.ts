@@ -7,7 +7,6 @@ export const fileNameEditor = (
     callback:(erros: any, filename)=>void
 ) => {
     //const newFileName = 'urban-animal-' + file.originalname;
-    console.log(file)
     const newFileName = 'secrect'+ file.originalname;
     callback(null, newFileName)
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Response, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Response, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { PetsServicie } from "./pets.service";
 import { GetCurrentUser, Public } from "src/common/decorators";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -36,14 +36,16 @@ export class PetsController {
     }))
     @HttpCode(HttpStatus.OK)
     loadProfilePicture(
+        @GetCurrentUser() user: any,
         @UploadedFile() file: Express.Multer.File,
         @Body() dto: CreateFileDto
     ) {
-        return {
-            filename: file.filename,
-            size: file.size,
-            dto
-        };
+        console.log(dto)
+        if(user && file) {
+            return this.petService.loadImage(file.filename, dto.medalString);    
+        } else {
+            throw new NotFoundException('Error al cargar archivos');
+        }
     }
 
     @Get('files/:fileName')
