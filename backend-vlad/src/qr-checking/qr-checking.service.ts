@@ -118,7 +118,7 @@ export class QrService {
     async creatQr(): Promise<any>{
         let timeWaiting;
         try {
-            console.log(
+            (
                 await QRCode.toFile(`${process.cwd()}/src/files/qrs/qr.png `,   'https://wwww.bici-arbol.com', {
                     errorCorrectionLevel: 'H',
                     margin: 2,

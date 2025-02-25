@@ -16,6 +16,9 @@ main {
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                img {
+                    max-width: 100%;
+                }
                 
                 mat-icon {
                     width: 120px !important;

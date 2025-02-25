@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { PetsService } from 'src/app/services/pets.services';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-my-pets',
@@ -22,6 +23,7 @@ export class MyPetsComponent implements OnInit, OnDestroy {
   myPets: any[] = [];
   petsSubscription: Subscription | undefined;
   isLoginSubscription: Subscription | undefined;
+  env = environment;
   constructor(
     private router: Router,
     private petsServices: PetsService,

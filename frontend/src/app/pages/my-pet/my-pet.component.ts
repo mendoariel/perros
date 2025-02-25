@@ -58,6 +58,20 @@ export class MyPetComponent implements OnInit, OnDestroy{
     this.router.navigate(['/mi-mascota', registerHash])
   }
 
+  onFileSelected() {
+    const inputNode: any = document.querySelector('#file');
+    let srcResult;
+    if (typeof (FileReader) !== 'undefined') {
+      const reader = new FileReader();
+  
+      reader.onload = (e: any) => {
+        console.log(srcResult = e.target.result)
+      };
+  
+      reader.readAsArrayBuffer(inputNode.files[0]);
+    }
+  }
+
   ngOnDestroy(): void {
     this.petsSubscription ? this.petsSubscription.unsubscribe(): null;
     this.isLoginSubscription ? this.isLoginSubscription.unsubscribe(): null;
