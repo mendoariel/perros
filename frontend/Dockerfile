@@ -17,7 +17,7 @@ EXPOSE 49153
 
 FROM nginx:1.23.2 AS production
 
-EXPOSE 9000
+EXPOSE 9002
 
 RUN npm run build
 
