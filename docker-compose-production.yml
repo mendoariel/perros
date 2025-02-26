@@ -59,7 +59,7 @@ services:
       POSTGRES_PASSWORD: iendlshLANDHG423423480
       POSTGRES_DB: peludosclick
     ports:
-      - 5435:5435
+      - 5432:5432
     labels:
       - traefik.enable=false
     networks:
