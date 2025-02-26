@@ -10,7 +10,7 @@ COPY tsconfig.json ./
 RUN npm ci
 RUN npm run build
 
-EXPOSE 3333
+EXPOSE 3335
 
 FROM node:18.12.0 AS production
 
@@ -18,4 +18,4 @@ WORKDIR /alberto/backend/src/app
 
 COPY --from=development /alberto/backend/src/app .
 
-EXPOSE 3333
+EXPOSE 3335
