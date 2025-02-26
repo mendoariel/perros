@@ -6,7 +6,7 @@ networks:
   internal:
     external: false
 services:
-  peludosclickfrontendservice:
+  peludosclick_frontend_service:
     container_name: angular-frontend
     build: 
       dockerfile: production.Dockerfile
@@ -18,15 +18,15 @@ services:
     ports:
       - "9002:80"
     labels:
-      - traefik.http.routers.peludosclickfrontendservice.rule=Host(`peludosclick.com`)
-      - traefik.http.routers.peludosclickfrontendservice.tls=true
-      - traefik.http.routers.peludosclickfrontendservice.tls.certresolver=lets-encrypt
+      - traefik.http.routers.peludosclick_frontend_service.rule=Host(`peludosclick.com`)
+      - traefik.http.routers.peludosclick_frontend_service.tls=true
+      - traefik.http.routers.peludosclick_frontend_service.tls.certresolver=lets-encrypt
       - traefik.port=9002
     networks:
       - internal
       - web
   
-  backendPeludosclick:
+  peludosclick_backend:
     build: 
       context: ./backend-vlad
       dockerfile: production.Dockerfile
@@ -35,8 +35,8 @@ services:
     volumes:
       - ./backend-vlad:/alberto/backend/src/app
       - /alberto/backend/src/app/node_modules
-    command: npx prisma generate
-    # command: npx prisma migrate deploy
+    # command: npx prisma generate
+    command: npx prisma migrate deploy
     # command: npm run start:prod
     ports:
       - '3335:3335'
@@ -44,7 +44,7 @@ services:
       - postgres
     env_file: "./backend-vlad/.my-env-production"
     labels:
-      - traefik.http.routers.distfrontend.rule=Host(`api.bici-arbol.com`)
+      - traefik.http.routers.distfrontend.rule=Host(`api.peludosclick.com`)
       - traefik.http.routers.distfrontend.tls=true
       - traefik.http.routers.distfrontend.tls.certresolver=lets-encrypt
       - traefik.port=3335
@@ -52,16 +52,34 @@ services:
       - internal
       - web
   # Our Postgres Database for NestJS to connect to
-  postgresPeludos:
+  postgres:
     image: postgres:10.4
     environment:
       POSTGRES_USER: Silvestre1993
       POSTGRES_PASSWORD: iendlshLANDHG423423480
       POSTGRES_DB: peludosclick
     ports:
-      - 5435:5435
+      - 5432:5432
     labels:
       - traefik.enable=false
     networks:
       - internal
 
+  # The Postgres Admin tool if we want to run some custom queries and so on against our Database
+  postgres_admin-perros:
+    image: dpage/pgadmin4:4.28
+    depends_on: 
+       - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: albertdesarrolloweb@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: Yamaha600
+    ports:
+      - 5050:80
+    labels:
+      - traefik.http.routers.distfrontend.rule=Host(`pgadmin.peludosclick.com`)
+      - traefik.http.routers.distfrontend.tls=true
+      - traefik.http.routers.distfrontend.tls.certresolver=lets-encrypt
+      - traefik.port=5050
+    networks:
+      - internal
+      - web
