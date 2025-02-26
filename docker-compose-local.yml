@@ -24,8 +24,8 @@ services:
       - ./backend-vlad:/alberto/backend/src/app
       - /alberto/backend/src/app/node_modules/
     # command: npx prisma generate
-    # command: npx prisma migrate dev
-    command: npm run start:dev
+    command: npx prisma migrate dev
+    # command: npm run start:dev
     ports:
       - '3333:3333'
       - '5555:5555'
