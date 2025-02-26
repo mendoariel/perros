@@ -2,8 +2,9 @@ const fs = require('fs');
 
 const qr = require('qrcode');
 
-const data = 'https://www.bici-arbol.com';
-const filePath = 'qr-code.png';
+const data = 'https://peludosclick.com/mascota-checking?medalString=rosa_mosqueta';
+// const data = 'https://peludosclick.com';
+const filePath = 'qr-rose.png';
 
 qr.toFile(
     filePath,
