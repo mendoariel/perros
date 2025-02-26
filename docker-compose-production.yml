@@ -36,17 +36,18 @@ services:
       - ./backend-vlad:/alberto/backend/src/app
       - /alberto/backend/src/app/node_modules
     # command: npx prisma generate
-    command: npx prisma migrate deploy
-    # command: npm run start:prod
+    # command: npx prisma db push
+    # command: npx prisma migrate deploy
+    command: npm run start:prod
     ports:
       - '3335:3335'
     depends_on: 
       - postgres
     env_file: "./backend-vlad/.my-env-production"
     labels:
-      - traefik.http.routers.distfrontend.rule=Host(`api.peludosclick.com`)
-      - traefik.http.routers.distfrontend.tls=true
-      - traefik.http.routers.distfrontend.tls.certresolver=lets-encrypt
+      - traefik.http.routers.peludosclick_backend.rule=Host(`api.peludosclick.com`)
+      - traefik.http.routers.peludosclick_backend.tls=true
+      - traefik.http.routers.peludosclick_backend.tls.certresolver=lets-encrypt
       - traefik.port=3335
     networks:
       - internal
@@ -61,24 +62,27 @@ services:
     ports:
       - 5432:5432
     labels:
-      - traefik.enable=false
+      - traefik.enable=true
     networks:
       - internal
+      - web
+    restart: always
 
   # The Postgres Admin tool if we want to run some custom queries and so on against our Database
-  postgres_admin-perros:
+  postgresadmin:
     image: dpage/pgadmin4:4.28
     depends_on: 
        - postgres
     environment:
       PGADMIN_DEFAULT_EMAIL: albertdesarrolloweb@gmail.com
       PGADMIN_DEFAULT_PASSWORD: Yamaha600
+      PGADMIN_LISTEN_PORT: 5050
     ports:
       - 5050:80
     labels:
-      - traefik.http.routers.distfrontend.rule=Host(`pgadmin.peludosclick.com`)
-      - traefik.http.routers.distfrontend.tls=true
-      - traefik.http.routers.distfrontend.tls.certresolver=lets-encrypt
+      - traefik.http.routers.postgresadmin.rule=Host(`pgadmin.peludosclick.com`)
+      - traefik.http.routers.postgresadmin.tls=true
+      - traefik.http.routers.postgresadmin.tls.certresolver=lets-encrypt
       - traefik.port=5050
     networks:
       - internal
