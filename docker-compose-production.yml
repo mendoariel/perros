@@ -37,6 +37,7 @@ services:
       - /alberto/backend/src/app/node_modules
     # command: npx prisma generate
     # command: npx prisma db push
+    # command: npx prisma db pull
     # command: npx prisma migrate deploy
     command: npm run start:prod
     ports:

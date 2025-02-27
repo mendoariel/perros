@@ -14,3 +14,17 @@ docker run -d \
 
 fallow this guide
 https://www.digitalocean.com/community/tutorials/how-to-use-traefik-v2-as-a-reverse-proxy-for-docker-containers-on-ubuntu-20-04
+
+
+Docker some command to delete all information
+
+To delete all containers including its volumes use,
+
+docker rm -vf $(docker ps -aq)
+
+remove all images
+docker rmi -f $(docker images -aq)
+
+To delete all
+
+docker system prune -a --volumes
