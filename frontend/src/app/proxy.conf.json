@@ -1,6 +1,6 @@
 {
     "/perrosQrApi/*": {
-      "target": "https://api.bici-arbol.com",
+      "target": "https://api.peludosclick.com",
       "secure": false,
       "logLevel": "debug",
       "changeOrigin": true

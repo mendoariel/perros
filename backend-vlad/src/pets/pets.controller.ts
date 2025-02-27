@@ -11,6 +11,12 @@ import { CreateFileDto } from "./dto/create-file.dto";
 export class PetsController {
     constructor(private petService: PetsServicie) {}
 
+    @Public()
+    @Get('') 
+    greting() {
+        return 'wellcome from api';
+    }
+
     @Get('mine')
     @HttpCode(HttpStatus.OK)
     miPets(@GetCurrentUser() user: any) {
