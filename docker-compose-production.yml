@@ -77,9 +77,8 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: albertdesarrolloweb@gmail.com
       PGADMIN_DEFAULT_PASSWORD: Yamaha600
-      PGADMIN_LISTEN_PORT: 5050
     ports:
-      - 5050:80
+      - 5050:5050
     labels:
       - traefik.http.routers.postgresadmin.rule=Host(`pgadmin.peludosclick.com`)
       - traefik.http.routers.postgresadmin.tls=true
