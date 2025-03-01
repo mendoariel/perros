@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
     title: 'Production',
-    perrosQrApi: 'https://api.bici-arbol.com/'
+    perrosQrApi: 'https://api.peludosclick.com/'
 };
