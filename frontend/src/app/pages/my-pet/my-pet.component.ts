@@ -59,6 +59,7 @@ export class MyPetComponent implements OnInit, OnDestroy{
   }
 
   onFileSelected() {
+    console.log('into file selected')
     const inputNode: any = document.querySelector('#file');
     let srcResult;
     if (typeof (FileReader) !== 'undefined') {

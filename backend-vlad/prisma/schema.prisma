@@ -18,9 +18,9 @@ model User {
   hashedRt             String?
   username             String?
   role                 Role
-  hashPasswordRecovery String?
-  hashToRegister       String
+  hashPasswordRecovery String?    @map("hashPasswordRecovery")
   userStatus           UserStatus
+  hashToRegister       String     @map("hash_to_register")
   medals               Medal[]
 
   @@map("users")
@@ -28,14 +28,14 @@ model User {
 
 model Medal {
   id           Int        @id @default(autoincrement())
-  registerHash String
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @default(now()) @updatedAt
   ownerId      Int
-  medalString  String     @unique
   status       MedalState
-  petName      String
   image        String?
+  medalString  String     @unique @map("medal_string")
+  petName      String     @map("pet_name")
+  registerHash String     @map("register_hash")
   owner        User       @relation(fields: [ownerId], references: [id])
 
   @@map("medals")
@@ -43,11 +43,11 @@ model Medal {
 
 model VirginMedal {
   id           Int        @id @default(autoincrement())
-  medalString  String     @unique
   createdAt    DateTime   @default(now())
   updatedAt    DateTime?  @updatedAt
-  registerHash String     @unique
   status       MedalState
+  medalString  String     @unique @map("medal_string")
+  registerHash String     @unique @map("register_hash")
 
   @@map("virgin_medals")
 }
