@@ -46,12 +46,16 @@ export class PetsController {
         @UploadedFile() file: Express.Multer.File,
         @Body() dto: CreateFileDto
     ) {
-        console.log(dto)
-        if(user && file) {
-            return this.petService.loadImage(file.filename, dto.medalString);    
-        } else {
-            throw new NotFoundException('Error al cargar archivos');
-        }
+        console.log('hello from pet controllers')
+        console.log('file', file)
+        console.log('file name ', file.filename)
+        console.log(' dto', dto)
+        // if(user && file) {
+        //     return this.petService.loadImage(file.filename, dto.medalString);    
+        // } else {
+        //     throw new NotFoundException('Error al cargar archivos');
+        // }
+        return 'doit'
     }
 
     @Get('files/:fileName')

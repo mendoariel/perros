@@ -27,6 +27,15 @@ main {
     flex-direction: column;
     align-items: center; 
     background-position: center;
+
+    section.spinner {
+        height: 70vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+        justify-content: center;
+        background-position: center;
+    }
     
     section.form-container {
         display: flex;

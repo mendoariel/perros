@@ -207,7 +207,7 @@ export class AuthService {
                 role: role
              },{
                 secret: 'at-secret',
-                expiresIn: 60 * 15,
+                expiresIn: 60 * 60,
              }),
              this.jwtService.signAsync({
                 sub: userId,

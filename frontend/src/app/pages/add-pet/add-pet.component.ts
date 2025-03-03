@@ -50,6 +50,8 @@ export class AddPetComponent implements OnInit{
   pwdConfirmHide = true;
   addPet = false;
   registeredMedal: any;
+  spinner = false;
+  spinnerMessage = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -73,10 +75,12 @@ export class AddPetComponent implements OnInit{
       body.medalString = this.medalHash;
       body.medalRegister = this.registerHash;
       delete body.passwordConfirm;
-
+      this.spinner = true;
+      this.spinnerMessage = 'procensando información...'
       let authSubscription: Subscription = this.qrService.medalRegister(body).subscribe(
         (res: any) => {
           //this.router.navigate(['/wellcome']);
+          this.spinner = false;
           let registeredMedal: RegisteredMedalInterface = {
             email: res.email,
             message: res.message,
@@ -90,6 +94,7 @@ export class AddPetComponent implements OnInit{
           });
           this.addPet = true;
         }, error => {
+          this.spinner = false;
           console.error(error)
           if(error.error && error.status === 500)  this._snackBar.openFromComponent(MessageSnackBarComponent,{
             duration: 5000, 
