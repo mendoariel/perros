@@ -20,7 +20,7 @@
               </p>
             </mat-card-content>
             <mat-card-actions>
-              <input hidden (change)="onFileSelected()" #fileInput type="file" id="file">
+              <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file">
               <button (click)="fileInput.click()" style="margin-left: auto;" mat-raised-button color="primary">
                 <mat-icon>upload_file</mat-icon>
                 Agregar foto
