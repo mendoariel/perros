@@ -50,12 +50,16 @@ export class FirstNavbarComponent implements OnInit {
     this.router.navigate(['/register'])
   }
 
+  goTo(route: string) {
+    this.router.navigate([`/${route}`])
+  }
+
   logout() {
     this.logoutSubscription = this.authService.logout().subscribe({
       next: (res: any)=> {
         this.authService.putAuthenticatedFalse();
         localStorage.removeItem('access_token');
-        this.router.navigate(['frias'])
+        this.router.navigate([''])
       },
       error : (error)=> {console.error(error)}
     });

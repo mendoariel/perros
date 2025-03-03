@@ -22,9 +22,9 @@ export class QRCheckingController {
         return this.qrService.postMedal(dto);
     }
 
-    @Public()
-    @Post('creator')
-    qrCreator() {
-        return this.qrService.creatQr()
-    }
+    // @Public()
+    // @Post('creator')
+    // qrCreator() {
+    //     return this.qrService.creatQr()
+    // }
 }

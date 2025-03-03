@@ -1,7 +1,11 @@
+<app-first-navbar></app-first-navbar>
 <main>
-    <app-first-navbar></app-first-navbar>
-    <section class="main-content">
-        <mat-card  class="example-card" appearance="outlined">
+  <section class="spinner" *ngIf="spinner">
+    <h1>{{ spinnerMessage }}</h1>
+    <mat-spinner></mat-spinner>
+  </section>
+  <section class="main-content" *ngIf="!spinner">
+      <mat-card  class="example-card" appearance="outlined">
             <mat-card-header>
               <div mat-card-avatar class="example-header-image"></div>
               <mat-card-title>{{ myPet.medals[0].petName }}</mat-card-title>
@@ -10,8 +14,8 @@
             <div *ngIf="myPet.medals[0].status === 'INCOMPLETE'" class="image-container">
               <mat-icon>pets</mat-icon>
             </div>
-            <div *ngIf="!(myPet.medals[0].status === 'INCOMPLETE')" class="image-container">
-              <img mat-card-image src="assets/home-rosa-mosqueta.jpg" alt="Foto de Rosa Mosqueta">
+            <div *ngIf="(myPet.medals[0].status === 'ENABLED')" class="image-container">
+              <img mat-card-image [src]="myPet.medals[0].image" alt="Foto mascota">
             </div>
 
             <mat-card-content style="margin-top: 2em;">
@@ -19,14 +23,14 @@
                 Cargar una imagen de tu mascota para terminar el proceso
               </p>
             </mat-card-content>
-            <mat-card-actions>
+            <mat-card-actions *ngIf="myPet.medals[0].status === 'INCOMPLETE'">
               <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file">
               <button (click)="fileInput.click()" style="margin-left: auto;" mat-raised-button color="primary">
                 <mat-icon>upload_file</mat-icon>
-                Agregar foto
+                {{ textButton }}
               </button>
 
             </mat-card-actions>
-          </mat-card>
-    </section>
+      </mat-card>
+  </section>
 </main>

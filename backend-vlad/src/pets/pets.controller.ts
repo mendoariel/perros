@@ -13,8 +13,8 @@ export class PetsController {
 
     @Public()
     @Get('') 
-    greting() {
-        return 'wellcome from api';
+    allPets() {
+        return this.petService.allPet();
     }
 
     @Get('mine')
@@ -46,16 +46,14 @@ export class PetsController {
         @UploadedFile() file: Express.Multer.File,
         @Body() dto: CreateFileDto
     ) {
-        console.log('hello from pet controllers')
-        console.log('file', file)
-        console.log('file name ', file.filename)
         console.log(' dto', dto)
-        // if(user && file) {
-        //     return this.petService.loadImage(file.filename, dto.medalString);    
-        // } else {
-        //     throw new NotFoundException('Error al cargar archivos');
-        // }
-        return 'doit'
+        console.log(' dto.medalString', dto.medalString)
+        if(user && file && dto.medalString) {
+            console.log('before load imag')
+            return this.petService.loadImage(file.filename, dto.medalString);    
+        } else {
+            throw new NotFoundException('Error al cargar archivos');
+        }
     }
 
     @Get('files/:fileName')

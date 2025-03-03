@@ -46,6 +46,7 @@ export class MyPetsComponent implements OnInit, OnDestroy {
     this.petsSubscription = this.petsServices.getMyPets().subscribe({
       next: (myPets: any[]) => {
         this.myPets ? this.myPets = myPets : null;
+        if(this.myPets.length === 1 && this.myPets[0].image === null) this.complete(this.myPets[0].registerHash)
       },
       error: (error: any) => {
         console.error(error)

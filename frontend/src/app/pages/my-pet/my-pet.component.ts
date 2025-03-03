@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 import { MaterialModule } from 'src/app/material/material.module';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { UploadFileService } from 'src/app/services/upload-file.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-my-pet',
@@ -24,6 +25,10 @@ export class MyPetComponent implements OnInit, OnDestroy{
   petsSubscription: Subscription | undefined;
   registerHash: any;
   isLoginSubscription: Subscription | undefined;
+  uploadSubscription: Subscription | undefined;
+  spinner = false;
+  spinnerMessage = 'Cargando...';
+  textButton = 'Agregar foto';
   
   constructor(
     private route: ActivatedRoute,
@@ -34,10 +39,12 @@ export class MyPetComponent implements OnInit, OnDestroy{
   ) {}
   
   ngOnInit(): void {
+    this.spinner = true;
     this.registerHash = this.route.snapshot.params['registerHash'];
     this.isLoginSubscription = this.authService.isAuthenticatedObservable.subscribe({
       next: (res: any) => {
         if(res) {
+          this.spinner = false;
         } else {
           this.router.navigate(['login'])
         }
@@ -46,12 +53,20 @@ export class MyPetComponent implements OnInit, OnDestroy{
     this.getOnlyMyPets(this.registerHash);
   }
   getOnlyMyPets(registerHash: string) {
+    this.spinner = true;
     this.petsSubscription = this.petsServices.getMyPet(registerHash).subscribe({
       next: (myPet: any) => {
+        this.spinner = false;
         this.myPet = myPet;
+        if(myPet.medals[0].status === 'ENABLED' && myPet.medals[0].image) {
+          this.myPet.medals[0].image  = `${environment.perrosQrApi}pets/files/${myPet.medals[0].image}`;
+          this.textButton = 'Cambiar foto';
+        }
+        
         console.log('my pet ', this.myPet)
       },
       error: (error: any) => {
+        this.spinner  = false;
         console.error(error)
       }
     });
@@ -62,40 +77,29 @@ export class MyPetComponent implements OnInit, OnDestroy{
   }
 
   onFileSelected(event: any) {
-    console.log('envent ', event)
+    this.spinner = true;
     if(event && event.target && event.target.files && event.target.files.length > 0) {
-      console.log('into here')
       const file = event.target.files[0];
-      console.log(file)
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('medalString', this.myPet.medals[0]);
-      console.log(formData)
-      this.uploadFileService.uploadProfileServie(formData).subscribe({
+      formData.append('medalString', this.myPet.medals[0].medalString);
+      this.uploadSubscription = this.uploadFileService.uploadProfileServie(formData).subscribe({
         next: (res: any) => {
-          console.log(res)
+          console.log(res);
+          this.getOnlyMyPets(this.registerHash);
+          
         },
         error: (error: any) => {
+          this.spinner = false;
           console.log(error)
         }
       });
     }
-    // console.log('into file selected')
-    // const inputNode: any = document.querySelector('#file');
-    // let srcResult;
-    // if (typeof (FileReader) !== 'undefined') {
-    //   const reader = new FileReader();
-  
-    //   reader.onload = (e: any) => {
-    //     console.log(srcResult = e.target.result)
-    //   };
-  
-    //   reader.readAsArrayBuffer(inputNode.files[0]);
-    // }
   }
 
   ngOnDestroy(): void {
     this.petsSubscription ? this.petsSubscription.unsubscribe(): null;
     this.isLoginSubscription ? this.isLoginSubscription.unsubscribe(): null;
+    this.uploadSubscription ? this.uploadSubscription.unsubscribe(): null;
   }
 }
