@@ -8,6 +8,12 @@ import { PrismaService } from "src/prisma/prisma.service";
 export class PetsServicie {
     constructor(private prisma: PrismaService) {}
 
+    async allPet() {
+        let allPets = await this.prisma.medal.findMany();
+        if(!allPets) throw new NotFoundException('Sin registro');
+        return allPets;
+    }
+
     async getMyPets(email: string) {
         let owner = await this.prisma.user.findUnique({
             where: {
@@ -41,14 +47,15 @@ export class PetsServicie {
     }
 
     getFileByFileName(fileName: string, res: Response) {
-        const filePath = join(process.cwd(), 'public', 'files', fileName)
+        const filePath = join(process.cwd(), 'public', 'files', fileName);
+        console.log(filePath)
         return res.sendFile(filePath)
     }
 
-    loadImage(filename: string, medalString: string) {
+    async loadImage(filename: string, medalString: string) {
         console.log('medal string ===', medalString)
         //save database the images to then i can getting from frontend
-        const updateMedal = this.prisma.medal.update({
+        const updateMedal = await this.prisma.medal.update({
             where: {
                 medalString: medalString
             },
@@ -58,6 +65,6 @@ export class PetsServicie {
             }
         })
         if(!updateMedal)  throw new NotFoundException('Sin registro de esa medalla');
-        return updateMedal;
+        return {image: 'load'};
     }
 }

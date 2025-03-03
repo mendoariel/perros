@@ -24,12 +24,9 @@ export class QrService {
             }
         });
         if (!medal) throw new NotFoundException('No se encontro la medalla');
-
-
-        
         
         if(medal.status === 'VIRGIN') {
-            const registerHashVar = createHash(36);
+            const registerHashVar = await this.createHashNotUsed();
             const medalStringV = medal.medalString;
             const update = await this.prisma.virginMedal.update({
                 where: {
@@ -77,11 +74,14 @@ export class QrService {
                 medalString: virginMedal.medalString,
                 petName: dto.petName
         };
-        const hash = await this.hashData(dto.password)
+        
+        const hash = await this.hashData(dto.password);
+
+        const unicHash = await this.createHashNotUsedToUser();
 
         const userCreated: any = await this.prisma.user.create({
             data: {
-                hashToRegister: createHash(36),
+                hashToRegister: unicHash,
                 email: dto.ownerEmail,
                 userStatus: UserStatus.PENDING,
                 hash: hash,
@@ -94,7 +94,7 @@ export class QrService {
             },
             include: {
                 medals:   true 
-              }
+            }
         });
 
         // send email to confirm account
@@ -105,7 +105,7 @@ export class QrService {
             return userCreated;
         }
 
-        return 'no pudimos procsar la informacion vovler a intentar';
+        return 'no pudimos procesar la informacion vovler a intentar';
     
     }
 
@@ -115,42 +115,67 @@ export class QrService {
         await this.mailService.sendConfirmAccount(userEmail, url);
     }
 
-    async creatQr(): Promise<any>{
-        let timeWaiting;
-        try {
-            (
-                await QRCode.toFile(`${process.cwd()}/src/files/qrs/qr.png `,   'https://wwww.bici-arbol.com', {
-                    errorCorrectionLevel: 'H',
-                    margin: 2,
-                    scale: 4,
-                    color: {
-                      dark: '#00F',  // Blue dots
-                      light: '#0000' // Transparent background
-                    }
-                  }, function (err) {
-                    if (err) throw err
-                    timeWaiting = 'after doing'
-                    console.log('timeWawiting from await', timeWaiting, ' done')
-                    setTimeout(()=> {
-                        timeWaiting = '2 second later'
-                    },2000);
-                  })
-            )
-          } catch (err) {
-            console.error(err)
-        }
-        
-
-        // return await this.prisma.virginMedal.create({
-        //     data: {
-        //         medalString: 'genesis2',
-        //         registerHash: 'genesis2',
-        //         status: MedalState.VIRGIN
-        //     }
-        // });
-    }
-
     hashData(data: string) {
         return bcrypt.hashSync(data, 10);
     }
+
+    async createHashNotUsed() {
+        const hash = createHash(36);
+
+        const hashUsed = await this.prisma.virginMedal.findFirst({
+            where: {
+                registerHash: hash
+            }
+        });
+
+        if(!hashUsed) return hash;
+        else this.createHashNotUsed();
+    }
+    async createHashNotUsedToUser() {
+        const hash = createHash(36);
+
+        const hashUsed = await this.prisma.user.findFirst({
+            where: {
+                hashToRegister: hash
+            }
+        });
+
+        if(!hashUsed) return hash;
+        else this.createHashNotUsed();
+    }
+
+    // async creatQr(): Promise<any>{
+    //     let timeWaiting;
+    //     try {
+    //         (
+    //             await QRCode.toFile(`${process.cwd()}/src/files/qrs/qr.png `,   'https://wwww.bici-arbol.com', {
+    //                 errorCorrectionLevel: 'H',
+    //                 margin: 2,
+    //                 scale: 4,
+    //                 color: {
+    //                   dark: '#00F',  // Blue dots
+    //                   light: '#0000' // Transparent background
+    //                 }
+    //               }, function (err) {
+    //                 if (err) throw err
+    //                 timeWaiting = 'after doing'
+    //                 console.log('timeWawiting from await', timeWaiting, ' done')
+    //                 setTimeout(()=> {
+    //                     timeWaiting = '2 second later'
+    //                 },2000);
+    //               })
+    //         )
+    //       } catch (err) {
+    //         console.error(err)
+    //     }
+        
+
+    //     // return await this.prisma.virginMedal.create({
+    //     //     data: {
+    //     //         medalString: 'genesis2',
+    //     //         registerHash: 'genesis2',
+    //     //         status: MedalState.VIRGIN
+    //     //     }
+    //     // });
+    // }
 }
