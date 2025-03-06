@@ -1,5 +1,11 @@
 <mat-toolbar>
-    <span>Mascotas Click</span>
+    <section class="logo-container">
+        <article class="image-container">
+            <img src="assets/main/logo-peludosclick.png" alt="logo de peludos click">
+        </article>
+        <span class="logo-text">PeludosClick</span>
+    </section>
+    
     <section *ngIf="!authenticated" class="unauthenticated">
         <button (click)="login()" mat-button>Ingresar</button>
     </section>
