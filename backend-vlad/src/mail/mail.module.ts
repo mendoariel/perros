@@ -10,8 +10,8 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       transport: {
         service: "gmail",
         auth: {
-            user: "biciarbol@gmail.com",
-            pass: "uhnmokvtlstoyonk"
+            user: "peludosclick@gmail.com",
+            pass: "elrioestafuerte521"
         },
         
       },

@@ -18,7 +18,7 @@ services:
     ports:
       - "9002:80"
     labels:
-      - traefik.http.routers.peludosclick_frontend_service.rule=Host(`peludosclick.com`)
+      - traefik.http.routers.peludosclick_frontend_service.rule=Host(`www.peludosclick.com`,`peludosclick.com`)
       - traefik.http.routers.peludosclick_frontend_service.tls=true
       - traefik.http.routers.peludosclick_frontend_service.tls.certresolver=lets-encrypt
       - traefik.port=9002
