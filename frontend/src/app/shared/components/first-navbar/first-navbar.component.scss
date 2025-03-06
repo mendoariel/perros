@@ -5,6 +5,37 @@ mat-toolbar {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    height: 80px;
+    section.logo-container {
+        display: flex;
+        align-items: center;
+        background-color: black;
+        border: solid 1px white;
+        border-radius: 25px;
+        padding: 5px;
+        padding-left: 8px;
+        padding-right: 8px;
+        article.image-container {
+            width: 38px !important;
+            border-radius: 50%;
+            border: solid 2px black;
+            overflow: hidden;
+            background: white;
+            padding-top: 6px;
+            padding-left: 3px;
+            padding-right: 3px;
+            img {
+                max-width: 100%;
+            }
+            
+        }
+        span.logo-text {
+            font-size: 16px;
+            color: white;
+            margin-left: 9px;
+        }
+    }
+    
 
     section.unauthenticated {
         display: flex;
