@@ -47,7 +47,7 @@ services:
     environment:
       POSTGRES_USER: mendoariel
       POSTGRES_PASSWORD: casadesara
-      POSTGRES_DB: perros
+      POSTGRES_DB: peludosclick
     ports:
       -  5432:5432  
   # The Postgres Admin tool if we want to run some custom queries and so on against our Database

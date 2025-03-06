@@ -9,7 +9,7 @@ export class MailService {
         Logger.log('before send email')
         await this.mailerService.sendMail({
             to: email,
-            subject: 'Recuperación de cuenta Bici - Árbol',
+            subject: 'Recuperación de cuenta Peludosclick',
             template: './recovery-password',
             context: {
                 url: url
@@ -21,7 +21,7 @@ export class MailService {
         Logger.log('before send email')
         await this.mailerService.sendMail({
             to: email,
-            subject: 'Confirmacion de cuenta Scan my dog',
+            subject: 'Confirmacion de cuenta Peludosclick',
             template: './confirm-password',
             context: {
                 url: url
