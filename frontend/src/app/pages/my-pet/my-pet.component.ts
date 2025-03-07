@@ -63,7 +63,6 @@ export class MyPetComponent implements OnInit, OnDestroy{
           this.textButton = 'Cambiar foto';
         }
         
-        console.log('my pet ', this.myPet)
       },
       error: (error: any) => {
         this.spinner  = false;
@@ -85,13 +84,12 @@ export class MyPetComponent implements OnInit, OnDestroy{
       formData.append('medalString', this.myPet.medals[0].medalString);
       this.uploadSubscription = this.uploadFileService.uploadProfileServie(formData).subscribe({
         next: (res: any) => {
-          console.log(res);
           this.getOnlyMyPets(this.registerHash);
           
         },
         error: (error: any) => {
           this.spinner = false;
-          console.log(error)
+          console.error(error)
         }
       });
     }

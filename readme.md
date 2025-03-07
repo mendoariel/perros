@@ -69,3 +69,8 @@ COMANDO PARA VER TABLAS DENTRO DE LA CONSOLA DE POSTGRES
 COMANDO PARA RESTAURAR BASE DE DATOS DESDE UN ARCHIVO BACKUP EN CONTENDOR DOCKER CORRIENDO
 
 cat /home/albert/backup/database_name.sql | docker exec -i container_name psql -U username -d database_name
+
+
+Page to appoint the qr medals
+
+http:/localhost:4200/mascota-checking?medalString=pili

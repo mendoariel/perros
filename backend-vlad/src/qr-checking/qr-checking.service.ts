@@ -82,7 +82,7 @@ export class QrService {
         const userCreated: any = await this.prisma.user.create({
             data: {
                 hashToRegister: unicHash,
-                email: dto.ownerEmail,
+                email: dto.ownerEmail.toLocaleLowerCase(),
                 userStatus: UserStatus.PENDING,
                 hash: hash,
                 role: Role.VISITOR,
@@ -112,7 +112,13 @@ export class QrService {
     async sendEmailConfirmAccount(userEmail: string, hashToRegister: string, medalRegisterHash: string) {
         const url = `${process.env.FRONTEND_URL}/confirmar-cuenta?hashEmail=${userEmail}&hashToRegister=${hashToRegister}&medalRegisterHash=${medalRegisterHash}`;
         //const url = `${process.env.FRONTEND_URL}/crear-nueva-clave`;
-        await this.mailService.sendConfirmAccount(userEmail, url);
+        try {
+            await this.mailService.sendConfirmAccount(userEmail, url);
+        } catch (error) {
+            console.log('into try catch error===> ', error)
+            console.error('into try catch error===> ', error)
+        }
+        
     }
 
     hashData(data: string) {

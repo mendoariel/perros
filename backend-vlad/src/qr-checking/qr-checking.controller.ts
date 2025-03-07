@@ -15,6 +15,8 @@ export class QRCheckingController {
     chekingMedal(@Body() dto: QRCheckingDto): Promise<MedalStatus | string> {
         return this.qrService.QRCheking(dto);
     }
+
+    // create a medal and a user
     @Public()
     @Post('pet')
     @HttpCode(HttpStatus.CREATED)
