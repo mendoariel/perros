@@ -46,10 +46,7 @@ export class PetsController {
         @UploadedFile() file: Express.Multer.File,
         @Body() dto: CreateFileDto
     ) {
-        console.log(' dto', dto)
-        console.log(' dto.medalString', dto.medalString)
         if(user && file && dto.medalString) {
-            console.log('before load imag')
             return this.petService.loadImage(file.filename, dto.medalString);    
         } else {
             throw new NotFoundException('Error al cargar archivos');

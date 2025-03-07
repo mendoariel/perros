@@ -41,7 +41,7 @@ export class AuthService {
     async signinLocal(dto: AuthDto): Promise<Tokens> {
         const user = await this.prisma.user.findUnique({
             where: {
-                email: dto.email,
+                email: dto.email.toLocaleLowerCase(),
                 userStatus: UserStatus.ACTIVE
             }
         });
@@ -76,7 +76,7 @@ export class AuthService {
         
         const user = await this.prisma.user.findUnique({
             where: {
-                email: dto.email
+                email: dto.email.toLocaleLowerCase()
             },
             include: {
               medals:   true 
@@ -119,7 +119,7 @@ export class AuthService {
         // find the user alreidy modify
         const userFinal: any = await this.prisma.user.findUnique({
             where: {
-                email: dto.email
+                email: dto.email.toLocaleLowerCase()
             },
             include: {
               medals:   true 
@@ -159,7 +159,7 @@ export class AuthService {
     async passwordRecovery(dto: PasswordRecoveryDto): Promise<Message> {
         const user = await this.prisma.user.findUnique({
             where: {
-                email: dto.email
+                email: dto.email.toLocaleLowerCase()
             }
         });
         if(!user) throw new ForbiddenException("Access Denied"); 
@@ -176,7 +176,7 @@ export class AuthService {
     async newPassword(dto: NewPasswordDto): Promise<Message> {
         const user = await this.prisma.user.findUnique({
             where: {
-                email: dto.email
+                email: dto.email.toLocaleLowerCase()
             }
         });
         if(!user) throw new ForbiddenException("Access Denied"); 

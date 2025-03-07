@@ -17,7 +17,7 @@ export class PetsServicie {
     async getMyPets(email: string) {
         let owner = await this.prisma.user.findUnique({
             where: {
-                email: email
+                email: email.toLocaleLowerCase()
             },
             include: {
               medals: true 
@@ -31,7 +31,7 @@ export class PetsServicie {
     async getMyPet(email: string, registerHash: string) {
         let user = await this.prisma.user.findUnique({
             where: {
-                email: email
+                email: email.toLocaleLowerCase()
             },
             include: {
                 medals: {
@@ -48,12 +48,10 @@ export class PetsServicie {
 
     getFileByFileName(fileName: string, res: Response) {
         const filePath = join(process.cwd(), 'public', 'files', fileName);
-        console.log(filePath)
         return res.sendFile(filePath)
     }
 
     async loadImage(filename: string, medalString: string) {
-        console.log('medal string ===', medalString)
         //save database the images to then i can getting from frontend
         const updateMedal = await this.prisma.medal.update({
             where: {

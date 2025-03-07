@@ -36,7 +36,6 @@ export class WellcomeComponent implements OnInit, OnDestroy {
         this.pets = res;
 
         this.pets = this.pets.filter((pet)=> pet.status === 'ENABLED');
-        console.log(this.pets);
 
       },
       error:(error: any) => {
