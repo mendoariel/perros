@@ -52,7 +52,7 @@ export class AddPetComponent implements OnInit {
   registeredMedal: any;
   spinner = false;
   spinnerMessage = '';
-  firstTimeEmail = false;
+  newClient = false;
   validationDoIt = false;
   emailValue = '';
   emailTaken: any;
@@ -85,6 +85,7 @@ export class AddPetComponent implements OnInit {
     let authSubscription: Subscription = this.qrService.medalRegister(body).subscribe(
       (res: any) => {
         //this.router.navigate(['/wellcome']);
+        console.log('add component' , res)
         this.spinner = false;
         let registeredMedal: RegisteredMedalInterface = {
           email: res.email,
@@ -117,21 +118,34 @@ export class AddPetComponent implements OnInit {
     this.addSubscription(authSubscription);
   }
 
+  cancelMethod() {
+    this.newClient = false;
+    this.validationDoIt = false;
+    this.emailValue = '';
+    this.emailTaken = false;
+    this.ownerEmail?.setValue('');
+    this.ownerEmail?.clearValidators();
+    this.ownerEmail?.setValidators([Validators.required, Validators.email])
+    this.ownerEmail?.enable();
+    console.log('is email invalid ',this.ownerEmail?.invalid)
+  }
+
   emailValidate() {
     this.spinner = true;
     let subscription: Subscription = this.qrService.isThisEmailTaken(this.ownerEmail?.value).subscribe({
       next: (res: any)=>{
         this.emailValue = this.ownerEmail?.value;
         this.validationDoIt = true;
-        this.ownerEmail?.disable();
         console.log(res);
         this.spinner = false;
         if(res.emailIsTaken) {
-          console.log('email usado')
-          this.firstTimeEmail = false;
+          console.log('cliente existente')
+          this.newClient = false;
+          this.password?.clearValidators();
+          this.passwordConfirm?.clearValidators();
         } else {
-          console.log('email libre')
-          this.firstTimeEmail = true;
+          console.log('nuevo cliente')
+          this.newClient = true;
         }
       },
       error: (error: any)=>{
