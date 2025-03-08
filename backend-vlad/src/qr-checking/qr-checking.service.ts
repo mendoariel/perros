@@ -109,6 +109,31 @@ export class QrService {
     
     }
 
+    async getPet(medalString: string): Promise<any> {
+        let pet = await this.prisma.medal.findFirst({
+            where: {
+                medalString: medalString
+            }
+        });
+
+        if(!pet) throw new NotFoundException('No records for this medal');
+
+        return pet;
+    }
+
+    async isThisEmailTaken(email: string) {
+        let user = await this.prisma.user.findFirst({
+            where: {
+                email: email
+            }
+        });
+
+        let emailTaken;
+        user ?  emailTaken = true : emailTaken = false;
+
+        return { emailIsTaken: emailTaken }
+    }
+
     async sendEmailConfirmAccount(userEmail: string, hashToRegister: string, medalRegisterHash: string) {
         const url = `${process.env.FRONTEND_URL}/confirmar-cuenta?hashEmail=${userEmail}&hashToRegister=${hashToRegister}&medalRegisterHash=${medalRegisterHash}`;
         //const url = `${process.env.FRONTEND_URL}/crear-nueva-clave`;

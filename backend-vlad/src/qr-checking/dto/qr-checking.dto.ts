@@ -28,3 +28,9 @@ export class PostMedalDto {
     password: string;
 
 }
+
+export class GetPetDto {
+    @IsNotEmpty()
+    @IsString()
+    stringMedal: string;
+}

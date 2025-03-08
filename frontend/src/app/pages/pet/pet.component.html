@@ -1,1 +1,20 @@
-<p>pet works!</p>
+<app-first-navbar></app-first-navbar>
+<main>
+  <section class="spinner" *ngIf="spinner">
+    <h1>{{ spinnerMessage }}</h1>
+    <mat-spinner></mat-spinner>
+  </section>
+  <section class="main-content" *ngIf="!spinner">
+    <mat-card *ngIf="pet" class="example-card" appearance="outlined">
+      <mat-card-header>
+        <div mat-card-avatar class="example-header-image"></div>
+        <mat-card-title>{{ pet.petName }}</mat-card-title>
+        <mat-card-subtitle>{{ pet.status }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <div class="image-container">
+        <img mat-card-image [src]="pet.image" alt="Foto mascota">
+      </div>
+    </mat-card>
+  </section>
+</main>

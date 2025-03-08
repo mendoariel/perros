@@ -58,7 +58,7 @@ export const routes: Route[] = [
         
     },
     {
-        path: 'mascota',
+        path: 'mascota/:medalString',
         component: PetComponent
         
     },
