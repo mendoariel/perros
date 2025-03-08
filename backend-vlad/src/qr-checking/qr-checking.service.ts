@@ -74,7 +74,39 @@ export class QrService {
                 medalString: virginMedal.medalString,
                 petName: dto.petName
         };
+
+
+        // check if the user already exist and send an email to the user to confirm that you want to add this medal to your account
+        const user: any = await this.prisma.user.findFirst({
+            where: {
+                email: dto.ownerEmail
+            },
+            include: {
+                medals: true
+            }
+        });
+
         
+
+        // if user only add a medal to this user, an return
+        if(user) {
+          let medalCreated = await this.prisma.medal.create({
+            data: {
+                ownerId: user.id,
+                status: MedalState.REGISTER_PROCESS,
+                registerHash:  virginMedal.registerHash,
+                medalString: virginMedal.medalString,
+                petName: dto.petName
+            }
+          })
+            console.log('sending email from create a new medal pet to your account')
+            return medalCreated;
+        };
+            // send email to client to confirm this action
+
+       
+
+        //if !not user, create a new user
         const hash = await this.hashData(dto.password);
 
         const unicHash = await this.createHashNotUsedToUser();

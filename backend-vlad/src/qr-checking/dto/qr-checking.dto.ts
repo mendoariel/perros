@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class QRCheckingDto {
     @IsString()
@@ -23,7 +23,7 @@ export class PostMedalDto {
     @IsNotEmpty()
     medalRegister: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     password: string;
 
