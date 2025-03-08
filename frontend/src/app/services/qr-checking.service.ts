@@ -20,6 +20,14 @@ export class QrChekingService {
         return this.http.post(`${environment.perrosQrApi}auth/confirm-account`, confirmObject);
     }
 
+    getPet(medalString: string): any {
+        return this.http.get(`${environment.perrosQrApi}qr/pet/${medalString}`)
+    }
+
+    isThisEmailTaken(email: string): any {
+        return this.http.get(`${environment.perrosQrApi}qr/this-email-is-taken/${email}`);
+    }
+
     nextFunction() {
 
     }

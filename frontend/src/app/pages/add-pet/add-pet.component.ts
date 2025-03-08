@@ -18,33 +18,33 @@ import { MedalInterface, RegisteredMedalInterface } from 'src/app/interface/meda
 @Component({
   selector: 'app-add-pet',
   standalone: true,
- imports: [
-     CommonModule,
-     MaterialModule,
-     FormsModule,
-     ReactiveFormsModule,
-     FirstNavbarComponent
-   ],
+  imports: [
+    CommonModule,
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule,
+    FirstNavbarComponent
+  ],
   templateUrl: './add-pet.component.html',
   styleUrls: ['./add-pet.component.scss']
 })
-export class AddPetComponent implements OnInit{
+export class AddPetComponent implements OnInit {
   medalHash = '';
   registerHash = '';
 
   registerForm: FormGroup = new FormGroup({
-      petName: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]),
-      ownerEmail: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [
-        Validators.required, 
-        Validators.minLength(8), 
-        Validators.maxLength(50),
-        leastOneCapitalLetterValidator(),
-        leastOneLowerCaseValidator(),
-        leastOneNumberValidator()
-      ]),
-        passwordConfirm: new FormControl('', [Validators.required]),
-      }, { validators: confirmedValidator('password', 'passwordConfirm')});
+    petName: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]),
+    ownerEmail: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(8),
+      Validators.maxLength(50),
+      leastOneCapitalLetterValidator(),
+      leastOneLowerCaseValidator(),
+      leastOneNumberValidator()
+    ]),
+    passwordConfirm: new FormControl('', [Validators.required]),
+  }, { validators: confirmedValidator('password', 'passwordConfirm') });
   subscription: Subscription[] = [];
   pwdHide = true;
   pwdConfirmHide = true;
@@ -52,6 +52,10 @@ export class AddPetComponent implements OnInit{
   registeredMedal: any;
   spinner = false;
   spinnerMessage = '';
+  firstTimeEmail = false;
+  validationDoIt = false;
+  emailValue = '';
+  emailTaken: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -59,7 +63,7 @@ export class AddPetComponent implements OnInit{
     private authService: AuthService,
     private _snackBar: MatSnackBar,
     private qrService: QrChekingService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.medalHash = this.route.snapshot.params['medalHash'];
@@ -67,124 +71,149 @@ export class AddPetComponent implements OnInit{
   }
 
   goHome() {
-      this.router.navigate(['/wellcome'])
-    }
-  
-    register() {
-      let body: any = this.registerForm.value;
-      body.medalString = this.medalHash;
-      body.medalRegister = this.registerHash;
-      delete body.passwordConfirm;
-      this.spinner = true;
-      this.spinnerMessage = 'procensando información...'
-      let authSubscription: Subscription = this.qrService.medalRegister(body).subscribe(
-        (res: any) => {
-          //this.router.navigate(['/wellcome']);
-          this.spinner = false;
-          let registeredMedal: RegisteredMedalInterface = {
-            email: res.email,
-            message: res.message,
-            medals: res.medals
-          };
-          this.registeredMedal = registeredMedal;
-          this._snackBar.openFromComponent(MessageSnackBarComponent,{
-            duration: 6000, 
-            verticalPosition: 'top',
-            data: 'Medalla registrada, por favor confirme su cuenta desde su bandeja de entrada.'
-          });
-          this.addPet = true;
-        }, error => {
-          this.spinner = false;
-          console.error(error)
-          if(error.error && error.status === 500)  this._snackBar.openFromComponent(MessageSnackBarComponent,{
-            duration: 5000, 
-            verticalPosition: 'top',
-            data: 'No se pudo registar su medalla'
-          })
-          if(error.error && error.status === 400)  this._snackBar.openFromComponent(MessageSnackBarComponent,{
-            duration: 5000, 
-            verticalPosition: 'top',
-            data: error.error.message[0]
-          })
-  
+    this.router.navigate(['/wellcome'])
+  }
+
+  register() {
+    let body: any = this.registerForm.value;
+    body.medalString = this.medalHash;
+    body.medalRegister = this.registerHash;
+    delete body.passwordConfirm;
+    this.spinner = true;
+    this.spinnerMessage = 'procensando información...';
+
+    let authSubscription: Subscription = this.qrService.medalRegister(body).subscribe(
+      (res: any) => {
+        //this.router.navigate(['/wellcome']);
+        this.spinner = false;
+        let registeredMedal: RegisteredMedalInterface = {
+          email: res.email,
+          message: res.message,
+          medals: res.medals
+        };
+        this.registeredMedal = registeredMedal;
+        this._snackBar.openFromComponent(MessageSnackBarComponent, {
+          duration: 6000,
+          verticalPosition: 'top',
+          data: 'Medalla registrada, por favor confirme su cuenta desde su bandeja de entrada.'
+        });
+        this.addPet = true;
+      }, error => {
+        this.spinner = false;
+        console.error(error)
+        if (error.error && error.status === 500) this._snackBar.openFromComponent(MessageSnackBarComponent, {
+          duration: 5000,
+          verticalPosition: 'top',
+          data: 'No se pudo registar su medalla'
+        })
+        if (error.error && error.status === 400) this._snackBar.openFromComponent(MessageSnackBarComponent, {
+          duration: 5000,
+          verticalPosition: 'top',
+          data: error.error.message[0]
+        })
+
+      }
+    );
+    this.addSubscription(authSubscription);
+  }
+
+  emailValidate() {
+    this.spinner = true;
+    let subscription: Subscription = this.qrService.isThisEmailTaken(this.ownerEmail?.value).subscribe({
+      next: (res: any)=>{
+        this.emailValue = this.ownerEmail?.value;
+        this.validationDoIt = true;
+        this.ownerEmail?.disable();
+        console.log(res);
+        this.spinner = false;
+        if(res.emailIsTaken) {
+          console.log('email usado')
+          this.firstTimeEmail = false;
+        } else {
+          console.log('email libre')
+          this.firstTimeEmail = true;
         }
-      );
-      this.addSubscription(authSubscription);
-    }
-  
-    getVisibility() {
-      return this.pwdHide ? 'visibility_off' : 'visibility';
-    }
-  
-    getInputType() {
-      return this.pwdHide ? 'password' : 'text';
-    }
-  
-    visibilityToggle() {
-      this.pwdHide = !this.pwdHide;
-    }
-  
-    getIconToMinLength(): string {
-      return this.password?.value.length === 0 ? 'radio_button_unchecked' : this.password?.hasError('minlength') ? 'cancel' : 'check';
-    }
-  
-    getIconToMaxLength(): string {
-      return this.password?.value.length === 0 ? 'radio_button_unchecked' : this.password?.hasError('maxlength') ? 'cancel' : 'check';
-    }
-  
-    getIconUpperCase(): string {
-      return this.password?.value.length === 0 ? 'radio_button_unchecked' : this.password?.hasError('capitalLetterError') ? 'cancel' : 'check';
-    }
-  
-    getIconLowerCase(): string {
-      return this.password?.value.length === 0 ? 'radio_button_unchecked' : this.password?.hasError('lowerCaseError') ? 'cancel' : 'check';
-    }
-  
-    getIconNumber(): string {
-      return this.password?.value.length === 0 ? 'radio_button_unchecked' : this.password?.hasError('numberError') ? 'cancel' : 'check';
-    }
-  
-    addSubscription(subscripiont: Subscription) {
-      this.subscription.push(subscripiont);
-    }
-  
-    visibilityTogglePasswordConfirm() {
-      this.pwdConfirmHide = !this.pwdConfirmHide;
-    }
-  
-    getVisibilityPasswordConfirm() {
-      return this.pwdConfirmHide ? 'visibility_off' : 'visibility';
-    }
-  
-    getInputTypePasswordConfirm() {
-      return this.pwdConfirmHide ? 'password' : 'text';
-    }
-  
-    get petName(): FormControl | undefined {
-      if(this.registerForm.get('petName')) {
-        return this.registerForm.get('petName') as FormControl;
-      } else return undefined;
-    }
-  
-    get ownerEmail(): FormControl | undefined {
-      if(this.registerForm.get('ownerEmail')) {
-        return this.registerForm.get('ownerEmail') as FormControl;
-      } else return undefined;
-    }
-  
-    get password(): FormControl | undefined {
-      if(this.registerForm.get('password')) {
-        return this.registerForm.get('password') as FormControl;
-      } else return undefined;
-    }
-  
-    get passwordConfirm(): FormControl | undefined {
-      if(this.registerForm.get('passwordConfirm')) {
-        return this.registerForm.get('passwordConfirm') as FormControl;
-      } else return undefined;
-    }
-  
-    ngOnDestroy(): void {
-      this.subscription.map((subscription: Subscription) => subscription.unsubscribe());
-    }
+      },
+      error: (error: any)=>{
+        console.error(error);
+        this.spinner = false;
+      }
+    });
+  }
+
+  getVisibility() {
+    return this.pwdHide ? 'visibility_off' : 'visibility';
+  }
+
+  getInputType() {
+    return this.pwdHide ? 'password' : 'text';
+  }
+
+  visibilityToggle() {
+    this.pwdHide = !this.pwdHide;
+  }
+
+  getIconToMinLength(): string {
+    return this.password?.value.length === 0 ? 'radio_button_unchecked' : this.password?.hasError('minlength') ? 'cancel' : 'check';
+  }
+
+  getIconToMaxLength(): string {
+    return this.password?.value.length === 0 ? 'radio_button_unchecked' : this.password?.hasError('maxlength') ? 'cancel' : 'check';
+  }
+
+  getIconUpperCase(): string {
+    return this.password?.value.length === 0 ? 'radio_button_unchecked' : this.password?.hasError('capitalLetterError') ? 'cancel' : 'check';
+  }
+
+  getIconLowerCase(): string {
+    return this.password?.value.length === 0 ? 'radio_button_unchecked' : this.password?.hasError('lowerCaseError') ? 'cancel' : 'check';
+  }
+
+  getIconNumber(): string {
+    return this.password?.value.length === 0 ? 'radio_button_unchecked' : this.password?.hasError('numberError') ? 'cancel' : 'check';
+  }
+
+  addSubscription(subscripiont: Subscription) {
+    this.subscription.push(subscripiont);
+  }
+
+  visibilityTogglePasswordConfirm() {
+    this.pwdConfirmHide = !this.pwdConfirmHide;
+  }
+
+  getVisibilityPasswordConfirm() {
+    return this.pwdConfirmHide ? 'visibility_off' : 'visibility';
+  }
+
+  getInputTypePasswordConfirm() {
+    return this.pwdConfirmHide ? 'password' : 'text';
+  }
+
+  get petName(): FormControl | undefined {
+    if (this.registerForm.get('petName')) {
+      return this.registerForm.get('petName') as FormControl;
+    } else return undefined;
+  }
+
+  get ownerEmail(): FormControl | undefined {
+    if (this.registerForm.get('ownerEmail')) {
+      return this.registerForm.get('ownerEmail') as FormControl;
+    } else return undefined;
+  }
+
+  get password(): FormControl | undefined {
+    if (this.registerForm.get('password')) {
+      return this.registerForm.get('password') as FormControl;
+    } else return undefined;
+  }
+
+  get passwordConfirm(): FormControl | undefined {
+    if (this.registerForm.get('passwordConfirm')) {
+      return this.registerForm.get('passwordConfirm') as FormControl;
+    } else return undefined;
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.map((subscription: Subscription) => subscription.unsubscribe());
+  }
 }

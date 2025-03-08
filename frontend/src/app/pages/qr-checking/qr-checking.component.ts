@@ -42,7 +42,7 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
       next: (res: any) => {
         this.spinner = false;
         if(res.status === 'REGISTER_PROCESS') this.goToAddPed(res.medalString, res.registerHash);
-        if(res.status === 'ENABLED') this.goToMyPet();
+        if(res.status === 'ENABLED') this.goPet(res.medalString);
         if(res.status === 'DISABLED') {
           this.message = 'Medalla desactivada';
         }
@@ -61,13 +61,11 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
   }
 
   goToAddPed(medalHash: string, registerHash: string) {
-    this.message = 'carga tu mascota';
     this.router.navigate(['agregar-mascota', medalHash, registerHash])
   }
 
-  goToMyPet() {
-    this.message = 'bienvenido al sitio de tu mascota';
-    this.router.navigate(['/', 'mi-mascota'])
+  goPet(medalString: string) {
+    this.router.navigate(['/', 'mascota', medalString])
   }
     
   ngOnDestroy(): void {
