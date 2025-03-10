@@ -11,5 +11,7 @@ module.exports.getClient = async () => {
     ssl: false,
   });
   await client.connect();
+  const res = await client.query('SELECT $1::text as connected', ['Connection to postgres successful!']);
+  console.log(res.rows[0].connected);
   return client;
 };

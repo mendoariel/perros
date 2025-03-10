@@ -47,7 +47,7 @@ model VirginMedal {
   updatedAt    DateTime?  @updatedAt
   status       MedalState
   medalString  String     @unique @map("medal_string")
-  registerHash String     @unique @map("register_hash")
+  registerHash String     @map("register_hash")
 
   @@map("virgin_medals")
 }
