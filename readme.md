@@ -34,10 +34,9 @@ En el caso de restauracion de la base de datos, los contenedores que esten linqu
 
 Eliminar todas las bases de datos que tenga el contenedor
 
-
-
 COMANDO PARA COPIAR LA DB A UN ARCHIVO DESDE UN CONTENEDOR DOCKER CORRIENDO
 docker exec container_name pg_dumpall -U dabase_user > /home/albert/backup/dabase_name.sql 
+docker exec -it 8d pg_dumpall --inserts -c -U postgres > dump_$(date +%Y-%m-%d_%H_%M_%S).sql
 
 Este comando nos genera un archivo con el nombre que especificamos
 
@@ -48,7 +47,6 @@ docker stop container_name
 COMANDO PARA INGRESAR A LA CONSOLA DE POSTGRES
 
 docker exec -it container_name psql -U user_name 
-
 
 
 COMANDO LISTAR BASES DE DATOS DENTRO DE LA CONSOLA POSTGRES
@@ -73,7 +71,7 @@ cat /home/albert/backup/database_name.sql | docker exec -i container_name psql -
 
 Page to appoint the qr medals
 
-http:/localhost:4200/mascota-checking?medalString=pumita
+http:/localhost:4200/mascota-checking?medalString=andrea
 
 Shift + Alt + F
 

@@ -107,10 +107,10 @@
                                 </p>
                             </section>
     
-                            <button [disabled]="registerForm.invalid" mat-raised-button (click)="register()">Registrarse</button>
+                            <button [disabled]="registerForm.invalid" mat-raised-button (click)="register()">Guardar</button>
                         </article>
 
-                        <button (click)="cancelMethod()" *ngIf="validationDoIt" color="warn" mat-raised-button>Cancelar</button>
+                        <button style="margin-top: 1em;" (click)="cancelMethod()" *ngIf="validationDoIt" color="warn" mat-raised-button>Cancelar</button>
                     </section>
                    
                 </form>

@@ -21,6 +21,7 @@ model User {
   hashPasswordRecovery String?    @map("hashPasswordRecovery")
   userStatus           UserStatus
   hashToRegister       String     @map("hash_to_register")
+  phonenumber          String?
   medals               Medal[]
 
   @@map("users")
@@ -33,6 +34,7 @@ model Medal {
   ownerId      Int
   status       MedalState
   image        String?
+  description  String?
   medalString  String     @unique @map("medal_string")
   petName      String     @map("pet_name")
   registerHash String     @map("register_hash")

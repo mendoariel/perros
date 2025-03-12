@@ -58,7 +58,8 @@ export class MyPetComponent implements OnInit, OnDestroy{
       next: (myPet: any) => {
         this.spinner = false;
         this.myPet = myPet;
-        if(myPet.medals[0].status === 'ENABLED' && myPet.medals[0].image) {
+        console.log('res get only my pets ', myPet)
+        if(myPet.medals[0].image) {
           this.myPet.medals[0].image  = `${environment.perrosQrApi}pets/files/${myPet.medals[0].image}`;
           this.textButton = 'Cambiar foto';
         }
@@ -84,6 +85,7 @@ export class MyPetComponent implements OnInit, OnDestroy{
       formData.append('medalString', this.myPet.medals[0].medalString);
       this.uploadSubscription = this.uploadFileService.uploadProfileServie(formData).subscribe({
         next: (res: any) => {
+          if(res.image === 'load')
           this.getOnlyMyPets(this.registerHash);
           
         },

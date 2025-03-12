@@ -58,21 +58,20 @@ export class PetsServicie {
                 medalString: medalString
             },
             data: {
-                image: filename,
-                status: MedalState.ENABLED
+                image: filename
             }
         })
         if(!updateMedal)  throw new NotFoundException('Sin registro de esa medalla');
         //save database the images to then i can getting from frontend
-        const updateVirginMedal = await this.prisma.virginMedal.update({
-            where: {
-                medalString: medalString
-            },
-            data: {
-                status: MedalState.ENABLED
-            }
-        })
-        if(!updateVirginMedal)  throw new NotFoundException('Sin registro de esa medalla');
+        // const updateVirginMedal = await this.prisma.virginMedal.update({
+        //     where: {
+        //         medalString: medalString
+        //     },
+        //     data: {
+        //         status: MedalState.ENABLED
+        //     }
+        // });
+        // if(!updateVirginMedal)  throw new NotFoundException('Sin registro de esa medalla');
         return {image: 'load'};
     }
 }
