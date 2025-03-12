@@ -100,7 +100,11 @@ export class QrService {
             }
           })
             console.log('sending email from create a new medal pet to your account')
-            return medalCreated;
+            return {
+                email: user.email,
+                message: 'medalla cargadas',
+                medals: [medalCreated]
+            };
         };
             // send email to client to confirm this action
 
