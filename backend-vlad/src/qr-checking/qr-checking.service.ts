@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 
 import {  PostMedalDto, QRCheckingDto } from './dto/qr-checking.dto';
 import { MedalStatus } from './types';
@@ -7,6 +7,7 @@ import { Prisma, Role, MedalState, UserStatus } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';
 
 import QRCode from 'qrcode';
+import { Exception } from 'handlebars';
 
 var bcrypt = require('bcryptjs');
 var createHash = require('hash-generator');
@@ -176,10 +177,19 @@ export class QrService {
         try {
             await this.mailService.sendConfirmAccount(userEmail, url);
         } catch (error) {
-            console.log('into try catch error===> ', error)
-            console.error('into try catch error===> ', error)
+            console.error('into try catch error===> ', error);
+            await this.putDataLikeBeforeReques();
+            throw new ServiceUnavailableException('No pudimos procesara la informacion')
+            
+            
         }
         
+    }
+
+    async putDataLikeBeforeReques() {
+        setTimeout(()=>{
+            console.log('update user, or update reset')
+        },10000);
     }
 
     hashData(data: string) {
