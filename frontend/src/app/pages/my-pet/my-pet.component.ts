@@ -29,6 +29,7 @@ export class MyPetComponent implements OnInit, OnDestroy{
   spinner = false;
   spinnerMessage = 'Cargando...';
   textButton = 'Agregar foto';
+  loadPet = false;
   
   constructor(
     private route: ActivatedRoute,
@@ -45,12 +46,13 @@ export class MyPetComponent implements OnInit, OnDestroy{
       next: (res: any) => {
         if(res) {
           this.spinner = false;
+          this.getOnlyMyPets(this.registerHash);
         } else {
           this.router.navigate(['login'])
         }
       }
     });
-    this.getOnlyMyPets(this.registerHash);
+    
   }
   getOnlyMyPets(registerHash: string) {
     this.spinner = true;
@@ -58,7 +60,12 @@ export class MyPetComponent implements OnInit, OnDestroy{
       next: (myPet: any) => {
         this.spinner = false;
         this.myPet = myPet;
-        console.log('res get only my pets ', myPet)
+        console.log('res get only my pets ', myPet);
+        // check if pets is incomplete
+        if(this.myPet.medals[0].status === 'INCOMPLETE') {
+          // put mode charge info
+          this.loadPet = true;
+        }
         if(myPet.medals[0].image) {
           this.myPet.medals[0].image  = `${environment.perrosQrApi}pets/files/${myPet.medals[0].image}`;
           this.textButton = 'Cambiar foto';
