@@ -21,6 +21,7 @@ export class MailService {
         Logger.log('before send email')
         await this.mailerService.sendMail({
             to: email,
+            from: '"PeludosClick" <info@peludosclick.com>',
             subject: 'Confirmacion de cuenta Peludosclick',
             template: './confirm-password',
             context: {
