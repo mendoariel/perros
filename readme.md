@@ -71,7 +71,7 @@ cat /home/albert/backup/database_name.sql | docker exec -i container_name psql -
 
 Page to appoint the qr medals
 
-http:/localhost:4200/mascota-checking?medalString=andrea
+http:/localhost:4200/mascota-checking?medalString=pamela
 
 Shift + Alt + F
 
@@ -162,3 +162,6 @@ const result = await prisma.books.create({
   }
 });
 This approach allows you to either connect to existing records or create new ones if they don't exist How to handle arrays?.
+
+
+ssh root@67.205.144.228

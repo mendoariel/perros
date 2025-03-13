@@ -8,15 +8,23 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.office365.com',
-        port: 587,
-        secure: false,
-        auth: {
-            user: "info@peludosclick.com",
-            pass: "Yamaha600"
+        service: "gmail",
+        auth: {            
+          user: "biciarbol@gmail.com",
+          pass: "uhnmokvtlstoyonk"
         },
         
       },
+      // transport: {
+      //   host: 'smtp.office365.com',
+      //   port: 587,
+      //   secure: false,
+      //   auth: {
+      //       user: "info@peludosclick.com",
+      //       pass: "Yamaha600"
+      //   },
+        
+      // },
       template: {
         dir: join(__dirname, 'templates'),
         adapter: new HandlebarsAdapter(),
