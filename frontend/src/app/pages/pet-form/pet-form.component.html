@@ -1,0 +1,53 @@
+<app-first-navbar></app-first-navbar>
+<main>
+  <section class="spinner" *ngIf="spinner">
+    <h1>{{ spinnerMessage }}</h1>
+    <mat-spinner></mat-spinner>
+  </section>
+  <section class="main-content" *ngIf="!spinner">
+      <h3>Formulario mi mascota</h3>
+      <mat-card  class="example-card" appearance="outlined">
+            <mat-card-header>
+              <mat-card-title>{{ myPet.medals[0].petName }}</mat-card-title>
+            </mat-card-header>
+            
+            <div *ngIf="!myPet.medals[0].image" class="image-container">
+              <mat-icon class="image">pets</mat-icon>
+              <div class="input-file-container">
+                <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file">
+                <button (click)="fileInput.click()" style="margin-left: auto;" mat-raised-button color="primary">
+                  <mat-icon>upload_file</mat-icon>
+                  {{ textButton }}
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="myPet.medals[0].image" class="image-container">
+              <img mat-card-image [src]="env.perrosQrApi + 'pets/files/' + myPet.medals[0].image" alt="Foto mascota">
+            </div>
+
+            <mat-card-content>
+              <form [formGroup]="petForm">
+                <h2>Cargar información</h2>
+                <p>Número con el que se comunican cuando se scanea tu mascota</p>  
+                <mat-form-field>
+                  <mat-label>Teléfono:</mat-label>
+                  <input matInput formControlName="phoneNumber" mask="(000) 000-0000" placeholder="Ex. (000) 000-0000"> 
+                  <mat-error *ngIf="phoneNumber?.hasError('required')">Ingrese usuario</mat-error>
+                  <mat-error *ngIf="phoneNumber?.hasError('minlength')">Mínimo de 9 caracteres</mat-error>
+                  <mat-error *ngIf="phoneNumber?.hasError('maxlength')">Máximo de 15 caracteres</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Descripción:</mat-label>
+                  <textarea matInput placeholder="Descripción de la mascota" formControlName="description"></textarea>
+                  <mat-error *ngIf="desciption?.hasError('required')">Ingrese usuario</mat-error>
+                  <mat-error *ngIf="desciption?.hasError('minlength')">Mínimo de 9 caracteres</mat-error>
+                  <mat-error *ngIf="desciption?.hasError('maxlength')">Máximo de 150 caracteres</mat-error>
+                </mat-form-field>
+                <button  [disabled]="petForm.invalid" mat-raised-button (click)="updatePet()">Guardar</button>
+              </form>
+            </mat-card-content>
+
+      </mat-card>
+  </section>
+</main>

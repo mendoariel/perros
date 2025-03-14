@@ -28,7 +28,7 @@ export class PetsServicie {
         return owner.medals;
     }
 
-    async getMyPet(email: string, registerHash: string) {
+    async getMyPet(email: string, medalString: string) {
         let user = await this.prisma.user.findUnique({
             where: {
                 email: email.toLocaleLowerCase()
@@ -36,7 +36,7 @@ export class PetsServicie {
             include: {
                 medals: {
                     where: {
-                      registerHash: registerHash 
+                      medalString: medalString 
                     }
                 }
             }

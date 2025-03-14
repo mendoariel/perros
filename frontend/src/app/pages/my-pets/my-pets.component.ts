@@ -46,7 +46,7 @@ export class MyPetsComponent implements OnInit, OnDestroy {
     this.petsSubscription = this.petsServices.getMyPets().subscribe({
       next: (myPets: any[]) => {
         this.myPets ? this.myPets = myPets : null;
-        if(this.myPets.length === 1 && this.myPets[0].image === null) this.complete(this.myPets[0].registerHash)
+        if(this.myPets.length === 1 && this.myPets[0].image === null) this.goToMyPetForm(this.myPets[0].medalString)
       },
       error: (error: any) => {
         console.error(error)
@@ -54,8 +54,8 @@ export class MyPetsComponent implements OnInit, OnDestroy {
     });
   }
 
-  complete(registerHash: string) {
-    this.router.navigate(['/mi-mascota', registerHash])
+  goToMyPetForm(medalString: string) {
+    this.router.navigate(['/formulario-mi-mascota', medalString])
   }
 
   ngOnDestroy(): void {
