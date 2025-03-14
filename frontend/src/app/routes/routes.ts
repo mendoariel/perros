@@ -19,6 +19,7 @@ import { ConfirmAccountComponent } from "../pages/confirm-account/confirm-accoun
 import { MyPetsComponent } from "../pages/my-pets/my-pets.component";
 import { PetsComponent } from "../pages/pets/pets.component";
 import { PetComponent } from "../pages/pet/pet.component";
+import { PetFormComponent } from "../pages/pet-form/pet-form.component";
 
 export const routes: Route[] = [
     {
@@ -37,6 +38,10 @@ export const routes: Route[] = [
     {
         path: 'agregar-mascota/:medalHash/:registerHash',
         component: AddPetComponent
+    },
+    {
+        path: 'formulario-mi-mascota/:medalString',
+        component: PetFormComponent
     },
     {
         path: 'confirmar-cuenta',

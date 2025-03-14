@@ -23,10 +23,10 @@ export class PetsController {
         return this.petService.getMyPets(user.email);
     }
 
-    @Post('my')
+    @Get('my/:medalString')
     @HttpCode(HttpStatus.OK)
-    miPet(@GetCurrentUser() user: any, @Body() registerHash: any) {
-        return this.petService.getMyPet(user.email, registerHash.registerHash);
+    miPet(@GetCurrentUser() user: any, @Param('medalString') medalString: string) {
+        return this.petService.getMyPet(user.email, medalString);
     }
 
     @Post('profile-picture')

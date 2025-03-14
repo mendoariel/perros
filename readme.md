@@ -165,3 +165,9 @@ This approach allows you to either connect to existing records or create new one
 
 
 ssh root@67.205.144.228
+
+start convert files utf8
+
+$ file yourfilename
+yourfilename: UTF-8 Unicode English text
+iconv -f original_charset -t utf-8 originalfile > newfile
