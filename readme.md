@@ -71,7 +71,9 @@ cat /home/albert/backup/database_name.sql | docker exec -i container_name psql -
 
 Page to appoint the qr medals
 
-http:/localhost:4200/mascota-checking?medalString=pamela
+http:/localhost:4200/mascota-checking?medalString=chicho
+
+insert into virgin_medals ("medal_string", "status", "register_hash") values ('pumita', 'VIRGIN', 'hash');
 
 Shift + Alt + F
 

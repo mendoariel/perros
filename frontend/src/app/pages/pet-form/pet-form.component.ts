@@ -98,6 +98,7 @@ export class PetFormComponent implements OnInit, OnDestroy{
       next: (myPet: any) => {
         this.spinner = false;
         this.myPet = myPet;
+        if(this.myPet.medals[0].status === 'ENABLED') this.goToMyPets();
         //this.phoneNumber?.setValue(this.myPet.phonenumber);
         //this.desciption?.setValue(this.myPet.description);
       },
@@ -110,6 +111,10 @@ export class PetFormComponent implements OnInit, OnDestroy{
 
   complete(medalString: string) {
     this.router.navigate(['/mi-mascota', medalString])
+  }
+
+  goToMyPets() {
+    this.router.navigate(['/mis-mascotas'])
   }
 
   onFileSelected(event: any) {
@@ -141,7 +146,10 @@ export class PetFormComponent implements OnInit, OnDestroy{
       medalString: this.myPet.medals[0].medalString
     }
     this.medalUpdateSubscription = this.petsServices.updateMedal(body).subscribe({
-      next: (medal: any)=>{ console.log(medal)},
+      next: (medal: any)=>{ 
+        console.log(medal);
+        this.goToMyPets();
+      },
       error: (error: any)=>{ console.log(error)}
     });
   }

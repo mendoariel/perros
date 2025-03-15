@@ -9,6 +9,7 @@ import { UtilService } from 'src/services/util.service';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { ConfirmAccountDto } from './dto/confirm-account.dto';
 import { UserStatus, MedalState } from '@prisma/client';
+import { ConfirmMedalto } from './dto/confirm-medal.dto';
 
 var bcrypt = require('bcryptjs');
 @Injectable()
@@ -99,7 +100,7 @@ export class AuthService {
         // udpate medal status
         const medalUpdate: any = await this.prisma.medal.updateMany({
             where: {
-                registerHash: dto.medalHash
+                registerHash: dto.medalString
             },
             data: {
                 status: MedalState.INCOMPLETE
@@ -109,7 +110,7 @@ export class AuthService {
         // udpate medal status
         const virginMedalUpdate: any = await this.prisma.virginMedal.updateMany({
             where: {
-                registerHash: dto.medalHash
+                medalString: dto.medalString
             },
             data: {
                 status: MedalState.REGISTERED
@@ -129,6 +130,37 @@ export class AuthService {
         const response = {
             message: "user registered, medal incomplete",
             code: 5001
+        }
+
+        return response;
+    }
+
+    async confirmMedal(dto: ConfirmMedalto) {
+
+        // udpate medal status
+        const medalUpdate: any = await this.prisma.medal.updateMany({
+            where: {
+                medalString: dto.medalString
+            },
+            data: {
+                status: MedalState.INCOMPLETE
+            }
+        });
+
+        // udpate medal status
+        const virginMedalUpdate: any = await this.prisma.virginMedal.updateMany({
+            where: {
+                medalString: dto.medalString
+            },
+            data: {
+                status: MedalState.REGISTERED
+            }
+        });
+        if(!virginMedalUpdate) throw new NotFoundException('Medalla sin registro')
+
+        const response = {
+            message: "Medal registered",
+            code: 5010
         }
 
         return response;

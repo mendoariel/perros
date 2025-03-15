@@ -119,16 +119,8 @@
                 <section class="info-container">
                     <h2>Cuenta penditente
                     </h2>
-                    <p>{{ registeredMedal.medals[registeredMedal.medals.length -1].petName }} esta pendiente de confirmación
-                        
-                    </p>
-                    <p>
-                        Tenes registrado la medalla con código 
-                        <strong>"{{ registeredMedal.medals[registeredMedal.medals.length -1].medalString }}"</strong>
-                        en estado <strong> {{ registeredMedal.medals[registeredMedal.medals.length -1].status }} </strong>
-                        por favor confirma tu cuenta desde la bandeja de entrada o correo no deseado del la cuenta  de email <strong>
-                            {{ registeredMedal.email }}</strong>
-                    </p>
+                    <p>{{ registeredMedal.text }}</p>
+                   
                 </section>
             </section>
         </section>

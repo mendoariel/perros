@@ -87,9 +87,6 @@ export class QrService {
             }
         });
 
-        
-
-        // if user only add a medal to this user, an return
         if(user) {
           let medalCreated = await this.prisma.medal.create({
             data: {
@@ -99,23 +96,22 @@ export class QrService {
                 medalString: virginMedal.medalString,
                 petName: dto.petName
             }
-          })
-            console.log('sending email from create a new medal pet to your account')
-            return {
-                email: user.email,
-                message: 'medalla cargadas',
-                medals: [medalCreated]
+          });
+          if(!medalCreated) throw new NotFoundException('can not create medal');
+            
+          let sendEmailConfirmMedal: any  = await this.sendEmailConfirmMedal(user.email, virginMedal.medalString);
+          console.log('into qr checkin service send email confirm medal ===> ', sendEmailConfirmMedal)
+          if(!sendEmailConfirmMedal) throw new NotFoundException('can not send email confirm medal');
+          let peludosResponse = { 
+            text: 'Le hemos enviado un email, siga las intrucciones para la activar su medalla.',
+            code: 'medalcreated'
             };
+
+            return peludosResponse;
         };
-            // send email to client to confirm this action
 
-       
-
-        //if !not user, create a new user
         const hash = await this.hashData(dto.password);
-
         const unicHash = await this.createHashNotUsedToUser();
-
         const userCreated: any = await this.prisma.user.create({
             data: {
                 hashToRegister: unicHash,
@@ -134,16 +130,16 @@ export class QrService {
             }
         });
 
+        if(!userCreated) throw new NotFoundException('Can not create user')
         // send email to confirm account
-        if(userCreated) {
-            await this.sendEmailConfirmAccount(userCreated.email, userCreated.hashToRegister, virginMedal.registerHash);
-            let message = { text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta su cuenta.'};
-            userCreated.message = message;  
-            return userCreated;
-        }
-
-        return 'no pudimos procesar la informacion vovler a intentar';
-    
+        let sendEmail:any = await this.sendEmailConfirmAccount(userCreated.email, userCreated.hashToRegister, virginMedal.registerHash);
+            if(!sendEmail) throw new NotFoundException('Can not send email acount')
+            let peludosResponse = { 
+                text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta su cuenta.',
+                code: 'usercreated'
+            };
+             
+        return peludosResponse;
     }
 
     async getPet(medalString: string): Promise<any> {
@@ -176,12 +172,27 @@ export class QrService {
         //const url = `${process.env.FRONTEND_URL}/crear-nueva-clave`;
         try {
             await this.mailService.sendConfirmAccount(userEmail, url);
+            return true;
         } catch (error) {
             console.error('into try catch error===> ', error);
             await this.putDataLikeBeforeReques();
             throw new ServiceUnavailableException('No pudimos procesara la informacion')
-            
-            
+            return false;
+        }
+        
+    }
+
+    async sendEmailConfirmMedal(userEmail: string, medalString: string) {
+        const url = `${process.env.FRONTEND_URL}/confirmar-medalla?email=${userEmail}&medalString=${medalString}`;
+        try {
+            await this.mailService.sendConfirmMedal(userEmail, url);
+            return true;
+        } catch (error) {
+            console.log('user ===> ', userEmail, '    medalString ====> ', medalString)
+            console.error('into try catch error===> ', error);
+            await this.putDataLikeBeforeReques();
+            throw new ServiceUnavailableException('No pudimos procesara la informacion')
+            return false;
         }
         
     }

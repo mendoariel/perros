@@ -19,7 +19,7 @@
             </p>
           </mat-card-content>
           <mat-card-actions *ngIf="pet.status === 'INCOMPLETE'">
-            <button (click)="goToMyPetForm(pet.registerHash)" style="margin-left: auto;" mat-raised-button color="primary">Completar</button>
+            <button (click)="goToMyPetForm(pet.medalString)" style="margin-left: auto;" mat-raised-button color="primary">Completar</button>
           </mat-card-actions>
           <mat-card-actions *ngIf="(pet.status === 'ENABLED')">
             <button (click)="goToMyPet(pet.medalString)" style="margin-left: auto;" mat-raised-button color="primary">Ver Detalles</button>

@@ -20,6 +20,7 @@ import { MyPetsComponent } from "../pages/my-pets/my-pets.component";
 import { PetsComponent } from "../pages/pets/pets.component";
 import { PetComponent } from "../pages/pet/pet.component";
 import { PetFormComponent } from "../pages/pet-form/pet-form.component";
+import { ConfirmMedalComponent } from "../pages/confirm-medal/confirm-medal.component";
 
 export const routes: Route[] = [
     {
@@ -46,6 +47,10 @@ export const routes: Route[] = [
     {
         path: 'confirmar-cuenta',
         component: ConfirmAccountComponent
+    },
+    {
+        path: 'confirmar-medalla',
+        component: ConfirmMedalComponent
     },
     {
         path: 'mi-mascota/:registerHash',

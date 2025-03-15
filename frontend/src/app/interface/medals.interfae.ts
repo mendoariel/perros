@@ -9,7 +9,11 @@ export interface MedalRegisterInterface {
 export interface ConfirmAccountInterface {
     email: string;
     registerHash: string;
-    medalHash: string;
+    medalString: string;
+}
+export interface ConfirmMedalInterface {
+    email: string;
+    medalString: string;
 }
 export interface MedalInterface {
     medalString: string;
