@@ -30,6 +30,8 @@ export class PetFormComponent implements OnInit, OnDestroy{
   medalString: any;
   isLoginSubscription: Subscription | undefined;
   uploadSubscription: Subscription | undefined;
+  phoneSubscription: Subscription | undefined;
+  medalUpdateSubscription: Subscription | undefined;
   spinner = false;
   spinnerMessage = 'Cargando...';
   textButton = 'Agregar foto';
@@ -37,7 +39,11 @@ export class PetFormComponent implements OnInit, OnDestroy{
   env = environment;
 
   petForm: FormGroup = new FormGroup({
-      phoneNumber: new FormControl('', [Validators.required, Validators.minLength(9), Validators.maxLength(13)]),
+      phoneNumber: new FormControl('', [
+        Validators.required, 
+        Validators.minLength(9), 
+        Validators.maxLength(13)
+      ]),
       description: new FormControl('', [Validators.required,  Validators.minLength(3), Validators.maxLength(150)])
   });
   
@@ -57,12 +63,34 @@ export class PetFormComponent implements OnInit, OnDestroy{
         if(res) {
           this.spinner = false;
           this.getOnlyMyPet(this.medalString);
+          this.subscribeValidationPhone();
         } else {
           this.router.navigate(['login'])
         }
       }
     });
+
     
+  }
+
+  subscribeValidationPhone() {
+    this.phoneSubscription = this.phoneNumber?.valueChanges.subscribe({
+      next: (value: any)=> {
+        if(!this.isNumber(value[value.length-1])) {
+          let char = value[value.length-1];
+          value = value.replace(char, "");
+          this.phoneNumber?.setValue(value);
+        }
+      }
+    });
+  }
+
+  isNumber(value: string): boolean {
+    let isNumber = false;
+    if(value === "0" || value === "1" || value === "2" || value === "3" || value === "4" || value === "5" || value === "6" || value === "7" || value === "8" || value === "9") {
+      isNumber = true;
+    } 
+    return isNumber;
   }
   getOnlyMyPet(medalString: string) {
     this.spinner = true;
@@ -70,12 +98,8 @@ export class PetFormComponent implements OnInit, OnDestroy{
       next: (myPet: any) => {
         this.spinner = false;
         this.myPet = myPet;
-        console.log('res get only my pets ', myPet);
-        // check if pets is incomplete
-        if(this.myPet.medals[0].status === 'INCOMPLETE') {
-          // put mode charge info
-          this.loadPet = true;
-        }
+        //this.phoneNumber?.setValue(this.myPet.phonenumber);
+        //this.desciption?.setValue(this.myPet.description);
       },
       error: (error: any) => {
         this.spinner  = false;
@@ -110,7 +134,16 @@ export class PetFormComponent implements OnInit, OnDestroy{
   }
 
   updatePet():void {
-
+    console.log(this.petForm.value);
+    let body = {
+      phoneNumber: this.phoneNumber?.value,
+      description: this.description?.value,
+      medalString: this.myPet.medals[0].medalString
+    }
+    this.medalUpdateSubscription = this.petsServices.updateMedal(body).subscribe({
+      next: (medal: any)=>{ console.log(medal)},
+      error: (error: any)=>{ console.log(error)}
+    });
   }
 
   get phoneNumber(): FormControl | undefined {
@@ -119,9 +152,9 @@ export class PetFormComponent implements OnInit, OnDestroy{
     } else return undefined;
   }
 
-  get desciption(): FormControl | undefined {
-    if (this.petForm.get('desciption')) {
-      return this.petForm.get('desciption') as FormControl;
+  get description(): FormControl | undefined {
+    if (this.petForm.get('description')) {
+      return this.petForm.get('description') as FormControl;
     } else return undefined;
   }
 
@@ -129,5 +162,7 @@ export class PetFormComponent implements OnInit, OnDestroy{
     this.petsSubscription ? this.petsSubscription.unsubscribe(): null;
     this.isLoginSubscription ? this.isLoginSubscription.unsubscribe(): null;
     this.uploadSubscription ? this.uploadSubscription.unsubscribe(): null;
+    this.phoneSubscription ? this.phoneSubscription.unsubscribe(): null;
+    this.medalUpdateSubscription ? this.medalUpdateSubscription.unsubscribe(): null;
   }
 }

@@ -49,7 +49,6 @@ export class QRCheckingController {
         @Param('hash') hash: string,
         @Param('medal') medal: string
     ) {
-        console.log('hello from check controller')
         return this.qrService.sendEmailConfirmAccount(email, hash, medal);
     }
 

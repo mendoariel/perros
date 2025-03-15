@@ -67,6 +67,10 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
   goPet(medalString: string) {
     this.router.navigate(['/', 'mascota', medalString])
   }
+
+  goHome() {
+    this.router.navigate(['/'])
+  }
     
   ngOnDestroy(): void {
     this.checkingSubscriber ? this.checkingSubscriber.unsubscribe() : null;

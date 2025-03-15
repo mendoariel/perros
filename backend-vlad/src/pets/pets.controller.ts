@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Response, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Logger, NotFoundException, Param, Post, Put, Response, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { PetsServicie } from "./pets.service";
 import { GetCurrentUser, Public } from "src/common/decorators";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -6,6 +6,7 @@ import { diskStorage } from "multer";
 import { FILE_UPLOAD_DIR } from "src/constans";
 import { fileNameEditor, imageFileFilter } from "src/file.util";
 import { CreateFileDto } from "./dto/create-file.dto";
+import { UpdateMedalDto } from "./dto/update-medal.dto";
 
 @Controller('pets')
 export class PetsController {
@@ -60,6 +61,15 @@ export class PetsController {
         @Response() res
     ) {
         return this.petService.getFileByFileName(fileName, res)
+    }
+
+    @Put('update-medal')
+    updateMedal(
+        @Body() dto: UpdateMedalDto,
+        @GetCurrentUser() user: any
+    ) {
+        Logger.log('dto from controller', dto);
+        return this.petService.updateMedal(user.emal, dto)
     }
 
 
