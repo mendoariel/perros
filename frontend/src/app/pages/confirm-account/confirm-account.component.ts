@@ -40,7 +40,7 @@ export class ConfirmAccountComponent implements OnInit{
           let body: ConfirmAccountInterface = {
             email: params.hashEmail,
             registerHash: params.hashToRegister,
-            medalHash: params.medalRegisterHash
+            medalString: params.medalRegisterHash
           };
           this.confirmAccunt(body);
         }

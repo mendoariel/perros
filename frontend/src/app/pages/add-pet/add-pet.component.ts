@@ -86,16 +86,11 @@ export class AddPetComponent implements OnInit {
       (res: any) => {
         //this.router.navigate(['/wellcome']);
         this.spinner = false;
-        let registeredMedal: RegisteredMedalInterface = {
-          email: res.email,
-          message: res.message,
-          medals: res.medals
-        };
-        this.registeredMedal = registeredMedal;
+        this.registeredMedal = res;
         this._snackBar.openFromComponent(MessageSnackBarComponent, {
           duration: 6000,
           verticalPosition: 'top',
-          data: 'Medalla registrada, por favor confirme su cuenta desde su bandeja de entrada.'
+          data: `${res.text}`
         });
         this.addPet = true;
       }, error => {
