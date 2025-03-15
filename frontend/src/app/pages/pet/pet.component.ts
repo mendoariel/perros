@@ -41,8 +41,6 @@ export class PetComponent implements OnInit, OnDestroy{
     this.spinner = true;
     this.petSubscription = this.qrCheckingService.getPet(medalString).subscribe({
       next: (pet: any) => {
-        
-        console.log(pet)
         this.spinner = false;
         this.pet = pet;
         this.pet.image = `${environment.perrosQrApi}pets/files/${this.pet.image}`

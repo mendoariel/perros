@@ -22,7 +22,7 @@
             <button (click)="goToMyPetForm(pet.registerHash)" style="margin-left: auto;" mat-raised-button color="primary">Completar</button>
           </mat-card-actions>
           <mat-card-actions *ngIf="(pet.status === 'ENABLED')">
-            <button (click)="goToMyPetForm(pet.registerHash)" style="margin-left: auto;" mat-raised-button color="primary">Ver Detalles</button>
+            <button (click)="goToMyPet(pet.medalString)" style="margin-left: auto;" mat-raised-button color="primary">Ver Detalles</button>
           </mat-card-actions>
         </mat-card>
   </section>

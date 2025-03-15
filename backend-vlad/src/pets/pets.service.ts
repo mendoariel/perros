@@ -1,16 +1,30 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma, MedalState } from "@prisma/client";
-import { Response } from "express";
+import e, { Response } from "express";
 import { join } from "path";
 import { PrismaService } from "src/prisma/prisma.service";
+import { UpdateMedalDto } from "./dto/update-medal.dto";
+import { throws } from "assert";
 
 @Injectable()
 export class PetsServicie {
     constructor(private prisma: PrismaService) {}
 
     async allPet() {
-        let allPets = await this.prisma.medal.findMany();
+        let allPets = await this.prisma.medal.findMany({
+            where: {
+              status: 'ENABLED' 
+            },
+            select: {
+              petName: true,
+              image: true,
+              status: true 
+            }
+            
+            
+        });
         if(!allPets) throw new NotFoundException('Sin registro');
+        
         return allPets;
     }
 
@@ -46,7 +60,7 @@ export class PetsServicie {
         return user;
     }
 
-    getFileByFileName(fileName: string, res: Response) {
+    async getFileByFileName(fileName: string, res: Response) {
         const filePath = join(process.cwd(), 'public', 'files', fileName);
         return res.sendFile(filePath)
     }
@@ -73,5 +87,37 @@ export class PetsServicie {
         // });
         // if(!updateVirginMedal)  throw new NotFoundException('Sin registro de esa medalla');
         return {image: 'load'};
+    }
+
+    async updateMedal(email: string, medalUpdate: UpdateMedalDto) {
+        let user = await this.prisma.user.updateMany({
+            where: { email: email},
+            data: {
+                phonenumber: medalUpdate.phoneNumber
+            }
+        });
+        if(!user) throw new NotFoundException('User not found');
+        let medal = await this.prisma.medal.update({
+            where: { medalString: medalUpdate.medalString},
+            data: {
+                description: medalUpdate.description,
+                status: 'ENABLED'
+            }
+        });
+        if(!medal) throw new NotFoundException('Medal not found');
+        let virgin = await this.prisma.virginMedal.update({
+            where: {
+                medalString: medalUpdate.medalString
+            },
+            data: {
+                status: 'ENABLED'
+            }
+        });
+        console.log('virgin ===> ', virgin)
+        if(!virgin) throw new NotFoundException('Virgin Medal not found');
+
+        return medal;
+
+        
     }
 }

@@ -60,7 +60,6 @@ export class MyPetComponent implements OnInit, OnDestroy{
       next: (myPet: any) => {
         this.spinner = false;
         this.myPet = myPet;
-        console.log('res get only my pets ', myPet);
         // check if pets is incomplete
         if(this.myPet.medals[0].status === 'INCOMPLETE') {
           // put mode charge info

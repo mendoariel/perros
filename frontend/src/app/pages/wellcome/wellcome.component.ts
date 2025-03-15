@@ -24,6 +24,8 @@ export class WellcomeComponent implements OnInit, OnDestroy {
   petSubsciption: Subscription | undefined;
   pets: any[] = [];
   imagePath = `${environment.perrosQrApi}pets/files/`;
+  env = environment;
+  background = 'url(http://localhost:3333/pets/files/secrectIMG-20250301-WA0000.jpg)';
   
   constructor(
     private router: Router,
@@ -36,6 +38,9 @@ export class WellcomeComponent implements OnInit, OnDestroy {
         this.pets = res;
 
         this.pets = this.pets.filter((pet)=> pet.status === 'ENABLED');
+        this.pets.map(pet => pet.background = `url(${environment.perrosQrApi}pets/files/${pet.image})`);
+
+        console.log(this.pets)
 
       },
       error:(error: any) => {
