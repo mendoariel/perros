@@ -5,16 +5,28 @@
     <mat-spinner></mat-spinner>
   </section>
   <section class="main-content" *ngIf="!spinner">
-    <mat-card *ngIf="pet" class="example-card" appearance="outlined">
-      <mat-card-header>
-        <div mat-card-avatar class="example-header-image"></div>
-        <mat-card-title>{{ pet.petName }}</mat-card-title>
-        <mat-card-subtitle>{{ pet.status }}</mat-card-subtitle>
-      </mat-card-header>
-
-      <div class="image-container">
-        <img mat-card-image [src]="pet.image" alt="Foto mascota">
+    <div *ngIf="pet" class="pelu-card" appearance="outlined">
+      <h1>{{ pet.petName }}</h1>
+      <div class="image-container" [style.background]="pet.background"></div>
+      <p style="margin-top: 5px;">{{ pet.description }}</p>
+      <div class="action-container">
+        <div class="logo">
+          <div class="button wame-button">
+            <img class="wame-logo" src="assets/icons/wame-logo.png" alt="whatsapp logo">
+            <a [href]="pet.wame">Whatsapp</a>
+          </div>
+        </div>
+        <div class="logo">
+          <div class="button call-button">
+            <mat-icon>phone</mat-icon>
+            <a [href]="pet.tel">Llamar</a>
+          </div>
+        </div>
       </div>
-    </mat-card>
+      
+     
+
+      
+    </div>
   </section>
 </main>
