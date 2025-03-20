@@ -143,15 +143,28 @@ export class QrService {
     }
 
     async getPet(medalString: string): Promise<any> {
-        let pet = await this.prisma.medal.findFirst({
+        let medal: any = await this.prisma.medal.findFirst({
             where: {
                 medalString: medalString
             }
         });
 
-        if(!pet) throw new NotFoundException('No records for this medal');
+        if(!medal) throw new NotFoundException('No records for this medal');
+        let user: any = await this.prisma.user.findFirst({
+            where:{
+                id: medal.ownerId
+            }
+        });
 
-        return pet;
+        if(!user) throw new NotFoundException('No user for this medal');
+        let response = {
+            petName: medal.petName,
+            phone: user.phonenumber,
+            image: medal.image,
+            description: medal.description
+        }
+
+        return response;
     }
 
     async isThisEmailTaken(email: string) {
