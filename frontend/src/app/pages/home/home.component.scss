@@ -2,8 +2,6 @@ section.main-box {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    //background: url('/assets/pic_1900/el-filo-del-chinche-25.jpg');
-    background: url('/assets/pic_1900/filo-01.jpg') no-repeat;
     background-size: cover;
     background-position: center;
     width: 100%;
@@ -88,51 +86,3 @@ section.main-box {
         }
     }
 }
-
-// main {
-//     height: 100vh;
-//     display: flex;
-//     flex-direction: column;
-//     background: url('/assets/pic_1900/el-filo-del-chinche-25.jpg');
-//     background-position: center;
-// }
-
-// section {
-//     width: 100%;
-//     height: 100%;
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-// }
-
-// section.first-container {
-//     height: 33vh;
-// }
-
-// div.second-container {
-//     height: 100%;
-//     display: flex;
-//     flex-direction: column;
-// }
-// section.place button,
-// section.people button,
-// section.wheels button {
-//     color: white;
-//     padding: 1.2em;
-//     box-shadow: 5px 5px 15px 15px rgba(254, 254, 254, .1);
-//     height: 100%;
-//     width: 100%;
-//     border: 1px grey solid;
-//     background: rgba(200,200,200, 0.4);
-// }
-
-
-
-// @media screen and (orientation: landscape) {
-//     section.first-container {
-//         height: 100%;
-//     }
-//     div.second-container {
-//         flex-direction: row;
-//     }
-// }

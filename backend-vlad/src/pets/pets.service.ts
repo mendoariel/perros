@@ -43,7 +43,7 @@ export class PetsServicie {
     }
 
     async getMyPet(email: string, medalString: string) {
-        let user = await this.prisma.user.findUnique({
+        let user: any = await this.prisma.user.findUnique({
             where: {
                 email: email.toLocaleLowerCase()
             },
@@ -57,7 +57,17 @@ export class PetsServicie {
             
         });
         if(!user) throw new NotFoundException('Sin registro');
-        return user;
+        let response: any = {
+            petName: user.medals[0].petName,
+            image: user.medals[0].image,
+            description: user.medals[0].description,
+            phone: user.phonenumber,
+            status: user.medals[0].status,
+            medalString: user.medals[0].medalString
+        }
+
+
+        return response;
     }
 
     async getFileByFileName(fileName: string, res: Response) {
@@ -102,7 +112,6 @@ export class PetsServicie {
                 status: 'ENABLED'
             }
         });
-        console.log('virgin ===> ', virgin)
         if(!virgin) throw new NotFoundException('Virgin Medal not found');
 
         return medal;

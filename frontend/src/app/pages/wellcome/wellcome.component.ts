@@ -40,8 +40,6 @@ export class WellcomeComponent implements OnInit, OnDestroy {
         this.pets = this.pets.filter((pet)=> pet.status === 'ENABLED');
         this.pets.map(pet => pet.background = `url(${environment.perrosQrApi}pets/files/${pet.image})`);
 
-        console.log(this.pets)
-
       },
       error:(error: any) => {
         console.error(error)

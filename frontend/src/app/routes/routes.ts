@@ -53,7 +53,7 @@ export const routes: Route[] = [
         component: ConfirmMedalComponent
     },
     {
-        path: 'mi-mascota/:registerHash',
+        path: 'mi-mascota/:medalString',
         component: MyPetComponent
         
     },
