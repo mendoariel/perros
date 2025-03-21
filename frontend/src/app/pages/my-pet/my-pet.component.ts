@@ -23,13 +23,14 @@ import { environment } from 'src/environments/environment';
 export class MyPetComponent implements OnInit, OnDestroy{
   myPet: any;
   petsSubscription: Subscription | undefined;
-  registerHash: any;
+  medalString: any;
   isLoginSubscription: Subscription | undefined;
   uploadSubscription: Subscription | undefined;
   spinner = false;
   spinnerMessage = 'Cargando...';
   textButton = 'Agregar foto';
   loadPet = false;
+  env = environment;
   
   constructor(
     private route: ActivatedRoute,
@@ -41,12 +42,12 @@ export class MyPetComponent implements OnInit, OnDestroy{
   
   ngOnInit(): void {
     this.spinner = true;
-    this.registerHash = this.route.snapshot.params['registerHash'];
+    this.medalString = this.route.snapshot.params['medalString'];
     this.isLoginSubscription = this.authService.isAuthenticatedObservable.subscribe({
       next: (res: any) => {
         if(res) {
           this.spinner = false;
-          this.getOnlyMyPets(this.registerHash);
+          this.getOnlyMyPets(this.medalString);
         } else {
           this.router.navigate(['login'])
         }
@@ -54,21 +55,15 @@ export class MyPetComponent implements OnInit, OnDestroy{
     });
     
   }
-  getOnlyMyPets(registerHash: string) {
+  getOnlyMyPets(medalString: string) {
     this.spinner = true;
-    this.petsSubscription = this.petsServices.getMyPet(registerHash).subscribe({
+    this.petsSubscription = this.petsServices.getMyPet(medalString).subscribe({
       next: (myPet: any) => {
         this.spinner = false;
         this.myPet = myPet;
-        // check if pets is incomplete
-        if(this.myPet.medals[0].status === 'INCOMPLETE') {
-          // put mode charge info
-          this.loadPet = true;
-        }
-        if(myPet.medals[0].image) {
-          this.myPet.medals[0].image  = `${environment.perrosQrApi}pets/files/${myPet.medals[0].image}`;
-          this.textButton = 'Cambiar foto';
-        }
+        this.myPet.wame = `https://wa.me/${this.myPet.phone}/?text=Estoy con tu mascota ${this.myPet.petName}`;
+        this.myPet.tel = `tel: ${this.myPet.phone}`;
+        this.myPet.background = `url(${this.env.perrosQrApi}pets/files/${myPet.image})`;
         
       },
       error: (error: any) => {
@@ -78,8 +73,12 @@ export class MyPetComponent implements OnInit, OnDestroy{
     });
   }
 
-  complete(registerHash: string) {
-    this.router.navigate(['/mi-mascota', registerHash])
+  complete(medalString: string) {
+    this.router.navigate(['/mi-mascota', medalString])
+  }
+
+  goToMyPets() {
+    this.router.navigate(['/mis-mascotas'])
   }
 
   onFileSelected(event: any) {
@@ -88,11 +87,11 @@ export class MyPetComponent implements OnInit, OnDestroy{
       const file = event.target.files[0];
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('medalString', this.myPet.medals[0].medalString);
+      formData.append('medalString', this.myPet.medalString);
       this.uploadSubscription = this.uploadFileService.uploadProfileServie(formData).subscribe({
         next: (res: any) => {
           if(res.image === 'load')
-          this.getOnlyMyPets(this.registerHash);
+          this.getOnlyMyPets(this.medalString);
           
         },
         error: (error: any) => {
@@ -101,6 +100,10 @@ export class MyPetComponent implements OnInit, OnDestroy{
         }
       });
     }
+  }
+
+  goToMyPetForm(medalString: string) {
+    this.router.navigate(['/formulario-mi-mascota', medalString])
   }
 
   ngOnDestroy(): void {
