@@ -3,22 +3,13 @@
     <section class="main-content" *ngIf="pets.length > 0">
         <h1>Manten tu mascota conectada con QR</h1>
         <div class="pets-container">
-          <mat-card *ngFor="let pet of pets" class="example-card" appearance="outlined">
+          <mat-card *ngFor="let pet of pets"  appearance="outlined">
             <mat-card-header>
               <mat-card-title>{{ pet.petName }}</mat-card-title>
-              <mat-card-subtitle>{{ pet.status }}</mat-card-subtitle>
             </mat-card-header>
-            <img mat-card-image [src]="imagePath + pet.image" alt="Foto de Rosa Mosqueta">
-            <!-- <mat-card-content>
-              <p>
-                Soy Rosa Mosqueta, pero me dicen Rose, vivo en el barrio
-                Bancario de Godoy Cruz, mi dueño esta atento al whatps
-              </p>
-            </mat-card-content> -->
-            <mat-card-actions>
-              <button mat-raised-button>Conectar</button>
-              <button mat-raised-button>Lo Vi</button>
-            </mat-card-actions>
+            <div class="image-container" [style.background]="pet.background">
+              <!-- <img mat-card-image [src]="imagePath + pet.image" alt="Foto de Rosa Mosqueta"> -->
+            </div>
           </mat-card>
         </div>
     </section>

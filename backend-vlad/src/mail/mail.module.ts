@@ -7,6 +7,12 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 @Module({
   imports: [
     MailerModule.forRoot({
+      // transport: {
+      //   service: "gmail",
+      //   auth: {            
+      //     user: "biciarbol@gmail.com",
+      //     pass: "uhnmokvtlstoyonk"
+      //   },
       transport: {
         host: 'smtp.office365.com',
         port: 587,
