@@ -17,42 +17,51 @@ main {
     
     section.main-content {
         border: 1px solid grey;
-        padding: 1em;
-        background-color: white;
+        background-color: rgb(218, 247, 232);
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 4em;
         max-width: 500px;
         margin-left: auto;
         margin-right: auto;
-        mat-card {
-            max-width: 250px;
-            overflow: hidden;
-            
-
+        div.pelu-card {
+            background-color: white;
+            margin-top: 1em;
+            width: 100%;
+            width: 100%;
+            max-width: 350px;
+            border: solid 1px rgb(185, 222, 187);
+            border-radius: 5px;
+            margin-bottom: 3em;
+            box-shadow: 0px 10px 14px 2px black;
+            h1 {
+                padding-top: .8em;
+                padding-left: .8em;
+            }
             div.image-container {
+                max-width: 350px;
                 width: 100%;
-                border: solid 1px #ddd;
+                height: 200px;
+                background-repeat: no-repeat !important;
+                background-size: cover !important;
+                background-position: center center !important;
+            }
+            div.info-container {
+                padding: .8em .6em 1em;
+            }
+            div.action-container {
                 display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                padding: 1em;
-                img {
-                    max-width: 100%;
-                    max-height: 250px;
-                }
-                
-                mat-icon.image {
-                    width: 120px !important;
-                    height: 120px !important;
-                    font-size: 7em;
+                width: 100%;
+                margin-bottom: 2em;
+                margin-top: 1.5em;
+                div.logo {
+                    width: 100%;
                     display: flex;
                     justify-content: center;
                     align-items: center;
                 }
+                    
             }
         }
     }

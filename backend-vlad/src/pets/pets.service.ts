@@ -18,7 +18,8 @@ export class PetsServicie {
             select: {
               petName: true,
               image: true,
-              status: true 
+              status: true,
+              description: true
             }
             
             
@@ -43,7 +44,7 @@ export class PetsServicie {
     }
 
     async getMyPet(email: string, medalString: string) {
-        let user = await this.prisma.user.findUnique({
+        let user: any = await this.prisma.user.findUnique({
             where: {
                 email: email.toLocaleLowerCase()
             },
@@ -57,7 +58,17 @@ export class PetsServicie {
             
         });
         if(!user) throw new NotFoundException('Sin registro');
-        return user;
+        let response: any = {
+            petName: user.medals[0].petName,
+            image: user.medals[0].image,
+            description: user.medals[0].description,
+            phone: user.phonenumber,
+            status: user.medals[0].status,
+            medalString: user.medals[0].medalString
+        }
+
+
+        return response;
     }
 
     async getFileByFileName(fileName: string, res: Response) {
@@ -66,7 +77,6 @@ export class PetsServicie {
     }
 
     async loadImage(filename: string, medalString: string) {
-        //save database the images to then i can getting from frontend
         const updateMedal = await this.prisma.medal.update({
             where: {
                 medalString: medalString
@@ -76,16 +86,6 @@ export class PetsServicie {
             }
         })
         if(!updateMedal)  throw new NotFoundException('Sin registro de esa medalla');
-        //save database the images to then i can getting from frontend
-        // const updateVirginMedal = await this.prisma.virginMedal.update({
-        //     where: {
-        //         medalString: medalString
-        //     },
-        //     data: {
-        //         status: MedalState.ENABLED
-        //     }
-        // });
-        // if(!updateVirginMedal)  throw new NotFoundException('Sin registro de esa medalla');
         return {image: 'load'};
     }
 
@@ -113,7 +113,6 @@ export class PetsServicie {
                 status: 'ENABLED'
             }
         });
-        console.log('virgin ===> ', virgin)
         if(!virgin) throw new NotFoundException('Virgin Medal not found');
 
         return medal;

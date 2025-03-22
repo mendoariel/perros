@@ -100,7 +100,6 @@ export class QrService {
           if(!medalCreated) throw new NotFoundException('can not create medal');
             
           let sendEmailConfirmMedal: any  = await this.sendEmailConfirmMedal(user.email, virginMedal.medalString);
-          console.log('into qr checkin service send email confirm medal ===> ', sendEmailConfirmMedal)
           if(!sendEmailConfirmMedal) throw new NotFoundException('can not send email confirm medal');
           let peludosResponse = { 
             text: 'Le hemos enviado un email, siga las intrucciones para la activar su medalla.',
@@ -143,15 +142,28 @@ export class QrService {
     }
 
     async getPet(medalString: string): Promise<any> {
-        let pet = await this.prisma.medal.findFirst({
+        let medal: any = await this.prisma.medal.findFirst({
             where: {
                 medalString: medalString
             }
         });
 
-        if(!pet) throw new NotFoundException('No records for this medal');
+        if(!medal) throw new NotFoundException('No records for this medal');
+        let user: any = await this.prisma.user.findFirst({
+            where:{
+                id: medal.ownerId
+            }
+        });
 
-        return pet;
+        if(!user) throw new NotFoundException('No user for this medal');
+        let response = {
+            petName: medal.petName,
+            phone: user.phonenumber,
+            image: medal.image,
+            description: medal.description
+        }
+
+        return response;
     }
 
     async isThisEmailTaken(email: string) {
@@ -188,7 +200,6 @@ export class QrService {
             await this.mailService.sendConfirmMedal(userEmail, url);
             return true;
         } catch (error) {
-            console.log('user ===> ', userEmail, '    medalString ====> ', medalString)
             console.error('into try catch error===> ', error);
             await this.putDataLikeBeforeReques();
             throw new ServiceUnavailableException('No pudimos procesara la informacion')

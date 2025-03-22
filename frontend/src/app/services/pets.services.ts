@@ -23,7 +23,6 @@ export class PetsService {
     }
 
     updateMedal(body: any): any {
-        console.log('descripption ', body)
         let token = localStorage.getItem('access_token');
         let header = new HttpHeaders().set('Authorization',`Bearer ${token}`);
         return this.http.put(`${environment.perrosQrApi}pets/update-medal`, body, {headers: header});
