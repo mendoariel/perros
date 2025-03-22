@@ -25,6 +25,8 @@ export class PetComponent implements OnInit, OnDestroy{
   spinner = false;
   spinnerMessage = 'Cargando...';
   textButton = 'Agregar foto';
+  env = environment;
+  background = 'url(http://localhost:3333/pets/files/secrectIMG-20250301-WA0000.jpg)';
     
   constructor(
     private route: ActivatedRoute,
@@ -43,7 +45,10 @@ export class PetComponent implements OnInit, OnDestroy{
       next: (pet: any) => {
         this.spinner = false;
         this.pet = pet;
-        this.pet.image = `${environment.perrosQrApi}pets/files/${this.pet.image}`
+        //this.pet.image = `${environment.perrosQrApi}pets/files/${this.pet.image}`;
+        this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;
+        this.pet.tel = `tel: ${this.pet.phone}`;
+        this.pet.background = `url(${this.env.perrosQrApi}pets/files/${pet.image})`;
       },
       error: (error: any) => {
         this.spinner  = false;

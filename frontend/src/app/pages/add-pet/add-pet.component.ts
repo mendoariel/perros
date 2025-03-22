@@ -29,7 +29,7 @@ import { MedalInterface, RegisteredMedalInterface } from 'src/app/interface/meda
   styleUrls: ['./add-pet.component.scss']
 })
 export class AddPetComponent implements OnInit {
-  medalHash = '';
+  medalString = '';
   registerHash = '';
 
   registerForm: FormGroup = new FormGroup({
@@ -66,7 +66,7 @@ export class AddPetComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.medalHash = this.route.snapshot.params['medalHash'];
+    this.medalString = this.route.snapshot.params['medalString'];
     this.registerHash = this.route.snapshot.params['registerHash'];
   }
 
@@ -76,7 +76,7 @@ export class AddPetComponent implements OnInit {
 
   register() {
     let body: any = this.registerForm.value;
-    body.medalString = this.medalHash;
+    body.medalString = this.medalString;
     body.medalRegister = this.registerHash;
     delete body.passwordConfirm;
     this.spinner = true;

@@ -56,6 +56,7 @@ export class PetFormComponent implements OnInit, OnDestroy{
   ) {}
   
   ngOnInit(): void {
+    console.log('into pet form')
     this.spinner = true;
     this.medalString = this.route.snapshot.params['medalString'];
     this.isLoginSubscription = this.authService.isAuthenticatedObservable.subscribe({
@@ -96,17 +97,22 @@ export class PetFormComponent implements OnInit, OnDestroy{
     this.spinner = true;
     this.petsSubscription = this.petsServices.getMyPet(medalString).subscribe({
       next: (myPet: any) => {
+        console.log('mypet====>', myPet);
         this.spinner = false;
         this.myPet = myPet;
-        if(this.myPet.medals[0].status === 'ENABLED') this.goToMyPets();
-        //this.phoneNumber?.setValue(this.myPet.phonenumber);
-        //this.desciption?.setValue(this.myPet.description);
+        if(this.myPet.status === 'ENABLED') this.editMode();
       },
       error: (error: any) => {
         this.spinner  = false;
         console.error(error)
       }
     });
+  }
+
+  editMode() {
+    console.log('into edit mode');
+    this.myPet.description ? this.description?.setValue(this.myPet.description) : null;
+    this.myPet.phone ? this.phoneNumber?.setValue(this.myPet.phone) : null;
   }
 
   complete(medalString: string) {
@@ -123,7 +129,7 @@ export class PetFormComponent implements OnInit, OnDestroy{
       const file = event.target.files[0];
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('medalString', this.myPet.medals[0].medalString);
+      formData.append('medalString', this.myPet.medalString);
       this.uploadSubscription = this.uploadFileService.uploadProfileServie(formData).subscribe({
         next: (res: any) => {
           if(res.image === 'load')
@@ -139,18 +145,17 @@ export class PetFormComponent implements OnInit, OnDestroy{
   }
 
   updatePet():void {
-    console.log(this.petForm.value);
     let body = {
       phoneNumber: this.phoneNumber?.value,
       description: this.description?.value,
-      medalString: this.myPet.medals[0].medalString
+      medalString: this.myPet.medalString
     }
     this.medalUpdateSubscription = this.petsServices.updateMedal(body).subscribe({
       next: (medal: any)=>{ 
-        console.log(medal);
+        console.log('medal from update ', medal)
         this.goToMyPets();
       },
-      error: (error: any)=>{ console.log(error)}
+      error: (error: any)=>{ console.error(error)}
     });
   }
 
