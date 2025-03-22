@@ -26,28 +26,9 @@
             <div *ngIf="myPet.medals[0].image" class="image-container">
               <img mat-card-image [src]="myPet.medals[0].image" alt="Foto mascota">
             </div>
-
-            <mat-card-content style="margin-top: 2em;">
-              <p *ngIf="!myPet.medals[0].image">
-                Cargar una imagen de tu mascota para terminar el proceso
-              </p>
+            <mat-card-content *ngIf="loadPet">
+              formulario cargar mascota
             </mat-card-content>
-            <mat-card-content>
-              <mat-card-title>Estado de la medalla</mat-card-title>
-            </mat-card-content>
-            <mat-card-content>
-              Para que la la medalla este completa tine que tener
-            </mat-card-content>
-            <mat-card-content>
-              <mat-card-title>Telefono</mat-card-title>
-            </mat-card-content>
-            <!-- <mat-card-actions *ngIf="myPet.medals[0].status === 'INCOMPLETE'">
-              <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file">
-              <button (click)="fileInput.click()" style="margin-left: auto;" mat-raised-button color="primary">
-                <mat-icon>upload_file</mat-icon>
-                {{ textButton }}
-              </button>
-            </mat-card-actions> -->
 
       </mat-card>
   </section>

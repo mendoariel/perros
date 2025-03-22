@@ -10,6 +10,7 @@ import { PasswordRecoveryDto } from './dto/password-recovery.dto';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { AuthSignInDto } from './dto/auth-signin.dto';
 import { ConfirmAccountDto } from './dto/confirm-account.dto';
+import { ConfirmMedalto } from './dto/confirm-medal.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -77,5 +78,12 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     confirmAccount(@Body() dto: ConfirmAccountDto): any {
         return this.authService.confirmAccount(dto);
+    }
+
+    @Public()
+    @Post('confirm-medal')
+    @HttpCode(HttpStatus.OK)
+    confirmMedal(@Body() dto: ConfirmMedalto): any {
+        return this.authService.confirmMedal(dto);
     }
 }

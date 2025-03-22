@@ -1,15 +1,16 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class ConfirmAccountDto {
+export class UpdateMedalDto {
     @IsString()
     @IsNotEmpty()
-    email: string;
-
+    phoneNumber: string;
+    
     @IsString()
     @IsNotEmpty()
-    registerHash: string;
+    description: string;
 
     @IsString()
     @IsNotEmpty()
     medalString: string;
+
 }

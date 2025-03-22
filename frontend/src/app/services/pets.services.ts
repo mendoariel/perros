@@ -12,13 +12,20 @@ export class PetsService {
         return this.http.get(`${environment.perrosQrApi}pets/mine`, {headers: header});
     }
 
-    getMyPet(registerHash: string): any {
+    getMyPet(medalString: string): any {
         let token = localStorage.getItem('access_token');
         let header = new HttpHeaders().set('Authorization',`Bearer ${token}`);
-        return this.http.post(`${environment.perrosQrApi}pets/my`, {registerHash}, {headers: header});
+        return this.http.get(`${environment.perrosQrApi}pets/my/${medalString}`, {headers: header});
     }
 
     getAllPets(): any {
         return this.http.get(`${environment.perrosQrApi}pets`);
+    }
+
+    updateMedal(body: any): any {
+        console.log('descripption ', body)
+        let token = localStorage.getItem('access_token');
+        let header = new HttpHeaders().set('Authorization',`Bearer ${token}`);
+        return this.http.put(`${environment.perrosQrApi}pets/update-medal`, body, {headers: header});
     }
 }

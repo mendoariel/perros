@@ -41,6 +41,17 @@ export class QRCheckingController {
         return this.qrService.isThisEmailTaken(email);
     }
 
+    @Public()
+    @Get('test-email/:email/:hash/:medal')
+    @HttpCode(HttpStatus.OK)
+    checkEmailService(
+        @Param('email') email: string,
+        @Param('hash') hash: string,
+        @Param('medal') medal: string
+    ) {
+        return this.qrService.sendEmailConfirmAccount(email, hash, medal);
+    }
+
     // @Public()
     // @Post('creator')
     // qrCreator() {

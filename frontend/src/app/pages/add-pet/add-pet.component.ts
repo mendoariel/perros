@@ -85,18 +85,12 @@ export class AddPetComponent implements OnInit {
     let authSubscription: Subscription = this.qrService.medalRegister(body).subscribe(
       (res: any) => {
         //this.router.navigate(['/wellcome']);
-        console.log('add component' , res)
         this.spinner = false;
-        let registeredMedal: RegisteredMedalInterface = {
-          email: res.email,
-          message: res.message,
-          medals: res.medals
-        };
-        this.registeredMedal = registeredMedal;
+        this.registeredMedal = res;
         this._snackBar.openFromComponent(MessageSnackBarComponent, {
           duration: 6000,
           verticalPosition: 'top',
-          data: 'Medalla registrada, por favor confirme su cuenta desde su bandeja de entrada.'
+          data: `${res.text}`
         });
         this.addPet = true;
       }, error => {
@@ -127,7 +121,6 @@ export class AddPetComponent implements OnInit {
     this.ownerEmail?.clearValidators();
     this.ownerEmail?.setValidators([Validators.required, Validators.email])
     this.ownerEmail?.enable();
-    console.log('is email invalid ',this.ownerEmail?.invalid)
   }
 
   emailValidate() {
@@ -136,15 +129,12 @@ export class AddPetComponent implements OnInit {
       next: (res: any)=>{
         this.emailValue = this.ownerEmail?.value;
         this.validationDoIt = true;
-        console.log(res);
         this.spinner = false;
         if(res.emailIsTaken) {
-          console.log('cliente existente')
           this.newClient = false;
           this.password?.clearValidators();
           this.passwordConfirm?.clearValidators();
         } else {
-          console.log('nuevo cliente')
           this.newClient = true;
         }
       },
