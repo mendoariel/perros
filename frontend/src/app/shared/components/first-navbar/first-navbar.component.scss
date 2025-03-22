@@ -9,29 +9,30 @@ mat-toolbar {
     section.logo-container {
         display: flex;
         align-items: center;
-        background-color: black;
-        border: solid 1px white;
         border-radius: 25px;
         padding: 5px;
         padding-left: 8px;
         padding-right: 8px;
         article.image-container {
-            width: 38px !important;
+            width: 20px !important;
+            height: 20px;
             border-radius: 50%;
-            border: solid 2px black;
+            border: solid 1px #777;
             overflow: hidden;
             background: white;
             padding-top: 6px;
             padding-left: 3px;
             padding-right: 3px;
+            box-shadow: inset 6px 6px 9px 0px rgba(231,245,232,1);
             img {
                 max-width: 100%;
+                margin-top: 0px;
+    margin-bottom: 6px;
             }
             
         }
         span.logo-text {
-            font-size: 16px;
-            color: white;
+            font-size: 14px;
             margin-left: 9px;
         }
     }
