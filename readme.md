@@ -72,6 +72,7 @@ cat /home/albert/backup/database_name.sql | docker exec -i container_name psql -
 Page to appoint the qr medals
 
 http:/localhost:4200/mascota-checking?medalString=andrea
+https:/peludosclick.com/mascota-checking?medalString=pelusa
 
 Shift + Alt + F
 
