@@ -54,6 +54,10 @@ export class FirstNavbarComponent implements OnInit {
     this.router.navigate([`/${route}`])
   }
 
+  goHome() {
+    this.router.navigate([`/`])
+  }
+
   logout() {
     this.logoutSubscription = this.authService.logout().subscribe({
       next: (res: any)=> {
