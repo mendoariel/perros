@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
+import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 
 
 @Component({
@@ -21,6 +22,7 @@ import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/me
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
+    FirstNavbarComponent,
     FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, NgIf,
   ],
   templateUrl: './password-recovery.component.html',
