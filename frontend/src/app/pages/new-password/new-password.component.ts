@@ -9,6 +9,7 @@ import { CookieService } from "ngx-cookie-service";
 import { Subscription } from "rxjs";
 import { AuthService } from "src/app/auth/services/auth.service";
 import { MaterialModule } from "src/app/material/material.module";
+import { FirstNavbarComponent } from "src/app/shared/components/first-navbar/first-navbar.component";
 import { MessageSnackBarComponent } from "src/app/shared/components/sanck-bar/message-snack-bar.component";
 import { confirmedValidator } from "src/app/shared/custom-validators/confirmed-validator.directive";
 import { leastOneCapitalLetterValidator } from "src/app/shared/custom-validators/least-one-capital-letter.directive";
@@ -31,7 +32,8 @@ export interface NewPasswordInterface {
         FormsModule, 
         MatFormFieldModule, 
         MatInputModule, 
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        FirstNavbarComponent
     ],
     templateUrl: './new-password.component.html',
     styleUrls: ['./new-password.component.scss']
