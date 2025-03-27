@@ -3,15 +3,40 @@ main {
     padding-bottom: 6em;
     section.main-content {
         border: 1px solid grey;
-        padding: 1em;
-        margin: 1em;
-        background-color: white;
+        background-color: #ccc;
         padding-bottom: 3em;
         max-width: 800px;
         margin: auto;
         h1 {
             font-weight: 450;
             font-size: 1.2em;
+            background: white;
+            margin-bottom: 0;
+            padding-top: 1em;
+            padding: 1.3em 1em 1em;
+        }
+        section.peludosclick {
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            border: solid 5px #eee;
+            display: flex;
+            flex-direction: column;
+            article.image-container {
+                margin: 0;
+                padding: 0;
+                img {
+                    max-width: 100%;
+                    margin-bottom: -10px;
+                }
+            }
+            article.info-container {
+                p {
+                    background: white;
+                    padding: 1.2em 0.5em 2em 1em;
+                    margin: 0;
+                }
+            }
         }
         section.main-header {
             display: flex;
