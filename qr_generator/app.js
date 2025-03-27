@@ -28,7 +28,7 @@ function insertVirginMedalRegister() {
 }
 
 // function to insert register into medal register
-// for (let index = 37; index > 0; index--) {
+// for (let index = 12; index > 0; index--) {
 //     insertVirginMedalRegister();
 // }
 
@@ -37,7 +37,7 @@ var  qrMakeSvgFile = async function () {
     // query to get all virgin medal
     const client = await getClient();
     let createQuery = `SELECT * FROM virgin_medals 
-        WHERE register_hash = 'genesis'`;
+        WHERE register_hash = 'second-round'`;
     const medalToSvg = await client.query(createQuery);
     client.end();
     console.log('function MakeSvg ====> ', medalToSvg);
@@ -47,7 +47,7 @@ var  qrMakeSvgFile = async function () {
 
         console.log('medal to make svg file ===> ', medal)
         const data = `https://peludosclick.com/mascota-checking?medalString=${medal.medal_string}`;
-        const filePath = `medals_qr_images/2025-03-10-${++fileId}-sgv-qr-file-${medal.medal_string}.png`
+        const filePath = `medals_qr_images/2025-03-26-${medal.id}-sgv-qr-file-${medal.medal_string}.svg`
         qr.toFile(
             filePath,
             data,
@@ -55,7 +55,7 @@ var  qrMakeSvgFile = async function () {
                 errorCorrectionalLevel: 'H',
                 margin: 2,
                 scale: 4,
-                type: "png"
+                type: "svg"
             },
             err => {
                 if(err) {
