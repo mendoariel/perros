@@ -1,16 +1,41 @@
 <main>
     <app-first-navbar></app-first-navbar>
     <section class="main-content" *ngIf="pets.length > 0">
-        <h1>Manten tu mascota conectada con QR</h1>
+      <h1>**!Manten a tu mascota conectada 
+        siempre segura con nuestras chapitas QR personalizadas!**</h1>
+      <section class="main-header">
+        <div class="header-image-container">
+          <img src="assets/main/logo-peludosclick-completo.png" 
+          alt="logo completo PeludosClick">
+        </div>
+        <div class="info-text-container">
+         
+          <p>Con solo escanear el código QR de la 
+            chapita, cualquiera podrá ver la foto de tu mascota y
+             contactarte de inmediato por WhatsApp.</p>
+          <p>Diseñadas para proteger y facilitar el reencunetro, 
+            nuestras chapitas modernas, prácticas y hechas con mucho amor.</p>
+          <p>No te la pierdas!!!!!</p>
+        </div>
+        
+      </section>
         <div class="pets-container">
-          <mat-card *ngFor="let pet of pets"  appearance="outlined">
+          <section class="pelu-card" *ngFor="let pet of pets" >
+            <article class="info">
+              <h2>{{ pet.petName }}</h2>
+              <p>{{ pet.description }}</p>
+            </article>
+            <article class="image">
+              <div class="image-container" [style.background]="pet.background"></div>
+            </article>
+          </section>
+          <!-- <mat-card *ngFor="let pet of pets"  appearance="outlined">
             <mat-card-header>
               <mat-card-title>{{ pet.petName }}</mat-card-title>
             </mat-card-header>
             <div class="image-container" [style.background]="pet.background">
-              <!-- <img mat-card-image [src]="imagePath + pet.image" alt="Foto de Rosa Mosqueta"> -->
             </div>
-          </mat-card>
+          </mat-card> -->
         </div>
     </section>
 </main>

@@ -12,6 +12,7 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
 import { LoginInterface } from 'src/app/interface/login.interface';
+import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 
 
 /** Error when invalid control is dirty, touched, or submitted. */
@@ -33,7 +34,8 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     FormsModule, 
     MatFormFieldModule, 
     MatInputModule, 
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FirstNavbarComponent
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
