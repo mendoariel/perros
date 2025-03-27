@@ -34,18 +34,22 @@
       </article>
     </section>  
 
-
+    <h3>Algunas moscotas conectadas</h3>
    
     <div class="pets-container" *ngIf="pets.length > 0">
       <section class="pelu-card" *ngFor="let pet of pets">
-        <article class="info">
-          <h2>{{ pet.petName }}</h2>
-          <p>{{ pet.description }}</p>
-        </article>
+        <h2>{{ pet.petName }}</h2>
         <article class="image">
           <div class="image-container" [style.background]="pet.background"></div>
         </article>
+        
+        <article class="info">
+          
+          <p>{{ pet.description }}</p>
+        </article>
+        
       </section>
     </div>
   </section>
+  <app-peludosclick-footer></app-peludosclick-footer>
 </main>
