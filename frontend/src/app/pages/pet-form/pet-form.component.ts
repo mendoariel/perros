@@ -97,11 +97,10 @@ export class PetFormComponent implements OnInit, OnDestroy{
     this.spinner = true;
     this.petsSubscription = this.petsServices.getMyPet(medalString).subscribe({
       next: (myPet: any) => {
+        console.log('mypet====>', myPet);
         this.spinner = false;
         this.myPet = myPet;
         if(this.myPet.status === 'ENABLED') this.editMode();
-        //this.phoneNumber?.setValue(this.myPet.phonenumber);
-        //this.desciption?.setValue(this.myPet.description);
       },
       error: (error: any) => {
         this.spinner  = false;

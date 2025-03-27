@@ -18,7 +18,8 @@ export class PetsServicie {
             select: {
               petName: true,
               image: true,
-              status: true 
+              status: true,
+              description: true
             }
             
             
