@@ -3,10 +3,6 @@ const fs = require('fs');
 const qr = require('qrcode');
 const { getClient } = require('./get-client');
 
-// const data = 'https://peludosclick.com/mascota-checking?medalString=rosa_mosqueta';
-// const data = 'https://peludosclick.com';
-const filePath = 'qr-rose-scale-4.svg';
-
 let createHash = require('hash-generator');
 
 
@@ -40,14 +36,10 @@ var  qrMakeSvgFile = async function () {
         WHERE register_hash = 'second-round'`;
     const medalToSvg = await client.query(createQuery);
     client.end();
-    console.log('function MakeSvg ====> ', medalToSvg);
 
-    let fileId = 0;
     medalToSvg.rows.map(medal => {
-
-        console.log('medal to make svg file ===> ', medal)
         const data = `https://peludosclick.com/mascota-checking?medalString=${medal.medal_string}`;
-        const filePath = `medals_qr_images/2025-03-26-${medal.id}-sgv-qr-file-${medal.medal_string}.svg`
+        const filePath = `medals_qr_images/2025-03-27-${medal.id}-sgv-qr-file-${medal.medal_string}-${medal.register_hash}.png`
         qr.toFile(
             filePath,
             data,
@@ -55,7 +47,7 @@ var  qrMakeSvgFile = async function () {
                 errorCorrectionalLevel: 'H',
                 margin: 2,
                 scale: 4,
-                type: "svg"
+                type: "png"
             },
             err => {
                 if(err) {
