@@ -1,6 +1,5 @@
 main {
     background-color: darkgreen;
-    padding-bottom: 6em;
     section.main-content {
         border: 1px solid grey;
         background-color: #ccc;
@@ -66,45 +65,57 @@ main {
             }
 
         }
+        h3 {
+            background: #83ff93;
+            text-align: center;
+            border-top: 1px solid #58e882;
+            border-bottom: 1px solid #58e882;;
+            padding-top: 1em;
+            padding-bottom: 1em;
+            margin-bottom: 2em;
+            margin-top: 2em;
+            font-weight: 100;
+        }
         div.pets-container {
             display: flex;
             width: 100%;
             flex-direction: column;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+           
             section.pelu-card {
-                border-top: 1px #ccc solid;
-                border-bottom: 2px #ccc solid;
+                padding: 0;
                 display: flex;
+                flex-direction: column;
                 margin-bottom: 1em;
-                padding-bottom: .5em;
-                padding-top: .4em;
-                article.info {
-                    width: 64%;
-                    overflow: hidden;
-                    h2 {
-                        font-size: 1.1em;
-                        font-weight: 400;
-                        padding-left: .5em;
-                        padding-top: .6em;
+                border: solid 3px #d6efdb;
+                h2 {
+                    font-size: 1.1em;
+                    font-weight: 400;
+                    padding-left: .5em;
+                    padding-top: .6em;
+                    background: black;
+                    color: white;
+                    margin: 0;
+                    padding: 1.4em 1em .5em 1em;
+                    text-align: center;
 
-                    }
+                }
+                article.info {
                     p {
+                        margin: 0;
                         font-size: .8em;
                         font-weight: 300;
-                        padding-left: 1em;
-                        padding-top: .6em;
-                        border: solid 1px #aaa;
-                        margin-right: 3px;
-                        height: 100%;
-                        margin-bottom: 4px;
-                        overflow: hidden;
+                        background: white;
+                        padding: 2em 1em 3em 1.3em;
                     }
                    
                 }
                 article.image {
-                    width: 36%;
                     div.image-container {
                         width: 100%;
-                        height: 150px;
+                        height: 250px;
                         background-repeat: no-repeat !important;
                         background-size: cover !important;
                         background-position: center center !important;
