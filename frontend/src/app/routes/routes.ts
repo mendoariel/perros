@@ -69,10 +69,10 @@ export const routes: Route[] = [
         path: 'login',
         component: LoginComponent
     },
-    {
-        path: 'register',
-        component: RegisterComponent
-    },
+    // {
+    //     path: 'register',
+    //     component: RegisterComponent
+    // },
     {
         path: 'recuperar-cuenta',
         component: PasswordRecoveryComponent
