@@ -7,13 +7,15 @@ import { HttpClientModule } from '@angular/common/http';
 import { PetsService } from 'src/app/services/pets.services';
 import { Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { PeludosclickFooterComponent } from 'src/app/shared/components/peludosclick-footer/peludosclick-footer.component';
 @Component({
   selector: 'app-wellcome',
   standalone: true,
   imports: [
     CommonModule,
     MaterialModule,
-    FirstNavbarComponent
+    FirstNavbarComponent,
+    PeludosclickFooterComponent
   ],
   templateUrl: './wellcome.component.html',
   styleUrls: ['./wellcome.component.scss']

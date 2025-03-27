@@ -1,41 +1,55 @@
 <main>
-    <app-first-navbar></app-first-navbar>
-    <section class="main-content" *ngIf="pets.length > 0">
-      <h1>**!Manten a tu mascota conectada 
-        siempre segura con nuestras chapitas QR personalizadas!**</h1>
-      <section class="main-header">
-        <div class="header-image-container">
-          <img src="assets/main/logo-peludosclick-completo.png" 
-          alt="logo completo PeludosClick">
-        </div>
-        <div class="info-text-container">
-         
-          <p>Con solo escanear el código QR de la 
-            chapita, cualquiera podrá ver la foto de tu mascota y
-             contactarte de inmediato por WhatsApp.</p>
-          <p>Diseñadas para proteger y facilitar el reencunetro, 
-            nuestras chapitas modernas, prácticas y hechas con mucho amor.</p>
-          <p>No te la pierdas!!!!!</p>
-        </div>
+  <app-first-navbar></app-first-navbar>
+  <section class="main-content">
+    <h1>**!Manten a tu mascota conectada
+      siempre segura con nuestras chapitas QR personalizadas!**</h1>
+    <!-- first -->
+    <section class="peludosclick">
+      <article class="image-container">
+        <img src="assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg" alt="logo completo PeludosClick"/>
+      </article>
+      <article class="info-container">
+        <p>Con solo escanear el código QR de la
+          chapita, cualquiera podrá ver la foto de tu mascota y
+          contactarte de inmediato por WhatsApp.</p>
+      </article>
+    </section>  
+    <!-- second -->
+    <section class="peludosclick">
+      <article class="image-container">
+        <img src="assets/main/dog-do-recovery-afer-scaning.jpeg" alt="logo completo PeludosClick"/>
+      </article>
+      <article class="info-container">
+        <p>Diseñadas para proteger y facilitar el reencunetro,
+          nuestras chapitas modernas, prácticas y hechas con mucho amor.</p>
+      </article>
+    </section>  
+    <!-- third -->
+    <section class="peludosclick">
+      <article class="image-container">
+        <img src="assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg" alt="logo completo PeludosClick"/>
+      </article>
+      <article class="info-container">
+        <p>No te la pierdas!!!!!</p>
+      </article>
+    </section>  
+
+    <h3>Algunas moscotas conectadas</h3>
+   
+    <div class="pets-container" *ngIf="pets.length > 0">
+      <section class="pelu-card" *ngFor="let pet of pets">
+        <h2>{{ pet.petName }}</h2>
+        <article class="image">
+          <div class="image-container" [style.background]="pet.background"></div>
+        </article>
+        
+        <article class="info">
+          
+          <p>{{ pet.description }}</p>
+        </article>
         
       </section>
-        <div class="pets-container">
-          <section class="pelu-card" *ngFor="let pet of pets" >
-            <article class="info">
-              <h2>{{ pet.petName }}</h2>
-              <p>{{ pet.description }}</p>
-            </article>
-            <article class="image">
-              <div class="image-container" [style.background]="pet.background"></div>
-            </article>
-          </section>
-          <!-- <mat-card *ngFor="let pet of pets"  appearance="outlined">
-            <mat-card-header>
-              <mat-card-title>{{ pet.petName }}</mat-card-title>
-            </mat-card-header>
-            <div class="image-container" [style.background]="pet.background">
-            </div>
-          </mat-card> -->
-        </div>
-    </section>
+    </div>
+  </section>
+  <app-peludosclick-footer></app-peludosclick-footer>
 </main>
