@@ -35,7 +35,7 @@ services:
     volumes:
       - ./backend-vlad:/alberto/backend/src/app
       - /alberto/backend/src/app/node_modules
-    # command: npx prisma generate
+    command: npx prisma generate
     # command: npx prisma db push
     # command: npx prisma db pull
     # command: npx prisma migrate deploy
