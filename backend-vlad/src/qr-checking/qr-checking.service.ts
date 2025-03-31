@@ -187,7 +187,6 @@ export class QrService {
             return true;
         } catch (error) {
             console.error('into try catch error===> ', error);
-            await this.putDataLikeBeforeReques();
             throw new ServiceUnavailableException('No pudimos procesara la informacion')
             return false;
         }
@@ -201,17 +200,10 @@ export class QrService {
             return true;
         } catch (error) {
             console.error('into try catch error===> ', error);
-            await this.putDataLikeBeforeReques();
             throw new ServiceUnavailableException('No pudimos procesara la informacion')
             return false;
         }
         
-    }
-
-    async putDataLikeBeforeReques() {
-        setTimeout(()=>{
-            console.log('update user, or update reset')
-        },10000);
     }
 
     hashData(data: string) {
@@ -242,39 +234,4 @@ export class QrService {
         if(!hashUsed) return hash;
         else this.createHashNotUsed();
     }
-
-    // async creatQr(): Promise<any>{
-    //     let timeWaiting;
-    //     try {
-    //         (
-    //             await QRCode.toFile(`${process.cwd()}/src/files/qrs/qr.png `,   'https://wwww.bici-arbol.com', {
-    //                 errorCorrectionLevel: 'H',
-    //                 margin: 2,
-    //                 scale: 4,
-    //                 color: {
-    //                   dark: '#00F',  // Blue dots
-    //                   light: '#0000' // Transparent background
-    //                 }
-    //               }, function (err) {
-    //                 if (err) throw err
-    //                 timeWaiting = 'after doing'
-    //                 console.log('timeWawiting from await', timeWaiting, ' done')
-    //                 setTimeout(()=> {
-    //                     timeWaiting = '2 second later'
-    //                 },2000);
-    //               })
-    //         )
-    //       } catch (err) {
-    //         console.error(err)
-    //     }
-        
-
-    //     // return await this.prisma.virginMedal.create({
-    //     //     data: {
-    //     //         medalString: 'genesis2',
-    //     //         registerHash: 'genesis2',
-    //     //         status: MedalState.VIRGIN
-    //     //     }
-    //     // });
-    // }
 }

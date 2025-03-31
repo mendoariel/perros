@@ -5,6 +5,7 @@ import { join } from "path";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdateMedalDto } from "./dto/update-medal.dto";
 import { throws } from "assert";
+import { FILE_UPLOAD_DIR } from "src/constans";
 
 @Injectable()
 export class PetsServicie {
@@ -77,6 +78,11 @@ export class PetsServicie {
     }
 
     async loadImage(filename: string, medalString: string) {
+        const medal = await this.prisma.medal.findFirst({
+            where: {
+                medalString: medalString
+            }
+        });
         const updateMedal = await this.prisma.medal.update({
             where: {
                 medalString: medalString
@@ -84,8 +90,17 @@ export class PetsServicie {
             data: {
                 image: filename
             }
-        })
+        });
         if(!updateMedal)  throw new NotFoundException('Sin registro de esa medalla');
+        // delete the file
+        if(medal) {
+            const fs = require('fs');
+            let path = `${FILE_UPLOAD_DIR}/${medal.image}`;
+            fs.unlink(path, (error) => { 
+                console.error(error);
+                return;
+            })
+        }
         return {image: 'load'};
     }
 
