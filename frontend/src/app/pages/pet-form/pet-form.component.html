@@ -41,7 +41,7 @@
                   <mat-label>Teléfono:</mat-label>
                   <input matInput formControlName="phoneNumber"  placeholder="Ej 02615551515"> 
                   <mat-error *ngIf="phoneNumber?.hasError('required')">Ingrese teléfono</mat-error>
-                  <mat-error *ngIf="phoneNumber?.hasError('minlength')">Mínimo de 9 caracteres</mat-error>
+                  <mat-error *ngIf="phoneNumber?.hasError('minlength')">Mínimo de 10 caracteres</mat-error>
                   <mat-error *ngIf="phoneNumber?.hasError('maxlength')">Máximo de 15 caracteres</mat-error>
                 </mat-form-field>
                 <mat-form-field>
@@ -52,7 +52,7 @@
                   <mat-error *ngIf="description?.hasError('maxlength')">Máximo de 150 caracteres</mat-error>
                 </mat-form-field>
                 <div class="button-container">
-                  <button color="primary" [disabled]="petForm.invalid || !myPet.image" mat-raised-button (click)="updatePet()">Guardar</button>
+                  <button color="primary" [disabled]="(petForm.invalid || !myPet.image) || (phoneNumber?.value ===  this.myPet.phone && description?.value === this.myPet.description)" mat-raised-button (click)="updatePet()">Guardar</button>
                   <button  color="accent" mat-raised-button (click)="goToMyPets()">Salir</button>
                 </div>
               </form>

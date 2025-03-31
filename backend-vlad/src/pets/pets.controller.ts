@@ -69,7 +69,7 @@ export class PetsController {
         @GetCurrentUser() user: any
     ) {
         Logger.log('dto from controller', dto);
-        return this.petService.updateMedal(user.emal, dto)
+        return this.petService.updateMedal(user.email, dto)
     }
 
 
