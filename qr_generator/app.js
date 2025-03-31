@@ -9,11 +9,11 @@ let createHash = require('hash-generator');
 function insertVirginMedalRegister() {
     (async () => {
         const client = await getClient();
-        const medalString = createHash(36);
+        const medalString = await createUniqueHash();
     
         let createQuery = `
             INSERT INTO virgin_medals (status, medal_string, register_hash) 
-            VALUES ('VIRGIN', '${medalString}', 'genesis');
+            VALUES ('VIRGIN', '${medalString}', 'third-round');
         `;
     
         const res = await client.query(createQuery);
@@ -23,10 +23,21 @@ function insertVirginMedalRegister() {
     )();
 }
 
-// function to insert register into medal register
-// for (let index = 12; index > 0; index--) {
-//     insertVirginMedalRegister();
-// }
+var createUniqueHash = async function () {
+    let medalString = createHash(36);
+    const client = await getClient();
+    let createQuery = `SELECT * FROM virgin_medals  WHERE medal_string = '${medalString}'`;
+    const medal = await client.query(createQuery);
+    client.end();
+    if(medal.rows.length>0) createUniqueHash();
+    else return medalString;
+}
+
+
+//function to insert register into medal register
+for (let index = 16; index > 0; index--) {
+    insertVirginMedalRegister();
+}
 
 
 var  qrMakeSvgFile = async function () {
@@ -63,7 +74,7 @@ var  qrMakeSvgFile = async function () {
 
 }
 
-qrMakeSvgFile();
+//qrMakeSvgFile();
 
 // query to get all virgin medal
 
