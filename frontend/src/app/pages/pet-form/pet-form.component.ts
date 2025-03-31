@@ -56,7 +56,6 @@ export class PetFormComponent implements OnInit, OnDestroy{
   ) {}
   
   ngOnInit(): void {
-    console.log('into pet form')
     this.spinner = true;
     this.medalString = this.route.snapshot.params['medalString'];
     this.isLoginSubscription = this.authService.isAuthenticatedObservable.subscribe({
@@ -97,7 +96,6 @@ export class PetFormComponent implements OnInit, OnDestroy{
     this.spinner = true;
     this.petsSubscription = this.petsServices.getMyPet(medalString).subscribe({
       next: (myPet: any) => {
-        console.log('mypet====>', myPet);
         this.spinner = false;
         this.myPet = myPet;
         if(this.myPet.status === 'ENABLED') this.editMode();
@@ -110,7 +108,6 @@ export class PetFormComponent implements OnInit, OnDestroy{
   }
 
   editMode() {
-    console.log('into edit mode');
     this.myPet.description ? this.description?.setValue(this.myPet.description) : null;
     this.myPet.phone ? this.phoneNumber?.setValue(this.myPet.phone) : null;
   }
@@ -152,7 +149,6 @@ export class PetFormComponent implements OnInit, OnDestroy{
     }
     this.medalUpdateSubscription = this.petsServices.updateMedal(body).subscribe({
       next: (medal: any)=>{ 
-        console.log('medal from update ', medal)
         this.goToMyPets();
       },
       error: (error: any)=>{ console.error(error)}
