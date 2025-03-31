@@ -105,7 +105,7 @@ export class PetsServicie {
     }
 
     async updateMedal(email: string, medalUpdate: UpdateMedalDto) {
-        let user = await this.prisma.user.updateMany({
+        let user = await this.prisma.user.update({
             where: { email: email},
             data: {
                 phonenumber: medalUpdate.phoneNumber

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -9,6 +9,12 @@ import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/fir
 import { UploadFileService } from 'src/app/services/upload-file.service';
 import { environment } from 'src/environments/environment';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
 
 
 @Component({
@@ -41,7 +47,7 @@ export class PetFormComponent implements OnInit, OnDestroy{
   petForm: FormGroup = new FormGroup({
       phoneNumber: new FormControl('', [
         Validators.required, 
-        Validators.minLength(9), 
+        Validators.minLength(10), 
         Validators.maxLength(13)
       ]),
       description: new FormControl('', [Validators.required,  Validators.minLength(3), Validators.maxLength(150)])
@@ -52,7 +58,9 @@ export class PetFormComponent implements OnInit, OnDestroy{
     private router: Router,
     private petsServices: PetsService,
     private authService: AuthService,
-    private uploadFileService: UploadFileService
+    private uploadFileService: UploadFileService,
+    public dialog: MatDialog,
+    private _snackBar: MatSnackBar
   ) {}
   
   ngOnInit(): void {
@@ -135,13 +143,15 @@ export class PetFormComponent implements OnInit, OnDestroy{
         },
         error: (error: any) => {
           this.spinner = false;
-          console.error(error)
+          console.error(error);
+          this.openDialog(error);
         }
       });
     }
   }
 
   updatePet():void {
+    this.spinner = true;
     let body = {
       phoneNumber: this.phoneNumber?.value,
       description: this.description?.value,
@@ -149,9 +159,15 @@ export class PetFormComponent implements OnInit, OnDestroy{
     }
     this.medalUpdateSubscription = this.petsServices.updateMedal(body).subscribe({
       next: (medal: any)=>{ 
+        this.spinner = false;
+        this.openSnackBar();
         this.goToMyPets();
       },
-      error: (error: any)=>{ console.error(error)}
+      error: (error: any)=>{
+         console.error(error);
+         this.spinner = false;
+         this.openDialog(error)
+        }
     });
   }
 
@@ -167,11 +183,57 @@ export class PetFormComponent implements OnInit, OnDestroy{
     } else return undefined;
   }
 
+  openDialog(data: any): void {
+    const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
+      data: data,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+    });
+  }
+
+  openSnackBar() {
+      this._snackBar.openFromComponent(MessageSnackBarComponent,{
+        duration: 3000, 
+        verticalPosition: 'top',
+        data: 'Datos modificados correctamente'
+      })
+    };
+
   ngOnDestroy(): void {
     this.petsSubscription ? this.petsSubscription.unsubscribe(): null;
     this.isLoginSubscription ? this.isLoginSubscription.unsubscribe(): null;
     this.uploadSubscription ? this.uploadSubscription.unsubscribe(): null;
     this.phoneSubscription ? this.phoneSubscription.unsubscribe(): null;
     this.medalUpdateSubscription ? this.medalUpdateSubscription.unsubscribe(): null;
+  }
+}
+
+
+export interface DialogData {
+  animal: string;
+  name: string;
+}
+@Component({
+  selector: 'dialog-overview-example-dialog',
+  template: `<h1 mat-dialog-title>No pudimos cargar la imagen</h1>
+                <div mat-dialog-content>
+                  <p>{{ data.error.message }}</p>
+                </div>
+                <div mat-dialog-actions>
+                  <button mat-button (click)="onNoClick()">Cerrar</button>
+                </div>
+`,
+  standalone: true,
+  imports: [MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule],
+})
+export class DialogOverviewExampleDialog {
+  constructor(
+    public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+  ) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
   }
 }
