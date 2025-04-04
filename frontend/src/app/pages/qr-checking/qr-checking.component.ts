@@ -41,17 +41,8 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
     this.checkingSubscriber = this.qrService.checkingQr(hash).subscribe({
       next: (res: any) => {
         this.spinner = false;
-        if(res.status === 'REGISTER_PROCESS') this.goToAddPed(res.medalString, res.registerHash);
+        if(res.status === 'VIRGIN') this.goToAddPed(res.medalString, res.registerHash);
         if(res.status === 'ENABLED') this.goPet(res.medalString);
-        if(res.status === 'DISABLED') {
-          this.message = 'Medalla desactivada';
-        }
-        if(res.status === 'REGISTERED') {
-          this.message = 'Medalla registrada pendiente de cargar foto';
-        }
-        if(res.status === 'DEAD') {
-          this.message = 'Medalla borrada';
-        }
       },
       error: (error: any) => {
         this.message = 'Medalla sin registro';
