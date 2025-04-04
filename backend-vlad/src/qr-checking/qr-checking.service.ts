@@ -26,31 +26,31 @@ export class QrService {
         });
         if (!medal) throw new NotFoundException('No se encontro la medalla');
         
-        if(medal.status === 'VIRGIN') {
-            const registerHashVar = await this.createHashNotUsed();
-            const medalStringV = medal.medalString;
-            const update = await this.prisma.virginMedal.update({
-                where: {
-                    medalString: medalStringV
-                },
-                data: {
-                    registerHash: registerHashVar,
-                    status: MedalState.REGISTER_PROCESS
-                }
-            });
+        // if(medal.status === 'VIRGIN') {
+        //     const registerHashVar = await this.createHashNotUsed();
+        //     const medalStringV = medal.medalString;
+        //     const update = await this.prisma.virginMedal.update({
+        //         where: {
+        //             medalString: medalStringV
+        //         },
+        //         data: {
+        //             registerHash: registerHashVar,
+        //             status: MedalState.REGISTER_PROCESS
+        //         }
+        //     });
 
-            const modifyMedal = await this.prisma.virginMedal.findFirst({
-                where: {
-                    medalString: dto.medalString
-                }
-            });
+        //     const modifyMedal = await this.prisma.virginMedal.findFirst({
+        //         where: {
+        //             medalString: dto.medalString
+        //         }
+        //     });
     
-            return {
-                status: modifyMedal.status, 
-                medalString: modifyMedal.medalString,
-                registerHash: modifyMedal.registerHash
-             };
-        }
+        //     return {
+        //         status: modifyMedal.status, 
+        //         medalString: modifyMedal.medalString,
+        //         registerHash: modifyMedal.registerHash
+        //      };
+        // }
 
         return {
             status: medal.status, 
@@ -67,9 +67,9 @@ export class QrService {
         })
         
         if (!virginMedal) throw new NotFoundException('No se encontro la medalla');
-        if (virginMedal.status !== MedalState.REGISTER_PROCESS) throw new NotFoundException('Esta medalla ya no esta disponible para registrar');
+        if (virginMedal.status !== MedalState.VIRGIN) throw new NotFoundException('Esta medalla ya no esta disponible para registrar');
         if(virginMedal.registerHash !== dto.medalRegister) throw new NotFoundException('No se puede cargar esta medalla error codigo de rgistro');
-        const medalsJson = {
+        const medalsJs on = {
                 status: MedalState.REGISTER_PROCESS,
                 registerHash:  virginMedal.registerHash,
                 medalString: virginMedal.medalString,
