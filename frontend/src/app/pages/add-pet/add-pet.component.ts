@@ -67,7 +67,6 @@ export class AddPetComponent implements OnInit {
 
   ngOnInit(): void {
     this.medalString = this.route.snapshot.params['medalString'];
-    this.registerHash = this.route.snapshot.params['registerHash'];
   }
 
   goHome() {
@@ -77,7 +76,6 @@ export class AddPetComponent implements OnInit {
   register() {
     let body: any = this.registerForm.value;
     body.medalString = this.medalString;
-    body.medalRegister = this.registerHash;
     delete body.passwordConfirm;
     this.spinner = true;
     this.spinnerMessage = 'procensando información...';

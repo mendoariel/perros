@@ -7,7 +7,7 @@ export class ConfirmAccountDto {
 
     @IsString()
     @IsNotEmpty()
-    registerHash: string;
+    userRegisterHash: string;
 
     @IsString()
     @IsNotEmpty()

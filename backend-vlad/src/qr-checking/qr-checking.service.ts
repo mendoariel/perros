@@ -65,7 +65,7 @@ export class QrService {
         
         if (!virginMedal) throw new NotFoundException('No se encontro la medalla');
         if (virginMedal.status !== MedalState.VIRGIN) throw new NotFoundException('Esta medalla ya no esta disponible para registrar');
-        if(virginMedal.registerHash !== dto.medalRegister) throw new NotFoundException('No se puede cargar esta medalla error codigo de rgistro');
+        
         const medalsJson = {
                 status: MedalState.REGISTER_PROCESS,
                 registerHash:  virginMedal.registerHash,
@@ -129,7 +129,7 @@ export class QrService {
 
         if(!userCreated) throw new NotFoundException('Can not create user')
         // send email to confirm account
-        let sendEmail:any = await this.sendEmailConfirmAccount(userCreated.email, userCreated.hashToRegister, virginMedal.registerHash);
+        let sendEmail:any = await this.sendEmailConfirmAccount(userCreated.email, userCreated.hashToRegister, virginMedal.medalString);
             if(!sendEmail) throw new NotFoundException('Can not send email acount');
             await this.putVirginMedalEnabled(virginMedal.medalString);
             let peludosResponse = { 
@@ -191,9 +191,8 @@ export class QrService {
         return { emailIsTaken: emailTaken }
     }
 
-    async sendEmailConfirmAccount(userEmail: string, hashToRegister: string, medalRegisterHash: string) {
-        const url = `${process.env.FRONTEND_URL}/confirmar-cuenta?hashEmail=${userEmail}&hashToRegister=${hashToRegister}&medalRegisterHash=${medalRegisterHash}`;
-        //const url = `${process.env.FRONTEND_URL}/crear-nueva-clave`;
+    async sendEmailConfirmAccount(userEmail: string, hashToRegister: string, medalString: string) {
+        const url = `${process.env.FRONTEND_URL}/confirmar-cuenta?hashEmail=${userEmail}&hashToRegister=${hashToRegister}&medalString=${medalString}`;
         try {
             await this.mailService.sendConfirmAccount(userEmail, url);
             return true;

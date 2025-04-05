@@ -52,9 +52,9 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
     this.checkingSubscriber = this.qrService.checkingQr(hash).subscribe({
       next: (res: any) => {
         this.spinner = false;
-        if(res.status === 'VIRGIN') this.goToAddPed(res.medalString, res.registerHash);
+        if(res.status === 'VIRGIN') this.goToAddPed(res.medalString);
         if(res.status === 'REGISTER_PROCESS') {
-          this.openSnackBar('Esta medalla esta siendo registrada, revise su correo para confirma su cuenta');
+          this.openSnackBar('Esta medalla esta en proceso de registro.');
           this.goHome();
         }
         if(res.status === 'ENABLED') this.goPet(res.medalString);
@@ -66,8 +66,8 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
     })
   }
 
-  goToAddPed(medalHash: string, registerHash: string) {
-    this.router.navigate(['agregar-mascota', medalHash, registerHash])
+  goToAddPed(medalString: string) {
+    this.router.navigate(['agregar-mascota', medalString])
   }
 
   goPet(medalString: string) {

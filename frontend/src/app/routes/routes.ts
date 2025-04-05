@@ -30,7 +30,7 @@ export const routes: Route[] = [
         component: QrCheckingComponent
     },
     {
-        path: 'agregar-mascota/:medalString/:registerHash',
+        path: 'agregar-mascota/:medalString',
         component: AddPetComponent
     },
     {
