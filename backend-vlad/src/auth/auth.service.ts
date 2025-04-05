@@ -85,7 +85,7 @@ export class AuthService {
         });
 
         if(!user) throw new NotFoundException('sin registro');
-        if(user.hashToRegister !== dto.registerHash) throw new NotFoundException('fail key');
+        if(user.hashToRegister !== dto.userRegisterHash) throw new NotFoundException('fail key');
 
         // update user status of the user
         const userUpdated = await this.prisma.user.update({
@@ -100,7 +100,7 @@ export class AuthService {
         // udpate medal status
         const medalUpdate: any = await this.prisma.medal.update({
             where: {
-                registerHash: dto.medalString
+                medalString: dto.medalString
             },
             data: {
                 status: MedalState.INCOMPLETE
@@ -108,22 +108,12 @@ export class AuthService {
         });
 
         // udpate medal status
-        const virginMedalUpdate: any = await this.prisma.virginMedal.updateMany({
+        const virginMedalUpdate: any = await this.prisma.virginMedal.update({
             where: {
                 medalString: dto.medalString
             },
             data: {
                 status: MedalState.REGISTERED
-            }
-        });
-
-        // find the user alreidy modify
-        const userFinal: any = await this.prisma.user.findUnique({
-            where: {
-                email: dto.email.toLocaleLowerCase()
-            },
-            include: {
-              medals:   true 
             }
         });
 

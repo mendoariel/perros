@@ -8,7 +8,7 @@ export interface MedalRegisterInterface {
 
 export interface ConfirmAccountInterface {
     email: string;
-    registerHash: string;
+    userRegisterHash: string;
     medalString: string;
 }
 export interface ConfirmMedalInterface {

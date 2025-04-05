@@ -19,10 +19,6 @@ export class PostMedalDto {
     @IsNotEmpty()
     medalString: string;
 
-    @IsString()
-    @IsNotEmpty()
-    medalRegister: string;
-
     @IsOptional()
     @IsString()
     password: string;
