@@ -5,6 +5,8 @@ import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/fir
 import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
 
 @Component({
   selector: 'app-qr-checking',
@@ -25,7 +27,8 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
   constructor(
     private qrService: QrChekingService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private _snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -37,11 +40,23 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
     });
   }
 
+  openSnackBar(message: string) {
+      this._snackBar.openFromComponent(MessageSnackBarComponent,{
+        duration: 7000, 
+        verticalPosition: 'top',
+        data: message
+      })
+    };
+
   callCheckingService(hash: string) {
     this.checkingSubscriber = this.qrService.checkingQr(hash).subscribe({
       next: (res: any) => {
         this.spinner = false;
         if(res.status === 'VIRGIN') this.goToAddPed(res.medalString, res.registerHash);
+        if(res.status === 'REGISTER_PROCESS') {
+          this.openSnackBar('Esta medalla esta siendo registrada, revise su correo para confirma su cuenta');
+          this.goHome();
+        }
         if(res.status === 'ENABLED') this.goPet(res.medalString);
       },
       error: (error: any) => {

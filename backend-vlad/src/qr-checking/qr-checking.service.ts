@@ -6,9 +6,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, Role, MedalState, UserStatus } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';
 
-import QRCode from 'qrcode';
-import { Exception } from 'handlebars';
-
 var bcrypt = require('bcryptjs');
 var createHash = require('hash-generator');
 @Injectable()
@@ -69,7 +66,7 @@ export class QrService {
         if (!virginMedal) throw new NotFoundException('No se encontro la medalla');
         if (virginMedal.status !== MedalState.VIRGIN) throw new NotFoundException('Esta medalla ya no esta disponible para registrar');
         if(virginMedal.registerHash !== dto.medalRegister) throw new NotFoundException('No se puede cargar esta medalla error codigo de rgistro');
-        const medalsJs on = {
+        const medalsJson = {
                 status: MedalState.REGISTER_PROCESS,
                 registerHash:  virginMedal.registerHash,
                 medalString: virginMedal.medalString,
@@ -101,6 +98,7 @@ export class QrService {
             
           let sendEmailConfirmMedal: any  = await this.sendEmailConfirmMedal(user.email, virginMedal.medalString);
           if(!sendEmailConfirmMedal) throw new NotFoundException('can not send email confirm medal');
+          await this.putVirginMedalEnabled(virginMedal.medalString);
           let peludosResponse = { 
             text: 'Le hemos enviado un email, siga las intrucciones para la activar su medalla.',
             code: 'medalcreated'
@@ -132,13 +130,27 @@ export class QrService {
         if(!userCreated) throw new NotFoundException('Can not create user')
         // send email to confirm account
         let sendEmail:any = await this.sendEmailConfirmAccount(userCreated.email, userCreated.hashToRegister, virginMedal.registerHash);
-            if(!sendEmail) throw new NotFoundException('Can not send email acount')
+            if(!sendEmail) throw new NotFoundException('Can not send email acount');
+            await this.putVirginMedalEnabled(virginMedal.medalString);
             let peludosResponse = { 
                 text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta su cuenta.',
                 code: 'usercreated'
             };
              
         return peludosResponse;
+    }
+
+    async putVirginMedalEnabled(medalString: string): Promise<any> {
+        let virgin = await this.prisma.virginMedal.update({
+            where: {
+                medalString: medalString
+            },
+            data: {
+                status: MedalState.REGISTER_PROCESS
+            }
+        });
+        if(!virgin) new NotFoundException('Virgin medal not found!')
+        return virgin;
     }
 
     async getPet(medalString: string): Promise<any> {

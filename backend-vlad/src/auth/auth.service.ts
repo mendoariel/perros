@@ -60,7 +60,7 @@ export class AuthService {
     }
     
     async logout(userId: number) {
-        await this.prisma.user.updateMany({
+        await this.prisma.user.update({
             where: {
                 id: userId,
                 hashedRt: {
@@ -98,7 +98,7 @@ export class AuthService {
         });
 
         // udpate medal status
-        const medalUpdate: any = await this.prisma.medal.updateMany({
+        const medalUpdate: any = await this.prisma.medal.update({
             where: {
                 registerHash: dto.medalString
             },
@@ -138,7 +138,7 @@ export class AuthService {
     async confirmMedal(dto: ConfirmMedalto) {
 
         // udpate medal status
-        const medalUpdate: any = await this.prisma.medal.updateMany({
+        const medalUpdate: any = await this.prisma.medal.update({
             where: {
                 medalString: dto.medalString
             },
@@ -148,7 +148,7 @@ export class AuthService {
         });
 
         // udpate medal status
-        const virginMedalUpdate: any = await this.prisma.virginMedal.updateMany({
+        const virginMedalUpdate: any = await this.prisma.virginMedal.update({
             where: {
                 medalString: dto.medalString
             },
