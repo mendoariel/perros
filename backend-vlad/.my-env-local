@@ -9,10 +9,10 @@ FRONTEND_URL="http://localhost:4200"
 
 BACKPORT=3333
 
-# MODULE_MAIL_USER=biciarbol@gmail.com
-# MODULE_MAIL_PASS=uhnmokvtlstoyonk
+MODULE_MAIL_USER=biciarbol@gmail.com
+MODULE_MAIL_PASS=uhnmokvtlstoyonk
 
-MODULE_MAIL_USER=info@peludosclick.com
-MODULE_MAIL_PASS=Yamaha600
+# MODULE_MAIL_USER=info@peludosclick.com
+# MODULE_MAIL_PASS=Yamaha600
 
 ENVIRONMENT=local
