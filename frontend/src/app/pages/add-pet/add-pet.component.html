@@ -31,9 +31,9 @@
                             <mat-form-field>
                                 <mat-label>Nombre de la mascota:</mat-label>
                                 <input matInput placeholder="Nombre de la mascota" formControlName="petName">
-                                <mat-error *ngIf="petName?.hasError('required')">Ingrese usuario</mat-error>
+                                <mat-error *ngIf="petName?.hasError('required')">Ingres el nombe de la mascota</mat-error>
                                 <mat-error *ngIf="petName?.hasError('minlength')">Mínimo de 3 caracteres</mat-error>
-                                <mat-error *ngIf="petName?.hasError('maxlength')">Máximo de 15 caracteres</mat-error>
+                                <mat-error *ngIf="petName?.hasError('maxlength')">Máximo de 35 caracteres</mat-error>
                             </mat-form-field>
                             
                             <mat-form-field *ngIf="newClient">
