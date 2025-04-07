@@ -39,7 +39,7 @@
                 <h2>Cargar información</h2>
                 <mat-form-field>
                   <mat-label>Teléfono:</mat-label>
-                  <input matInput formControlName="phoneNumber"  placeholder="Ej 02615551515"> 
+                  <input matInput formControlName="phoneNumber"  placeholder="Ej 2615551515"> 
                   <mat-error *ngIf="phoneNumber?.hasError('required')">Ingrese teléfono</mat-error>
                   <mat-error *ngIf="phoneNumber?.hasError('minlength')">Mínimo de 10 caracteres</mat-error>
                   <mat-error *ngIf="phoneNumber?.hasError('maxlength')">Máximo de 15 caracteres</mat-error>
