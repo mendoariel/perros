@@ -33,7 +33,7 @@ export class AddPetComponent implements OnInit {
   registerHash = '';
 
   registerForm: FormGroup = new FormGroup({
-    petName: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]),
+    petName: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(35)]),
     ownerEmail: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [
       Validators.required,

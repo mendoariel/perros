@@ -98,7 +98,7 @@ export class QrService {
             
           let sendEmailConfirmMedal: any  = await this.sendEmailConfirmMedal(user.email, virginMedal.medalString);
           if(!sendEmailConfirmMedal) throw new NotFoundException('can not send email confirm medal');
-          await this.putVirginMedalEnabled(virginMedal.medalString);
+          await this.putVirginMedalRegisterProcess(virginMedal.medalString);
           let peludosResponse = { 
             text: 'Le hemos enviado un email, siga las intrucciones para la activar su medalla.',
             code: 'medalcreated'
@@ -106,7 +106,7 @@ export class QrService {
 
             return peludosResponse;
         };
-
+        // this code execute only if user not exist
         const hash = await this.hashData(dto.password);
         const unicHash = await this.createHashNotUsedToUser();
         const userCreated: any = await this.prisma.user.create({
@@ -131,7 +131,7 @@ export class QrService {
         // send email to confirm account
         let sendEmail:any = await this.sendEmailConfirmAccount(userCreated.email, userCreated.hashToRegister, virginMedal.medalString);
             if(!sendEmail) throw new NotFoundException('Can not send email acount');
-            await this.putVirginMedalEnabled(virginMedal.medalString);
+            await this.putVirginMedalRegisterProcess(virginMedal.medalString);
             let peludosResponse = { 
                 text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta su cuenta.',
                 code: 'usercreated'
@@ -140,7 +140,7 @@ export class QrService {
         return peludosResponse;
     }
 
-    async putVirginMedalEnabled(medalString: string): Promise<any> {
+    async putVirginMedalRegisterProcess(medalString: string): Promise<any> {
         let virgin = await this.prisma.virginMedal.update({
             where: {
                 medalString: medalString
