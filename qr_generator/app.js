@@ -35,7 +35,7 @@ var createUniqueHash = async function () {
 
 
 //function to insert register into medal register
-for (let index = 16; index > 0; index--) {
+for (let index = 10; index > 0; index--) {
     insertVirginMedalRegister();
 }
 

@@ -3,8 +3,8 @@ services:
   parallel_postgres:
     image: postgres:12
     environment:
-      POSTGRES_USER: mendoariel
-      POSTGRES_PASSWORD: casadesara
+      POSTGRES_USER: Silvestre1993
+      POSTGRES_PASSWORD: iendlshLANDHG423423480
       POSTGRES_DB: peludosclick
     ports:
       -  5432:5432  
