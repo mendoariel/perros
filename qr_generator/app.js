@@ -14,7 +14,7 @@ function insertVirginMedalRegister(howManyMedalsCreate) {
             const medalString = await createUniqueHash(client);
             let createQuery = `
                 INSERT INTO virgin_medals (status, medal_string, register_hash) 
-                VALUES ('VIRGIN', '${medalString}', 'first-round-ezequiel');
+                VALUES ('VIRGIN', '${medalString}', 'resina-first-round');
             `;
     
         const res = await client.query(createQuery);
@@ -36,7 +36,7 @@ var createUniqueHash = async function (client) {
     else return medalString;
 }
 
-//insertVirginMedalRegister(200);
+//insertVirginMedalRegister(30);
 
 
 
@@ -45,13 +45,13 @@ var  qrMakeSvgFile = async function () {
     // query to get all virgin medal
     const client = await getClient();
     let createQuery = `SELECT * FROM virgin_medals 
-        WHERE register_hash = 'first-round-ezequiel'`;
+        WHERE register_hash = 'resina-first-round'`;
     const medalToSvg = await client.query(createQuery);
     client.end();
 
     medalToSvg.rows.map(medal => {
         const data = `https://www.peludosclick.com/mascota-checking?medalString=${medal.medal_string}`;
-        const filePath = `medals_qr_images/ezequiel/first-round/2025-05-06-${medal.id}-png-qr-file-${medal.medal_string}-${medal.register_hash}.png`
+        const filePath = `medals_qr_images/resina-qr/first-round/2025-05-08-${medal.id}-png-qr-file-${medal.medal_string}-${medal.register_hash}.png`
         qr.toFile(
             filePath,
             data,
