@@ -175,3 +175,7 @@ start convert files utf8
 $ file yourfilename
 yourfilename: UTF-8 Unicode English text
 iconv -f original_charset -t utf-8 originalfile > newfile
+
+CREATE TABLE <table name> AS (
+SELECT STATEMENT
+)
