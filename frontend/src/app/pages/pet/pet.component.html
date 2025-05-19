@@ -8,25 +8,54 @@
     <div *ngIf="pet" class="pelu-card" appearance="outlined">
       <h1>{{ pet.petName }}</h1>
       <div class="image-container" [style.background]="pet.background"></div>
-      <p style="margin-top: 5px;">{{ pet.description }}</p>
-      <div class="action-container">
-        <div class="logo">
-          <div class="button wame-button">
-            <img class="wame-logo" src="assets/icons/wame-logo.png" alt="whatsapp logo">
-            <a [href]="pet.wame">Whatsapp</a>
-          </div>
+      <p style="margin-top: 5px; padding: 1em;">{{ pet.description }}</p>
+      
+      <div class="connection">
+        <h3>Conectar con mi familia</h3>
+        <div class="info-message">
+          <p>Si piensas que estoy perdido puedes conectar con mis dueños</p>
         </div>
-        <div class="logo">
-          <div class="button call-button">
-            <mat-icon>phone</mat-icon>
-            <a [href]="pet.tel">Llamar</a>
+        <div class="action-container">
+          <div class="logo">
+            <div class="button wame-button">
+              <img class="wame-logo" src="assets/icons/wame-logo.png" alt="whatsapp logo">
+              <a [href]="pet.wame">Whatsapp</a>
+            </div>
+          </div>
+          <div class="logo">
+            <div class="button call-button">
+              <mat-icon>phone</mat-icon>
+              <a [href]="pet.tel">Llamar</a>
+            </div>
           </div>
         </div>
       </div>
       
-     
-
       
-    </div>
-  </section>
+      <div class="share-buttons">
+        <h3>Compartir</h3>
+        <share-buttons theme="circles-dark"
+          [include]="['copy', 'facebook','telegram', 'whatsapp']"
+          [showIcon]="true" 
+          [showText]="false" 
+          url="https://wwww.peludosclick.com/mascota/rosa_mosqueta" 
+          description="Rosa mosqueta"
+          class="pt-5">
+      </share-buttons>
+      
+      <!-- <share-buttons theme="modern-dark"
+      [include]="['copy', 'facebook', 'email', 'messenger', 'mix', 'line', 'linkedin', 'pinterest', 'print', 'reddit', 'sms', 'telegram', 'tumblr', 'twitter', 'viber', 'vk', 'xing', 'whatsapp']"
+      [showIcon]="true" [showText]="true" url="https://rodrigo.kamada.com.br/" description="Angular Share Buttons"
+      twitterAccount="rodrigokamada" class="pt-5">
+    </share-buttons>
+    
+    <share-buttons theme="modern-dark"
+    [include]="['copy', 'facebook', 'email', 'messenger', 'mix', 'line', 'linkedin', 'pinterest', 'print', 'reddit', 'sms', 'telegram', 'tumblr', 'twitter', 'viber', 'vk', 'xing', 'whatsapp']"
+    [showIcon]="false" [showText]="true" url="https://rodrigo.kamada.com.br/" description="Angular Share Buttons"
+    twitterAccount="rodrigokamada" class="pt-5">
+  </share-buttons> -->
+</div>
+
+</div>
+</section>
 </main>

@@ -6,6 +6,11 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { QrChekingService } from 'src/app/services/qr-checking.service';
+import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
+import { ShareIconsModule } from 'ngx-sharebuttons/icons';
+import { Meta } from '@angular/platform-browser';
+
+
 
 @Component({
   selector: 'app-pet',
@@ -13,7 +18,9 @@ import { QrChekingService } from 'src/app/services/qr-checking.service';
   imports: [
           CommonModule,
           MaterialModule,
-          FirstNavbarComponent
+          FirstNavbarComponent,
+          ShareButtonsModule,
+          ShareIconsModule
         ],
   templateUrl: './pet.component.html',
   styleUrls: ['./pet.component.scss']
@@ -31,12 +38,20 @@ export class PetComponent implements OnInit, OnDestroy{
   constructor(
     private route: ActivatedRoute,
     private qrCheckingService: QrChekingService,
-    private router: Router
+    private router: Router,
+    private meta: Meta
   ) {}
 
   ngOnInit(): void {
     this.medalString = this.route.snapshot.params['medalString'];
-    this.getPet(this.medalString)
+    this.getPet(this.medalString);
+    
+  }
+
+  setMetaData() {
+    this.meta.updateTag({property: 'og:title', content: `${this.pet.petName}`});
+    this.meta.updateTag({property: 'og:image', content: `https://api.peludosclick.com/pets/files/${this.pet.image}`});
+    this.meta.updateTag({property: 'og:url', content: `https://www.peludosclick/mascota/${this.medalString}`})
   }
   
   getPet(medalString: string) {
@@ -49,6 +64,7 @@ export class PetComponent implements OnInit, OnDestroy{
         this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;
         this.pet.tel = `tel: ${this.pet.phone}`;
         this.pet.background = `url(${this.env.perrosQrApi}pets/files/${pet.image})`;
+        this.setMetaData();
       },
       error: (error: any) => {
         this.spinner  = false;

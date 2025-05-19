@@ -175,3 +175,10 @@ start convert files utf8
 $ file yourfilename
 yourfilename: UTF-8 Unicode English text
 iconv -f original_charset -t utf-8 originalfile > newfile
+
+
+npm install 
+@angular/cdk @fortawesome/angular-fontawesome@0.13.0  
+@fortawesome/fontawesome-svg-core 
+@fortawesome/free-brands-svg-icons 
+@fortawesome/free-solid-svg-icons

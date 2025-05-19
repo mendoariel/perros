@@ -56,7 +56,9 @@
             ],
             "styles": [
               "@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/ngx-sharebuttons/themes/circles.scss",
+              "node_modules/ngx-sharebuttons/themes/modern.scss"
             ],
             "scripts": []
           },

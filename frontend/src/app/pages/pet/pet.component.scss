@@ -47,6 +47,26 @@ main {
                 background-size: cover !important;
                 background-position: center center !important;
             }
+            div.connection {
+                border: solid 2px grey;
+                margin: 1em;
+                padding: 0;
+                border-radius: 5px;
+                box-shadow: #aaa 8px 8px 8px 0p;
+                margin-top: 1.5em;
+
+                h3 {
+                    text-align: center;
+                    font-size: 1.3em;
+                    background: black;
+                    color: white;
+                    margin: 0;
+                    padding: 1.2em 0.5em;
+                }
+                div.info-message {
+                    padding: 1em;
+                }
+            }
             div.action-container {
                 display: flex;
                 width: 100%;
@@ -93,6 +113,18 @@ main {
                 img.wame-logo {
                     width: 17px;
                     margin-right: 4px;
+                }
+            }
+            div.share-buttons {
+                border: green 1px solid;
+                margin: .5em;
+                padding: 1em;
+                border-radius: 4px;
+
+                h3 {
+                    text-align: center;
+                    font-size: 1.4em;
+                    border-bottom: green solid 1px;
                 }
             }
         }

@@ -20,7 +20,8 @@ export class PetsServicie {
               petName: true,
               image: true,
               status: true,
-              description: true
+              description: true,
+              medalString: true
             }
             
             

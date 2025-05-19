@@ -38,15 +38,16 @@
    
     <div class="pets-container" *ngIf="pets.length > 0">
       <section class="pelu-card" *ngFor="let pet of pets">
-        <h2>{{ pet.petName }}</h2>
-        <article class="image">
-          <div class="image-container" [style.background]="pet.background"></div>
-        </article>
+        <a [routerLink]="pet.link">
+          <h2>{{ pet.petName }}</h2>
+          <article class="image">
+            <div class="image-container" [style.background]="pet.background"></div>
+          </article>
+          <article class="info">
+            <p>{{ pet.description }}</p>
+          </article>
+        </a>
         
-        <article class="info">
-          
-          <p>{{ pet.description }}</p>
-        </article>
         
       </section>
     </div>
