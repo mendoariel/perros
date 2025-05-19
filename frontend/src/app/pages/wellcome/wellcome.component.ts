@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { HttpClientModule } from '@angular/common/http';
 import { PetsService } from 'src/app/services/pets.services';
@@ -15,7 +15,8 @@ import { PeludosclickFooterComponent } from 'src/app/shared/components/peludoscl
     CommonModule,
     MaterialModule,
     FirstNavbarComponent,
-    PeludosclickFooterComponent
+    PeludosclickFooterComponent,
+    RouterModule
   ],
   templateUrl: './wellcome.component.html',
   styleUrls: ['./wellcome.component.scss']
@@ -37,10 +38,14 @@ export class WellcomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.petSubsciption = this.petService.getAllPets().subscribe({
       next:(res: any) => {
+        console.log('res ====> ', res)
         this.pets = res;
 
         this.pets = this.pets.filter((pet)=> pet.status === 'ENABLED');
-        this.pets.map(pet => pet.background = `url(${environment.perrosQrApi}pets/files/${pet.image})`);
+        this.pets.map((pet) => {
+          pet.background = `url(${environment.perrosQrApi}pets/files/${pet.image})`;
+          pet.link = `${environment.frontend}/masota/${pet.medalString}`;
+        });
 
       },
       error:(error: any) => {
