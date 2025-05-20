@@ -37,8 +37,7 @@
     <h3>Algunas mascotas conectadas</h3>
    
     <div class="pets-container" *ngIf="pets.length > 0">
-      <section class="pelu-card" *ngFor="let pet of pets">
-        <a [routerLink]="pet.link">
+      <section class="pelu-card" *ngFor="let pet of pets" (click)="goToPet(pet)">
           <h2>{{ pet.petName }}</h2>
           <article class="image">
             <div class="image-container" [style.background]="pet.background"></div>
@@ -46,9 +45,6 @@
           <article class="info">
             <p>{{ pet.description }}</p>
           </article>
-        </a>
-        
-        
       </section>
     </div>
   </section>
