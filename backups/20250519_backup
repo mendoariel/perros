@@ -1,0 +1,665 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.4 (Debian 10.4-2.pgdg90+1)
+-- Dumped by pg_dump version 12.4
+
+-- Started on 2025-05-19 15:07:01 UTC
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 513 (class 1247 OID 16394)
+-- Name: MedalState; Type: TYPE; Schema: public; Owner: Silvestre1993
+--
+
+CREATE TYPE public."MedalState" AS ENUM (
+    'VIRGIN',
+    'ENABLED',
+    'DISABLED',
+    'DEAD',
+    'REGISTER_PROCESS',
+    'PENDING_CONFIRMATION',
+    'INCOMPLETE',
+    'REGISTERED'
+);
+
+
+ALTER TYPE public."MedalState" OWNER TO "Silvestre1993";
+
+--
+-- TOC entry 510 (class 1247 OID 16387)
+-- Name: Role; Type: TYPE; Schema: public; Owner: Silvestre1993
+--
+
+CREATE TYPE public."Role" AS ENUM (
+    'VISITOR',
+    'FRIAS_EDITOR',
+    'REGISTER'
+);
+
+
+ALTER TYPE public."Role" OWNER TO "Silvestre1993";
+
+--
+-- TOC entry 595 (class 1247 OID 16412)
+-- Name: UserStatus; Type: TYPE; Schema: public; Owner: Silvestre1993
+--
+
+CREATE TYPE public."UserStatus" AS ENUM (
+    'ACTIVE',
+    'PENDING',
+    'DISABLED'
+);
+
+
+ALTER TYPE public."UserStatus" OWNER TO "Silvestre1993";
+
+SET default_tablespace = '';
+
+--
+-- TOC entry 199 (class 1259 OID 16434)
+-- Name: medals; Type: TABLE; Schema: public; Owner: Silvestre1993
+--
+
+CREATE TABLE public.medals (
+    id integer NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "ownerId" integer NOT NULL,
+    status public."MedalState" NOT NULL,
+    image text,
+    description text,
+    medal_string text NOT NULL,
+    pet_name text NOT NULL,
+    register_hash text NOT NULL
+);
+
+
+ALTER TABLE public.medals OWNER TO "Silvestre1993";
+
+--
+-- TOC entry 198 (class 1259 OID 16432)
+-- Name: medals_id_seq; Type: SEQUENCE; Schema: public; Owner: Silvestre1993
+--
+
+CREATE SEQUENCE public.medals_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.medals_id_seq OWNER TO "Silvestre1993";
+
+--
+-- TOC entry 2899 (class 0 OID 0)
+-- Dependencies: 198
+-- Name: medals_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Silvestre1993
+--
+
+ALTER SEQUENCE public.medals_id_seq OWNED BY public.medals.id;
+
+
+--
+-- TOC entry 197 (class 1259 OID 16421)
+-- Name: users; Type: TABLE; Schema: public; Owner: Silvestre1993
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    email text NOT NULL,
+    hash text NOT NULL,
+    "hashedRt" text,
+    username text,
+    role public."Role" NOT NULL,
+    "hashPasswordRecovery" text,
+    "userStatus" public."UserStatus" NOT NULL,
+    hash_to_register text NOT NULL,
+    phonenumber text
+);
+
+
+ALTER TABLE public.users OWNER TO "Silvestre1993";
+
+--
+-- TOC entry 196 (class 1259 OID 16419)
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: Silvestre1993
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO "Silvestre1993";
+
+--
+-- TOC entry 2900 (class 0 OID 0)
+-- Dependencies: 196
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Silvestre1993
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- TOC entry 201 (class 1259 OID 16447)
+-- Name: virgin_medals; Type: TABLE; Schema: public; Owner: Silvestre1993
+--
+
+CREATE TABLE public.virgin_medals (
+    id integer NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp(3) without time zone,
+    status public."MedalState" NOT NULL,
+    medal_string text NOT NULL,
+    register_hash text NOT NULL
+);
+
+
+ALTER TABLE public.virgin_medals OWNER TO "Silvestre1993";
+
+--
+-- TOC entry 200 (class 1259 OID 16445)
+-- Name: virgin_medals_id_seq; Type: SEQUENCE; Schema: public; Owner: Silvestre1993
+--
+
+CREATE SEQUENCE public.virgin_medals_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.virgin_medals_id_seq OWNER TO "Silvestre1993";
+
+--
+-- TOC entry 2901 (class 0 OID 0)
+-- Dependencies: 200
+-- Name: virgin_medals_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Silvestre1993
+--
+
+ALTER SEQUENCE public.virgin_medals_id_seq OWNED BY public.virgin_medals.id;
+
+
+--
+-- TOC entry 2752 (class 2604 OID 16437)
+-- Name: medals id; Type: DEFAULT; Schema: public; Owner: Silvestre1993
+--
+
+ALTER TABLE ONLY public.medals ALTER COLUMN id SET DEFAULT nextval('public.medals_id_seq'::regclass);
+
+
+--
+-- TOC entry 2749 (class 2604 OID 16424)
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: Silvestre1993
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- TOC entry 2755 (class 2604 OID 16450)
+-- Name: virgin_medals id; Type: DEFAULT; Schema: public; Owner: Silvestre1993
+--
+
+ALTER TABLE ONLY public.virgin_medals ALTER COLUMN id SET DEFAULT nextval('public.virgin_medals_id_seq'::regclass);
+
+
+--
+-- TOC entry 2891 (class 0 OID 16434)
+-- Dependencies: 199
+-- Data for Name: medals; Type: TABLE DATA; Schema: public; Owner: Silvestre1993
+--
+
+INSERT INTO public.medals VALUES (2, '2025-03-04 01:01:09.304', '2025-03-04 01:03:55.396', 2, 'ENABLED', 'secrectScreenshot_20250303-220346.Fotos.png', 'Gato macho adulto color vaquita', 'celeste', 'Silvestre', '6s2h438u4k1abfosmyfrgicd1d7dkue5qfs2');
+INSERT INTO public.medals VALUES (13, '2025-04-08 16:33:06.449', '2025-04-08 16:35:59.661', 13, 'ENABLED', '20250408163534-fp5unpiqo8h780.jpg', 'Gata adulta castrada ', 'p33bf93kyctc1p04hygbrvcvhgzrlmf1mh4u', 'Pilar', 'genesis');
+INSERT INTO public.medals VALUES (19, '2025-04-27 01:58:55.038', '2025-04-27 02:05:57.509', 19, 'ENABLED', '202504272122-vbragjdej5mvez.jpg', 'Hola me llamo Ciro Jofré!!!
+Si me encuentras por favor, llamar a mi papá Daniel y mi mamá Elva. Ellos me van a estar buscando ', 'zj07h8bybkl4gcafzw1ex1glxpqymt4d2k22', 'Ciro', 'genesis');
+INSERT INTO public.medals VALUES (12, '2025-04-08 13:40:25.082', '2025-04-08 13:40:25.082', 12, 'ENABLED', 'pamela.png', 'Vivo en cuarta sección soy hembra adulta, castrada', 'aosaxmu3oqpvraz11ib9dxvw8g1qj5cvkey8', 'Pamela', 'genesis');
+INSERT INTO public.medals VALUES (15, '2025-04-09 17:33:04.394', '2025-04-09 17:45:18.345', 15, 'INCOMPLETE', '20250409173722-9l1n676qan87cv.jpg', 'Gata adopatada', '5uewbvnpaumkzkjfwg5kyh9cc6j8klla8mqe', 'Sofia', 'genesis');
+INSERT INTO public.medals VALUES (14, '2025-04-09 12:56:17.652', '2025-04-09 19:09:18.264', 14, 'ENABLED', '2025040913011-mrbjepdlbeo3pd.jpg', 'Perro mediano pelo color gris blanco y marrón claro  le falta uno ojo. ', 'o86c320roj50qstp2y76x3d9slma8g7u2v3r', 'Aukan', 'genesis');
+INSERT INTO public.medals VALUES (16, '2025-04-09 22:32:40.19', '2025-04-09 22:45:54.317', 16, 'ENABLED', '20250409224327-ew6izcj0c85r8g.jpg', 'Hembra adulta, castrada tamaño grande.', 'bem5kkpbaxv9uhr4hmd4ztcu7pmnz9ar4rxp', 'NIna', 'genesis');
+INSERT INTO public.medals VALUES (17, '2025-04-11 23:23:08.727', '2025-04-11 23:29:32.15', 17, 'ENABLED', '20250411232930-jjjjszap054tq0.jpg', 'Caniche chico con manchas negras', 't75kly5rf7zkngcjvka31zyltnni3nerdevy', 'Champucito', 'genesis');
+INSERT INTO public.medals VALUES (18, '2025-04-23 23:53:42.708', '2025-04-23 23:59:23.376', 18, 'ENABLED', '20250423235710-7c3zi591vatjhg.jpg', 'Perro macho, con un solo ojito, color marrón con blanco,', 'qlp5dgnztepx96slvi2q2oo096c1u9axwiwi', 'Ramon', 'genesis');
+INSERT INTO public.medals VALUES (20, '2025-05-03 22:40:13.268', '2025-05-03 22:42:32.07', 14, 'ENABLED', '20250503224150-2bw85kf008ktem.png', 'Perra tamaño mediano vive en Drummond ', '7eo1ts2pjcnm2yr1xnzs9t7p7zdocn5wub5u', 'Panchita', 'second-round');
+INSERT INTO public.medals VALUES (1, '2025-03-04 00:25:32.841', '2025-04-08 13:03:14.628', 1, 'ENABLED', 'secrectIMG-20250301-WA0000.jpg', 'Vivo en el barrio Supe', 'yu0yz4rs6vr1h3l1jjnbgfm5idemx5j77vk1', 'Rosa Mosqueta', 'czddiglfpeyukzsejxazd03b4a5r26wunyt5');
+
+
+--
+-- TOC entry 2889 (class 0 OID 16421)
+-- Dependencies: 197
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: Silvestre1993
+--
+
+INSERT INTO public.users VALUES (2, '2025-03-04 01:01:09.304', '2025-03-20 23:21:09.37', 'Ara.frazetto@gmail.com', '$2a$10$scT7hAKFNyPbsbPa3ZExGODiyL9iumZcamLADvGVviYLuuiYQuAK6', '$2a$10$V8VzO/o2VGrXGS9lz4jAcuKwv6OpijwAVJ0xUp1uva51QaTljmGVy', NULL, 'VISITOR', NULL, 'ACTIVE', '5g36ncsemusmvb0gdc3jv3cjizde02tnh6sn', '2615597976');
+INSERT INTO public.users VALUES (1, '2025-03-04 00:25:32.841', '2025-04-08 13:05:45.315', 'mendoariel@hotmail.com', '$2a$10$S5RLh71P3TGG.jr125Hgdu.GlJ.5p5Abqd5k7JWsxu1hPb1.Fmqo6', NULL, NULL, 'VISITOR', NULL, 'ACTIVE', '4nvdw7yw5t3omgno21roy7rk2mx6py6do5t0', '2615597977');
+INSERT INTO public.users VALUES (12, '2025-04-08 13:36:46.863', '2025-04-08 13:36:46.863', 'susanapalomo2001@yahoo.com.ar', '$2a$10$0kdoi/Q0JZBJQIRNjPRZ1urdEGxnrnT2pzixkoD4DdaGocpOixwL6', NULL, NULL, 'VISITOR', NULL, 'ACTIVE', 'register_hash', '2616686339');
+INSERT INTO public.users VALUES (16, '2025-04-09 22:32:40.19', '2025-04-09 22:45:54.311', 'vivirromano@hotmail.com', '$2a$10$WlsdoppIw265J75dHZjGAu7f2vo3Vg0ZqeMuWBrmAmbZKNXJUXEJK', '$2a$10$qiHME.jv8vkmrUpuljhdjOzi8.Uhzs4P.t/9VwurZHvQyD.ttE9pC', NULL, 'VISITOR', NULL, 'ACTIVE', '2u6o0prb58rgav965avf6044wrgi6evieg9n', '2615455677');
+INSERT INTO public.users VALUES (13, '2025-04-08 16:33:06.449', '2025-04-08 16:36:07.229', 'mendoariel@gmail.com', '$2a$10$r4jvc8zDdgf/u/ucYSGMXufbV..eIWz02Zmx7HQ0oZWaz9GkLGz9S', NULL, NULL, 'VISITOR', NULL, 'ACTIVE', 'n2gs26mw6gkd3t2v1q4bab2tj8he3n2lw5bk', '2615597977');
+INSERT INTO public.users VALUES (17, '2025-04-11 23:23:08.727', '2025-04-11 23:26:47.259', 'marbonanno@yahoo.com.ar', '$2a$10$m2pJnZp3Mu2LasIHHnK4Hem9AJclxn7EIawiC.6DdZkTeKIhu7jw6', '$2a$10$YJXYYPUQfIEJ7VzC8jOyouyAxQQi62wS7omQrxLlShI2DH6RD3d3a', NULL, 'VISITOR', NULL, 'ACTIVE', 'i0bap6sovixqeh8dz15mojj3xwoquq1qbgpb', '2613208888');
+INSERT INTO public.users VALUES (15, '2025-04-09 17:33:04.394', '2025-04-09 17:45:18.342', 'albertdesarrolloweb@gmail.com', '$2a$10$Lw/LtdHwNWv3lery8pDBCudB3tP.F8atT3fcVGJg2Yb1XZaqPlTsu', '$2a$10$8Ljeq3eyBUp9GVBYwIgv5.Rhan5egG7JHXss2aiGFBkgOH3NpAsJS', NULL, 'VISITOR', NULL, 'ACTIVE', '2if2vcpyxwnat7x96428f0vzo3ifg939m61e', '2615597977');
+INSERT INTO public.users VALUES (18, '2025-04-23 23:53:42.708', '2025-04-23 23:59:23.374', 'casanovaluciana35@gmail.com', '$2a$10$SHQVPQ2U/t0QxID6zaJMAOJXWLUNTxlKuRA4YSmAFfQsQcay12glC', '$2a$10$3XyQVpLfuqZmNCBjc4OrJ.5ReTlWn435vXpk.63Zfy0Jf0bCchJDm', NULL, 'VISITOR', NULL, 'ACTIVE', 'pbsqlsqw4gamledqreoffcimh3non621dz52', '2616990028');
+INSERT INTO public.users VALUES (14, '2025-04-09 12:56:17.652', '2025-04-09 19:09:18.261', 'analiabelenarce@gmail.com', '$2a$10$UOhYM25pobyUzeIOoPe3H.hp2WXu.G44Ojs5KcuFIfHW1cCkM7Hoy', '$2a$10$/Cr16XnujXvJKveEyPnvAuFCQAjh659.B.SbrYRqOiAKzKwXzuwLG', NULL, 'VISITOR', NULL, 'ACTIVE', 'yed1wciyhg9pu80re2nwil9qhl3moob54y57', '2616686337');
+INSERT INTO public.users VALUES (19, '2025-04-27 01:58:55.038', '2025-04-27 02:05:57.506', 'elvamza64@gmail.com', '$2a$10$ROQpbNVfVyY6bGzpounRT.X8uTKaKBHOsbRsMAAe3QlhR.qxvZa4W', '$2a$10$L12N4yr6xeaVrK2YEwUt7eG7QB5J6.x21TSdc9cmTLx.kZcy/t/Py', NULL, 'VISITOR', NULL, 'ACTIVE', 'xcfd7zoduuvtlig56yrk7tdavwnprnncxemg', '2616778872');
+
+
+--
+-- TOC entry 2893 (class 0 OID 16447)
+-- Dependencies: 201
+-- Data for Name: virgin_medals; Type: TABLE DATA; Schema: public; Owner: Silvestre1993
+--
+
+INSERT INTO public.virgin_medals VALUES (168, '2025-05-12 16:13:55.865', NULL, 'ENABLED', 'yu0yz4rs6vr1h3l1jjnbgfm5idemx5j77vk1', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (1, '2025-03-04 00:22:24.146', '2025-04-08 13:03:14.631', 'VIRGIN', 'rosa_mosqueta', 'czddiglfpeyukzsejxazd03b4a5r26wunyt5');
+INSERT INTO public.virgin_medals VALUES (13, '2025-03-10 15:28:05.338', NULL, 'VIRGIN', '09871hhxuw78u7n9g3kzlgoxntv2dkag8pp3', 'genesis');
+INSERT INTO public.virgin_medals VALUES (14, '2025-03-10 15:28:05.341', NULL, 'VIRGIN', 'ps2m5c7zuhwcfpnk6uevsafkiuxu791oxfwy', 'genesis');
+INSERT INTO public.virgin_medals VALUES (15, '2025-03-10 15:28:05.342', NULL, 'VIRGIN', 'kbkp5db65hhpt432mas5u88dj0iub3h6jdvt', 'genesis');
+INSERT INTO public.virgin_medals VALUES (16, '2025-03-10 15:28:05.348', NULL, 'VIRGIN', 'ow1zo7weznx1jcfz3u98emrx2u1n21o12yv4', 'genesis');
+INSERT INTO public.virgin_medals VALUES (18, '2025-03-10 15:28:05.347', NULL, 'VIRGIN', 'lwdddp7p4spbzu1bor6fx8l0n1615886a30n', 'genesis');
+INSERT INTO public.virgin_medals VALUES (19, '2025-03-10 15:28:05.35', NULL, 'VIRGIN', 'hezyo1t1rca5scrjk1rv885m0f0im8mj4unp', 'genesis');
+INSERT INTO public.virgin_medals VALUES (20, '2025-03-10 15:28:05.352', NULL, 'VIRGIN', 'qr8byd98h9u93s4bievtxnbkox50wfzqfxft', 'genesis');
+INSERT INTO public.virgin_medals VALUES (21, '2025-03-10 15:28:05.354', NULL, 'VIRGIN', 'bhwuxlqh72t2dqxf158h48q8wpevjmxtsgqb', 'genesis');
+INSERT INTO public.virgin_medals VALUES (22, '2025-03-10 15:28:05.357', NULL, 'VIRGIN', 'xxlpwqu4fbslitrgykc8cxm0n7z36gy6zwid', 'genesis');
+INSERT INTO public.virgin_medals VALUES (24, '2025-03-10 15:28:05.359', NULL, 'VIRGIN', '58b6qilg69s22qwyhaxc0nujlo7x7mkkw7kz', 'genesis');
+INSERT INTO public.virgin_medals VALUES (23, '2025-03-10 15:28:05.358', NULL, 'VIRGIN', '56zywbrw8osvb6c7uc9qewspeg06kgppeafb', 'genesis');
+INSERT INTO public.virgin_medals VALUES (25, '2025-03-10 15:28:05.36', NULL, 'VIRGIN', 'jtb0i0ub95w7te8g6n1nekmvbn2j5oq0q7sc', 'genesis');
+INSERT INTO public.virgin_medals VALUES (26, '2025-03-10 15:28:05.361', NULL, 'VIRGIN', 'ag7cvvrxevh5ktcfp2wbowbe44vw3b30cv5i', 'genesis');
+INSERT INTO public.virgin_medals VALUES (27, '2025-03-10 15:28:05.362', NULL, 'VIRGIN', '4h3xratrux2uzpgh6ntibdgo3zyjbjwk4neh', 'genesis');
+INSERT INTO public.virgin_medals VALUES (28, '2025-03-10 15:28:05.363', NULL, 'VIRGIN', 's9m9978fw1q21gv7874o1f1bedano6rfr99y', 'genesis');
+INSERT INTO public.virgin_medals VALUES (30, '2025-03-10 15:28:05.365', NULL, 'VIRGIN', 'w2cwuheb0d8x0xyy65zbw6883x8iezzuuror', 'genesis');
+INSERT INTO public.virgin_medals VALUES (29, '2025-03-10 15:28:05.364', NULL, 'VIRGIN', 'wrjk3mfpnb48bn1hnfezoz4v8adisdr5rprt', 'genesis');
+INSERT INTO public.virgin_medals VALUES (31, '2025-03-10 15:28:05.366', NULL, 'VIRGIN', '7csaxou6y8k5d1pt3hy8glnunvswr4r1abye', 'genesis');
+INSERT INTO public.virgin_medals VALUES (33, '2025-03-10 15:28:05.369', NULL, 'VIRGIN', '47kjcx5ox3bc91f3mg7mwdolpaqigro2opsh', 'genesis');
+INSERT INTO public.virgin_medals VALUES (34, '2025-03-10 15:28:05.371', NULL, 'VIRGIN', 'ou31jl8fywixhg0pj4r9vkri374s47kvgces', 'genesis');
+INSERT INTO public.virgin_medals VALUES (35, '2025-03-10 15:28:05.373', NULL, 'VIRGIN', '8qd6az8z04sb5rce9vcpd8sw0745m0ngmw2s', 'genesis');
+INSERT INTO public.virgin_medals VALUES (38, '2025-03-10 15:28:05.379', NULL, 'VIRGIN', 'ziiidui2k4of8cb305zymgflrqwx73q65daw', 'genesis');
+INSERT INTO public.virgin_medals VALUES (43, '2025-03-10 15:28:05.438', NULL, 'VIRGIN', '0ktyn1pzav1znya6099hviqlko0v5shw8lma', 'genesis');
+INSERT INTO public.virgin_medals VALUES (45, '2025-03-10 15:28:05.509', NULL, 'VIRGIN', 'ymooegj5whvhsctj1slmgr6p44il5r2bq5sc', 'genesis');
+INSERT INTO public.virgin_medals VALUES (46, '2025-03-10 15:28:05.583', NULL, 'VIRGIN', 'nvca6ffp0316wlzb100ygfmpcbvn3nocvlbu', 'genesis');
+INSERT INTO public.virgin_medals VALUES (47, '2025-03-10 15:28:05.594', NULL, 'VIRGIN', '2zl3av64gg9coditbptf27fhtxmh8joz9hqr', 'genesis');
+INSERT INTO public.virgin_medals VALUES (48, '2025-03-10 15:28:05.612', NULL, 'VIRGIN', '05l49wgf2t9tpbr6kdbr3pnm5ak8e76lygx2', 'genesis');
+INSERT INTO public.virgin_medals VALUES (49, '2025-03-10 15:28:05.621', NULL, 'VIRGIN', 'dttuyj7qnf9xg2zkhceitr7c80zfz5ls9acg', 'genesis');
+INSERT INTO public.virgin_medals VALUES (2, '2025-03-04 00:34:57.678', '2025-03-04 01:01:53.286', 'ENABLED', 'celeste', '6s2h438u4k1abfosmyfrgicd1d7dkue5qfs2');
+INSERT INTO public.virgin_medals VALUES (68, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', 'th9w8qllmix0jr540tzdcnqy6mr81pcb8cyh', 'third-round');
+INSERT INTO public.virgin_medals VALUES (69, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', 'v5vp0v5a8bhycvdhaqbgwg64j6uvq52mbpxa', 'third-round');
+INSERT INTO public.virgin_medals VALUES (70, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', '2b6zqpcvqfrezf25kg6880wylce9gcoad38m', 'third-round');
+INSERT INTO public.virgin_medals VALUES (17, '2025-03-10 15:28:05.347', '2025-04-08 16:35:59.664', 'ENABLED', 'p33bf93kyctc1p04hygbrvcvhgzrlmf1mh4u', 'genesis');
+INSERT INTO public.virgin_medals VALUES (71, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', 'ncscpgvnj8osugdg1w3m94y99espap85q7dv', 'third-round');
+INSERT INTO public.virgin_medals VALUES (37, '2025-03-10 15:28:05.375', '2025-04-23 23:59:23.379', 'ENABLED', 'qlp5dgnztepx96slvi2q2oo096c1u9axwiwi', 'genesis');
+INSERT INTO public.virgin_medals VALUES (72, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', '54jbfmqnjzv8jxlv17bteq7cbg0ovzep2gj6', 'third-round');
+INSERT INTO public.virgin_medals VALUES (73, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', 'yln8917kdv8hkx8pvhzjd1hmk7tdukmfmmwx', 'third-round');
+INSERT INTO public.virgin_medals VALUES (42, '2025-03-10 15:28:05.436', NULL, 'ENABLED', 'aosaxmu3oqpvraz11ib9dxvw8g1qj5cvkey8', 'genesis');
+INSERT INTO public.virgin_medals VALUES (74, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', '4hybcu6dhut5e1pzuwoqtb4oj2c3sxfhu72g', 'third-round');
+INSERT INTO public.virgin_medals VALUES (41, '2025-03-10 15:28:05.426', '2025-04-27 02:05:57.512', 'ENABLED', 'zj07h8bybkl4gcafzw1ex1glxpqymt4d2k22', 'genesis');
+INSERT INTO public.virgin_medals VALUES (75, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', 'ny2831g5yvo8xcqrak1htswa4cu2db714nxk', 'third-round');
+INSERT INTO public.virgin_medals VALUES (76, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', 'ngsshzzh79krk0q7d6wcfvivqgijfmj2p9oz', 'third-round');
+INSERT INTO public.virgin_medals VALUES (39, '2025-03-10 15:28:05.38', '2025-04-09 17:45:18.347', 'REGISTERED', '5uewbvnpaumkzkjfwg5kyh9cc6j8klla8mqe', 'genesis');
+INSERT INTO public.virgin_medals VALUES (36, '2025-03-10 15:28:05.377', '2025-04-09 19:09:18.267', 'ENABLED', 'o86c320roj50qstp2y76x3d9slma8g7u2v3r', 'genesis');
+INSERT INTO public.virgin_medals VALUES (77, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', '0qo23iip72ff4idvyz103hqvhqgphmlos9p4', 'third-round');
+INSERT INTO public.virgin_medals VALUES (63, '2025-03-26 15:11:39.617', '2025-05-03 22:42:32.072', 'ENABLED', '7eo1ts2pjcnm2yr1xnzs9t7p7zdocn5wub5u', 'second-round');
+INSERT INTO public.virgin_medals VALUES (40, '2025-03-10 15:28:05.391', '2025-04-09 22:45:54.32', 'ENABLED', 'bem5kkpbaxv9uhr4hmd4ztcu7pmnz9ar4rxp', 'genesis');
+INSERT INTO public.virgin_medals VALUES (32, '2025-03-10 15:28:05.367', '2025-04-11 23:26:47.267', 'ENABLED', 't75kly5rf7zkngcjvka31zyltnni3nerdevy', 'genesis');
+INSERT INTO public.virgin_medals VALUES (56, '2025-03-26 15:11:39.607', NULL, 'VIRGIN', 'otner5nee6d70zv6zoqkipugkem11ovgjp6z', 'second-round');
+INSERT INTO public.virgin_medals VALUES (57, '2025-03-26 15:11:39.609', NULL, 'VIRGIN', 'm7x0xuyy3vl3rhigsh4jaxz4errfc14sro5e', 'second-round');
+INSERT INTO public.virgin_medals VALUES (58, '2025-03-26 15:11:39.611', NULL, 'VIRGIN', 'oziqeh739sdp2au8rbcc9t8hhauou1j9eqp3', 'second-round');
+INSERT INTO public.virgin_medals VALUES (59, '2025-03-26 15:11:39.612', NULL, 'VIRGIN', '0hb6e9ii7i21ccjap1owt1u3q8ymdhf1inz5', 'second-round');
+INSERT INTO public.virgin_medals VALUES (60, '2025-03-26 15:11:39.613', NULL, 'VIRGIN', '5xcdhecp0s63j14nsompg2yyleyupfbh5e2o', 'second-round');
+INSERT INTO public.virgin_medals VALUES (61, '2025-03-26 15:11:39.614', NULL, 'VIRGIN', 'q29iqqebymebwum37awa0yn9fykr0995axfd', 'second-round');
+INSERT INTO public.virgin_medals VALUES (62, '2025-03-26 15:11:39.616', NULL, 'VIRGIN', 'w4y7rud4zhlymgveqwxbqnf7bpk4w54w6j7n', 'second-round');
+INSERT INTO public.virgin_medals VALUES (64, '2025-03-26 15:11:39.62', NULL, 'VIRGIN', 'vtzphmfvf81u8fazwa92vb45cmzgye4wd2bk', 'second-round');
+INSERT INTO public.virgin_medals VALUES (65, '2025-03-26 15:11:39.619', NULL, 'VIRGIN', '7qm6uxw0gqwzbswr6wnooituso9se6an05qr', 'second-round');
+INSERT INTO public.virgin_medals VALUES (66, '2025-03-26 15:11:39.621', NULL, 'VIRGIN', 'zqq9riq3ni7ibaihfhi3w8hkl6sdq9c9t175', 'second-round');
+INSERT INTO public.virgin_medals VALUES (67, '2025-03-26 15:11:39.624', NULL, 'VIRGIN', '52qdl122bd6hzfcii5mqjxhqfp2gut1othbw', 'second-round');
+INSERT INTO public.virgin_medals VALUES (78, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', 'tdbz29ephjwqllk155xvdw8l1uxzwcspeme8', 'third-round');
+INSERT INTO public.virgin_medals VALUES (79, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', 'kteirqgvtxo2pdssg2uepctfl0fm7gtsf5gq', 'third-round');
+INSERT INTO public.virgin_medals VALUES (80, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', 'n3bttcz0pxsjz8kidlqzbqrzdv3xu0zdgvnq', 'third-round');
+INSERT INTO public.virgin_medals VALUES (81, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', '6pyb2cbuvqlrmhcahyw49aydumko3k5tvxzj', 'third-round');
+INSERT INTO public.virgin_medals VALUES (44, '2025-03-10 15:28:05.483', '2025-05-07 01:02:09.387', 'REGISTERED', 'y2zkbs4w7y8lunwy9rcxw1uwscvsjvzatmrb', 'genesis');
+INSERT INTO public.virgin_medals VALUES (82, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', 'ujs8y93kn95w56zrwntydmc7s0z5x7ov2bvt', 'third-round');
+INSERT INTO public.virgin_medals VALUES (83, '2025-05-06 15:21:59.975', NULL, 'VIRGIN', 'doc0hn8516yoevwirjpam5xefkoh4g26asc7', 'third-round');
+INSERT INTO public.virgin_medals VALUES (84, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', '1sxn09wh6q5mp5au8uiva1wjevugtp1g413t', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (85, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'ozsx8z1sdvehhx0lrwpyypqelpkyrxz484g1', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (86, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', '3x0fy6rj7fg7a7qq7l5cupd52zq12nhyn9ux', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (87, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'p7k49kxdwo89c6fbs8dhyng7xxyqd2en0lht', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (88, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', '9kvo0wwjq3sz5hdsb260w3xyuox9p6e9m1eh', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (89, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', '7gkxdbr2hy57u6uoabp48yr5nxh3nuxmtcng', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (90, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', '3qkgsvgso5q29e4phvsxqery116h6b7kla1a', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (91, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', '10f1kbmemzpxzrt32qt63ab8xlur5crbbymr', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (92, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'r96jd0k0uwbwrwk5emepqsiw0pz7yw689pc9', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (93, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'k9mjim6xzqjis4zl0013unft5w252t0x0rwr', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (94, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', '4s2yq77o578g7th4gescqbjab3w9fn94phus', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (95, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'm0mt4cultkrze5h7rjx76z89elc3rnrghiz5', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (96, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'whkf363uz5oe3kfxvptrhgf2pv5kzzh9qb9b', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (97, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'rit4jb67nbv4votd3uo99g3g68j9ylci0hw3', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (98, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'gj2uaatpqajrbxylrgmokqid2586z6ypq5i2', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (99, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'ix040e63dqkhrwkftrbxasbcf0x7hqyarv50', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (100, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', '0g9njd48y4fdb6dsjda7zxrm8qfsjvz5vtuy', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (101, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'zqir3kw2y22386drg1xoxa05muxswzovgscl', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (102, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'jk3hwfks4mh4oiz8mr8quauho497rfwypzja', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (103, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'imqt9dj6e35kkq9gz7pputmszpjy79a70egy', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (104, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'tuluwip02xng593tzssyvol17cl86nxf6i1l', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (105, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'sjuuinjologmsh3ipasyesdmp0mp1ds47kf8', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (106, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'b8nncbijnd76m66wbs2s87rb6crq7erd9yu9', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (107, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'cakhgh8e0jc4y2fqaqkyy7dk2xzyr9y4xrt1', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (108, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'dgdxinhsscko4rhg6d0p83ssvg2qlhgdtglu', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (109, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'sb9t5aye76vuhs5fm3ozrglmfqwk6pr6ycy2', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (110, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', '42coasa5j7045f97xlq2qkpkfvoc4nnrbww2', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (111, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'botxrn5zpci9ksfzfketpq9n1ruz2xft5flo', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (112, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'k64abtknnt6zwta5c6pc4jefmi7smosrkesv', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (113, '2025-05-12 15:58:32.61', NULL, 'VIRGIN', 'iz7vizo6q3umdlste9oi8fapfb8023hk5g8a', 'resina-first-round');
+INSERT INTO public.virgin_medals VALUES (114, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'e0n2bre3yokiadgdoyjzy0e534e0n8ngo4vf', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (115, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '95lwg5jdd6yic6wvfd2qfb20dddpyllqkqhi', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (116, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '6kpiejn632a6oill0k4dpw5lakwmwyr1u7fg', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (117, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'e38q5bcacdo5m1cjw10hmesnavg8vryyzupi', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (118, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'fr54wzox2r8vu8vx5jchw9hhq9hk4xpma9qu', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (119, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'vsljmh75fmjh82v2eyxoj4okkrnrz8fow5w7', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (120, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'hprhrun603h6aqfv6mqn8h5y8wmy5aga0gpc', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (121, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '8fvzqpeng5ikcgyugm7083z5oxn64orc970l', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (122, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'xqo1ilnfl8499p17r73v6mo8mydcyjizw3vb', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (123, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'g2kp6hnf70nxnhei1gb0s6h1ay3vst5dgjnq', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (124, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'tv208i4vwk3nejhbbozq8swmqky5910hz3ct', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (125, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'qa2ebxeralrso6ys0nwwrb4a1hhqpyyd3d6l', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (126, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'is1sppg83g52yikhqlf18fd9ovyax0ptgqsl', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (127, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '9oi5xpqm5ugawx7ax967zxdgnoyllu7s4mvs', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (128, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'jb53dflrevtn8eelsqx0707aeag7xa9dh5ie', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (129, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '7elfvrp69eexyqviweafrrckcgp9wj9ao0mn', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (130, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '5myzbg9cxa753umoucwopz6npfek6z29gp2h', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (131, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'qg2jg3jzb1ifkf4b449wp4eu7oxo1qxuthqf', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (132, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'r5ol34oiamerm1xs7n9ie69mkql7z7816rr3', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (133, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 's7hda8i1fow29tr9s5hbli06l4yrl7uecrta', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (134, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'qemqp27mjjfgadplwp8ug6gai5xlvbm4k2fi', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (135, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'llvkjjenswirvtuc0aln4yag1pihep6v1hwe', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (136, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '5644pmk71v3j2b2vr9k8wqsgiv44fnkh91uo', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (137, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'uiwphld8kdananadqufajx2a5i1fxp03c9l9', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (138, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'ibwxkztiugs37r7l1f4ow0oqtl33eoyv9r68', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (139, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'g8lxdb7evadez6wm7n8mz8aemnxb8l1hmm71', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (140, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'ejfndl0urs380i8iekun3yey576mvsgw28m3', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (141, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'myfwg3wygl0dq78ydo0nkpwkpvvoosctaz84', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (142, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'net7hofh9au2c1haeswgtpwcjlc4g0l7dptf', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (143, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'odubil7wft1iqft92kfee9dq7dnyjpzkq9w8', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (144, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'snr3uqpah0cx83ji8jiavqeeuewitqs61nv2', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (145, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '217avlyglmsd6o650gypbat7tef84osl37t9', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (146, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '9zbkeuqtr3uqs40qj56qmy1k2iyhl0x379k5', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (147, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'zq5oc0qcuv376f1n23e0zcwsbos5hsnrsg73', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (148, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'jms6hytpkd6x55jyde4uphp4z3uits1l3icr', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (149, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'kuikw5qw883hszc3e0z3m8ipdikuxmtc07w4', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (150, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '7ws5y9s43blct63dyg2f0mc98f9qloh6gwb1', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (151, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'mkute7iq1dt8qvrewbay11nbv6s0wc27nkab', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (152, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 't3pymaps0puwiuodvxiqswf3al44b3bnpyde', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (153, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'qtvyg88ivnfpj0eeh5027kselhwkblfm9z28', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (154, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'v1pgdke4d4tfymug6w3aqp1ztl2k7kx2m8h6', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (155, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'u20qjp4e4qidy4vd6h160wqjjuz3gprrd6nf', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (156, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'h0n5islez3qhfqj143yiiw9rg38500cbdl2r', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (157, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'rvfewvbh295wwhjioai9h2sp7gy6o4crpu82', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (158, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'yqcvw6b4iq465cnu6t3ryazctg8xelc8l13w', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (159, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'anfkyawjhg6f1mgk3vomo1ixuu6loh79ws6d', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (160, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'n0q1cmb7qnbm15fim1ab3dysgnf8j63i5owx', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (161, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'caavczv5mqsi7dfjsexte1bn0orljpwacg7v', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (162, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'akqsz0spu2hryytc011vk90qo0dljo32p7ul', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (163, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'vkhk6nl5mhpgk4km3o5a571w90oka4sf2yvf', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (164, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'a5116amguma41upv3yy0b06ogtzezs00p2zu', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (165, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '0c7mdm1aojj4m3gplmsbdpzy8vskotsnvadx', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (166, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'z8bdza7cxsduyndg5b0trm40z6zsqmi44k73', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (167, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '4id653ekgzebxwaflmd3fby6t69q06hlzqik', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (169, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'qyalsrk3zmgwtkmfx0w8odz16i250jiuf0ag', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (170, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'vivx7ot4l3flevou6wv88z71hgjl6t14nc3w', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (171, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '862sqexgamm0c5j1s218cz14sdyrtky9uuwo', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (172, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'y5ppbb0ai9xvqptygr0siq3edpviz7mh1bnm', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (173, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '35f3wa9fprojgbrjnh5q983huotovpfkt6ay', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (174, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'njrtvmgzgruwfa8j6teg3skbzxn5bfqnjae0', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (175, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '381p5a4yw9ht64kh5rtt9bq75qflt5yxsq3j', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (176, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'h7jhp4ep1g2mjiod81qclh3tysjndqmmhyjs', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (177, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'ithphvfa85j4pp9awz3e14wntruqnv3ycnli', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (178, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'h5hw9895ukupqotucugu78z5pmpu2yu02ufl', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (179, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'iemofap8ial462ymmjjwz8af9vma2nv0ct14', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (180, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'dn797hjozcatkgrz0lks0gw6cfc7nd65avv4', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (181, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'x5y2sfkd6egwxxooafedzjx4pk6a0zlk550h', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (182, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'aizq2jtal5wbdyomg1xcn4cebkioqwn0r5ow', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (183, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '3lpx20affzvu46ei0ud56n724zvx711llyh5', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (184, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '2ocrsezcrg59bfgrxvjoc1jvn3z1dr3rbfep', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (185, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'cns18h1xl19gkw3pumzf9ct9knve8qxy06n7', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (186, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'fpuyb0hnh7xpv2f19va3902uwt63wbjxheqj', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (187, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'b0ltcrji1rm9c1vkxj45ieoy5k8gv42qmjfr', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (188, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '9zz0qnad6vdhxqh7xesohkn5d7lcfvmmgo1m', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (189, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'ge762zcbmnry53bzwghtrsb8uo248smya0yz', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (190, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '22fheo7o5awbtqvm3hzk6ccyo8gp9sr9ueyw', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (191, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'upgde6iivu4fstr4r1zjnwr12wac8jgqit36', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (192, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '27kqih4cie9rplzsb2qew979mhv3jjuzd1or', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (193, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '9jvievmzqggx21lxzpko8d37gwxczb245l2f', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (194, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '8bbgyxk7oslnr7qmw3m354881nidfvqr7h0g', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (195, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'zqc1cd3zsy3b15wfuq2ntraln2thwov9ccke', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (196, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'mw0au0w6333dpirxfyitr48clisstxbquckg', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (197, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'rt969iqq6f1v7rl0n5bktumg04b8kneb0326', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (198, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'eujjeysvbau5ddqgetuajd320fvzoohzxr0u', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (199, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'jipe12vsg6vgq9ayffnkhumhu0o4f9grf2f8', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (200, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'rfv1a0t3d0bj2919regwy9mqcubxg74rcndi', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (201, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'kjcdrzimsin8r82n19iopxmcr57q0is5ozj2', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (202, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'rcijq5p4kgpzaxjclcd3waighee038m2lure', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (203, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'h2tbwfay2r82l71zf6aim26enbhuxe730obw', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (204, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'b1d6jvwb2fbqvl5t60hn5gpxqms6ilwhqgds', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (205, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'smj107dcvs0p9hxd6802hd7cuto68882xyta', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (206, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'fv5s14khkikr80naer7qalivntos239z60tv', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (207, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'y2xexnts6ggdu9itybtw2gdpokkgi1ruuc03', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (208, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'gzmb3ogzacc635obntuij0scugy8sj6nddji', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (209, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '69iid692gf4jyt39vfus0w7jru91nbmnb9ds', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (210, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'czrlvn28opnt7cg8p0vut164ndqorrr20b6q', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (211, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'mfwwtnmm8ocpqda0cm0sewyx9nhwpkghza1e', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (212, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'svgz4mdv7ac8m0zryhhlld5xr3hnsxguis1f', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (213, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'gosc9hafwoiif8e3xtns8h75x252552e9avg', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (214, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'xk1xgxj4rz12w7dbuzmqkkxjbmynji1ohxic', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (215, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'jjldev2qs0wj15l0dfb375rid13qb5ishwrc', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (216, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'wxlpgeya64i4cc0i0x4k48ft2xki3tjs5mr9', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (217, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'xz7kla83fzpfmn6klk71skcnweduc4ok7uik', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (218, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '1uod55l4p3od1zki2utoixv74qfpax2pscd6', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (219, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'k91uze4huz63hzgduq2iph7v25wzky6bgacq', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (220, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'ew7x5vg9ztwdoy80wkfn5383671zeowkk3up', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (221, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'qzy6yh70jnydslrvyg6bkglc7q4uizgjwt8s', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (222, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'eypu5jbslrcqal08lg4thqwgm4ahrwly7s98', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (223, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'r4f7a4h9e1jmc5ajdnl1vc3fdluiwhdjy479', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (224, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'eo7oh8ooexlx6983gyxazyl2i66c9xsfuj90', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (225, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 's8uypvv4l88o9wem4ur8283rdc455lgx2mz5', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (226, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'akku580z9ga1f3961zyvmgqymd4cyqmkdakz', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (227, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'zo73cybdpwv6wc737piqhx35u9idmkpyfigt', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (228, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'cucnq94r9vcwisatsz0jx9qgqk0un4s1la82', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (229, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '4ifgk0r5ml559klot6bjhr1mo4cbzie8fbaw', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (230, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'wllk9bvnrgwejxe6u5xt15t4btvg0buvub5a', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (231, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'h4bgwjvjbw8hrhdczviv5lczn36vbzvfhtbn', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (232, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '5cphrjl6mbncw94z3lerudu0rvbh8uoryci7', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (233, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'mrl5fxbh0rxde4n44czv49k6by9qariek9xx', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (234, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'jqm4iu3nxiioy3x73vnv8k4b05csex9sriib', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (235, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 't916wyv3qjsr213rcvon14gyyvtskeuyku0t', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (236, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '7ptha34opgs6ljx46igiii9eqxnvyvd0t6qg', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (237, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'a8d8j80xyhqw6k18kzvr31l8nxc9kv717yp9', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (238, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'y29knwu78s2ewrm4q5kixho3na5wmcgahg0s', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (239, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'qq3rzgrdjn93t6wjqxyysxy1tvy6m3ljrjpd', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (240, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'vktqiklmi92jmtywu0kf5tc89wj5wrdht3h6', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (241, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'dtdt4a4fi7uk1zfq711m5uvzt1eks28pyazj', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (242, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '2ootz6d7j57x3vhfme7ejquoxnywgsmridau', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (243, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'mp6z5oy4jc2kd7h2o3594zcj2agyyi8bsbkf', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (244, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'pcifnhjif74qnh9f3s8wibxbrnobed4k2xme', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (245, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'n4a5v00vuv3hi3rn3fkqulsc1idrvs79htdb', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (246, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'dz0lmc8bi7ahq7uaeu62tibdfn1pp3yvhhdt', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (247, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '4us9y6r4uhn1dcql5xaxf2mwia3u98fic0tu', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (248, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '248txx72tu15zkfvutglj0tgvv1mvoje0bm5', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (249, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'ffuzj80dzo3iof1zolv8yo3k5am2x6mb9nk0', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (250, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'f7vlkmorco06jdztglv5m6pyrbsrqt7pt5ie', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (251, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'gngez2on2t4n6u38bbnv9ipx0yy2xviverz3', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (252, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'rtgup5blba0uwiwk2vvczudo2rs5wyts4d9x', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (253, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'cjaplk6sdpzv8i0f6py5pvubyl73146c47is', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (254, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '1iexkd5b5uxueff18zlkfzmstjnjc7v7w6cx', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (255, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '0uq5xnqhl83cwdgkcbqn3inlgmi0a5g747so', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (256, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'e9iqz03j4x8xzga13b8kw0gy45lzviesf3jk', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (257, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '541ihoyz11fti8rpecxrmsouhebqfgx7r9e4', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (258, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '8cfvwk4s349x163dhma8ai6ye8lar54rv7sk', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (259, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'c9nddb73e3i5t6vxah6jjfwb1iopzsaqvl8w', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (260, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '06xt1rk42mwaz73d64gf90igj6kqexncs1fl', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (261, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'wxwogswj3tjfrize0x7convi40p0k3ctd1w1', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (262, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'faj2o0ldcuci7il5b8qyoieg7r5gprfh1e2i', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (263, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '6jerye36drebfp6sab1j1vfwr743ew9mqee7', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (264, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'a0r8zzuxb8wd3zfwa58xtruh5byo56qgbcuz', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (265, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '8me89vlu7gwybjd6pix551memg2gksb3uaj5', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (266, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '20ltpl1irt7jrpzjj14pozzq0b3xsihvkqzc', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (267, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'ac01q5tr003fdmkp8hhgqtz2eonuxaxvmll2', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (268, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '3j8ng21aotbq6048jbi45mufc0jiktrq8c1x', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (269, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '1gikyfyzakess4dgi9c6655clqcemd2ua6kx', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (270, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'tamdm4n00q5byg685f1f7pzyqdtawjbmgj9f', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (271, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 's4n118121trapk35qak1vtt2aqf08n57evvr', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (272, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'ipo71i9izda8d0t8qfctrcxr5wuady0ywsk3', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (273, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '05nyrm2v76cpeq5srwe1z44e9mqr34lbdr70', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (274, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '6r5w7tvbhhhw08pj9bvq5y1236arvafu47gd', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (275, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '16ej1m69od1bpb9bl3xt8hupm1wr0e49vam5', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (276, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'gw96bh6jaf7zc2jhx6d1u7su6v0upb32csqi', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (277, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'ihjo26kbk9zbvq4x0juoa20j583m4vyy8isr', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (278, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'mzuoz832rq02up3viq259yu7cmneku6a9ji7', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (279, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '6s1749mxp3clo1d4yea9jkx8tfnepde9yudf', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (280, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '7412a87sb2rfw7ppoevjvf5totxc77e7rgvu', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (281, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'avez3bcbbq1lpt251a3my2szm4nbsu4caftw', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (282, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'g5fcib6vjgr1hv3y6ix08obuo1xqeo3io44o', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (283, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'pwz4os346o00ikgshunp8inn1kpq7u4ytlc1', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (284, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'c1pfut4cqz2ofto39ozexzcdug44de4zit15', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (285, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'gvy16s4wzqbumg4etze1hx5uy1nuwt1rlg4n', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (286, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '84p52ptzybuvjpw6aj9y9ru47jtx64l80axq', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (287, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '2po9b46r97uadhid4dgl2gr26qim5flh9mso', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (288, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'b9c56rj5wxgaishlt3lj9a9e42zvkhp7nmfy', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (289, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'wc9m7hws8i9iy5yilxtgbbh2wglozz84uqax', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (290, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'xtv9si3e7l24uvor63qqe5rb8gzh0abu85jq', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (291, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'pds2d9cvemxqqao2zwminjv2kb98q2u3pymw', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (292, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'gpmss0zolk7fl2uk6e9w7cvzqv8fcnrctq7v', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (293, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'ckch1yb3wi8fdgyzfm8s11l59v24y7hvu170', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (294, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '0ifsapcfg89gx7hgxlm4hehrvfgg175qfbo6', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (295, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '6o6ijc0m8anzyy3wkhkykg72nj2lvb9qwevc', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (296, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '4t0d70s149gybw81t4taw6vho937jpeaxsf8', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (297, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'xsah4qa4jnoouettga3rqeh7yttk5ee7538j', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (298, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'd02857r4jjiqu1rqsnd781zj2k6q33my1za8', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (299, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '6shyy5ewkmr8ynf7rjayjfd9b7xnzmhqo0ts', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (300, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'riaq06q7jacdubjyjpeki2zoabx8owglofxc', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (301, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'ou3aawrf9kjunwmvs0vcctfvw7j1wl8j20gr', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (302, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '2bwotxcfu2ctqhwmjr3jx25ut23k45y328lf', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (303, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'fmz4khq2wpmzbp46uj7zw1e9fow3tqrfh1b1', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (304, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'ietvmgbdch03dh5zdvdtvr4li2okxnriwsyj', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (305, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'r2ja5m1njyj7zxm7r4irh71q224aurj8iqmx', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (306, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '2xxotxzdytfxnuftagjc5lttaheig4ntd8zq', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (307, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '31s30sniz0c42f9tp2zi40etofwrs8pvjxed', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (308, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'zy0nfwzixcau7el32tw4i3ajwhtlw5cb9f2x', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (309, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'digdfb6nb9io32kboylksuzscctxhm5rwg7t', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (310, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 't4xf3nk6cz1kavfvux7ha8s0ex9o9gs5zz1o', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (311, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', '98mh94ywbxqvagmzisyzjzm6zn9a5i3sddbl', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (312, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'nitm0mg7ubfcvz72u6ovzb7zoowbfluy6t1z', 'first-round-ezequiel');
+INSERT INTO public.virgin_medals VALUES (313, '2025-05-12 16:13:55.865', NULL, 'VIRGIN', 'p9zqsfm01603jlzjhio9ys0fp3a6nof94i3s', 'first-round-ezequiel');
+
+
+--
+-- TOC entry 2902 (class 0 OID 0)
+-- Dependencies: 198
+-- Name: medals_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Silvestre1993
+--
+
+SELECT pg_catalog.setval('public.medals_id_seq', 1, false);
+
+
+--
+-- TOC entry 2903 (class 0 OID 0)
+-- Dependencies: 196
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Silvestre1993
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 1, false);
+
+
+--
+-- TOC entry 2904 (class 0 OID 0)
+-- Dependencies: 200
+-- Name: virgin_medals_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Silvestre1993
+--
+
+SELECT pg_catalog.setval('public.virgin_medals_id_seq', 1, false);
+
+
+--
+-- TOC entry 2762 (class 2606 OID 16444)
+-- Name: medals medals_pkey; Type: CONSTRAINT; Schema: public; Owner: Silvestre1993
+--
+
+ALTER TABLE ONLY public.medals
+    ADD CONSTRAINT medals_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2759 (class 2606 OID 16431)
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: Silvestre1993
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2765 (class 2606 OID 16456)
+-- Name: virgin_medals virgin_medals_pkey; Type: CONSTRAINT; Schema: public; Owner: Silvestre1993
+--
+
+ALTER TABLE ONLY public.virgin_medals
+    ADD CONSTRAINT virgin_medals_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2760 (class 1259 OID 16458)
+-- Name: medals_medal_string_key; Type: INDEX; Schema: public; Owner: Silvestre1993
+--
+
+CREATE UNIQUE INDEX medals_medal_string_key ON public.medals USING btree (medal_string);
+
+
+--
+-- TOC entry 2757 (class 1259 OID 16457)
+-- Name: users_email_key; Type: INDEX; Schema: public; Owner: Silvestre1993
+--
+
+CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email);
+
+
+--
+-- TOC entry 2763 (class 1259 OID 16459)
+-- Name: virgin_medals_medal_string_key; Type: INDEX; Schema: public; Owner: Silvestre1993
+--
+
+CREATE UNIQUE INDEX virgin_medals_medal_string_key ON public.virgin_medals USING btree (medal_string);
+
+
+--
+-- TOC entry 2766 (class 2606 OID 16460)
+-- Name: medals medals_ownerId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: Silvestre1993
+--
+
+ALTER TABLE ONLY public.medals
+    ADD CONSTRAINT "medals_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+-- Completed on 2025-05-19 15:07:01 UTC
+
+--
+-- PostgreSQL database dump complete
+--
+
