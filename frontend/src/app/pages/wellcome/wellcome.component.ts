@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { HttpClientModule } from '@angular/common/http';
 import { PetsService } from 'src/app/services/pets.services';
@@ -32,7 +32,8 @@ export class WellcomeComponent implements OnInit, OnDestroy {
   
   constructor(
     private router: Router,
-    private petService: PetsService
+    private petService: PetsService,
+    private route: ActivatedRoute
   ) {}
   
   ngOnInit(): void {
@@ -44,7 +45,7 @@ export class WellcomeComponent implements OnInit, OnDestroy {
         this.pets = this.pets.filter((pet)=> pet.status === 'ENABLED');
         this.pets.map((pet) => {
           pet.background = `url(${environment.perrosQrApi}pets/files/${pet.image})`;
-          pet.link = `${environment.frontend}/masota/${pet.medalString}`;
+          pet.link = `mascota/${pet.medalString}`;
         });
 
       },
@@ -54,7 +55,10 @@ export class WellcomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  
+  goToPet(pet: any) {
+    console.log(pet);
+    this.router.navigate([`/mascota/${pet.medalString}`])
+  }
 
   ngOnDestroy(): void {
     this.petSubsciption ? this.petSubsciption.unsubscribe : null;
