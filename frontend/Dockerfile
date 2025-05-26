@@ -1,12 +1,12 @@
 # build
-FROM node:18.12.0 AS development
+FROM node:18.13.0 AS development
 
 WORKDIR /alberto/frontend/src/app
 
 COPY package*.json ./
 
 RUN npm install
-RUN npm install -g @angular/cli@16.1.0
+RUN npm install -g @angular/cli@17
 
 COPY . .
 

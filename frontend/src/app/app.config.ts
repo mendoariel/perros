@@ -15,7 +15,7 @@ export const appConfig: ApplicationConfig = {
       JwtModule.forRoot({
         config: {
           tokenGetter: tokenGetter,
-          allowedDomains: ['http:/localhost:3333']
+          allowedDomains: ['http:/localhost:3335']
         }
       })
     ),

@@ -17,7 +17,7 @@ RUN npm install -g @angular/cli@17
 
 COPY . .
 
-RUN npm run build-prod --production
+RUN npm run build-local
 
 
 ### STAGE 2: Run ###
