@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+  peludosclick_frontend_local_deploy_service:
+    container_name: angular-frontend-local-deploy
+    build: 
+      dockerfile: local-deploy.Dockerfile
+      context: ./frontend
+      target: production
+    volumes:
+      - ./frontend:/alberto/frontend/src/app
+      - /alberto/src/app/node_modules
+    ports:
+      - "9002:80"
+  
+  peludosclick_backend:
+    build: 
+      context: ./backend-vlad
+      dockerfile: production.Dockerfile
+      target: production
+    container_name: peludosclickbackend
+    volumes:
+      - ./backend-vlad:/alberto/backend/src/app
+      - /alberto/backend/src/app/node_modules
+    # command: npx prisma generate
+    # command: npx prisma db push
+    # command: npx prisma db pull
+    # command: npx prisma migrate deploy
+    command: npm run start:prod
+    ports:
+      - '3335:3335'
+    depends_on: 
+      - postgres
+    env_file: "./backend-vlad/.my-env-local"
+    
+  # Our Postgres Database for NestJS to connect to
+  postgres:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: mendoariel
+      POSTGRES_PASSWORD: casadesara
+      POSTGRES_DB: peludosclick
+    ports:
+      -  5432:5432  
+  # The Postgres Admin tool if we want to run some custom queries and so on against our Database
+  postgres_admin-perros:
+    image: dpage/pgadmin4:4.28
+    depends_on: 
+       - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - 5050:80
