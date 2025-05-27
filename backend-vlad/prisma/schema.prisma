@@ -11,16 +11,16 @@ datasource db {
 
 model User {
   id                   Int        @id @default(autoincrement())
-  createdAt            DateTime   @default(now())
-  updatedAt            DateTime   @default(now()) @updatedAt
+  createdAt            DateTime   @map("create_at") @default(now())
+  updatedAt            DateTime   @map("update_at") @default(now()) @updatedAt
   email                String     @unique
   hash                 String
-  hashedRt             String?
+  hashedRt             String? @map("hashed_rt")
   username             String?
   role                 Role
-  hashPasswordRecovery String?    @map("hashPasswordRecovery")
-  userStatus           UserStatus
-  hashToRegister       String     @map("hash_to_register")
+  hashPasswordRecovery String?    @map("hash_password_recovery")
+  userStatus           UserStatus @map("user_status")
+  hashToRegister     String @map("hash_to_register")
   phonenumber          String?
   medals               Medal[]
 
@@ -28,28 +28,28 @@ model User {
 }
 
 model Medal {
-  id           Int        @id @default(autoincrement())
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @default(now()) @updatedAt
-  ownerId      Int
-  status       MedalState
-  image        String?
-  description  String?
-  medalString  String     @unique @map("medal_string")
-  petName      String     @map("pet_name")
-  registerHash String     @map("register_hash")
-  owner        User       @relation(fields: [ownerId], references: [id])
+  id            Int        @id @default(autoincrement())
+  createdAt     DateTime   @map("create_at") @default(now())
+  updatedAt     DateTime   @map("update_at") @default(now()) @updatedAt
+  ownerId       Int @map("owner_id")
+  status        MedalState
+  image         String?
+  description   String?
+  medalString  String @map("medal_string") @unique
+  pet_name      String @map("pet_name")
+  registerHash String @map("register_hash")
+  owner         User       @relation(fields: [ownerId], references: [id])
 
   @@map("medals")
 }
 
 model VirginMedal {
-  id           Int        @id @default(autoincrement())
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime?  @updatedAt
-  status       MedalState
-  medalString  String     @unique @map("medal_string")
-  registerHash String     @map("register_hash")
+  id            Int        @id @default(autoincrement())
+  createdAt     DateTime   @map("create_at") @default(now())
+  updatedAt     DateTime?  @map("update_at") @updatedAt
+  status        MedalState
+  medalString  String   @map("medal_string")  @unique
+  registerHash String @map("register_hash")
 
   @@map("virgin_medals")
 }

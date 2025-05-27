@@ -1,6 +1,5 @@
 
-docker network create web
-
+,c
 docker run -d \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v $PWD/traefik.toml:/traefik.toml \

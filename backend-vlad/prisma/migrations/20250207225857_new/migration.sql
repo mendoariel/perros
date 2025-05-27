@@ -1,5 +1,5 @@
 -- AlterEnum
-ALTER TYPE "State" ADD VALUE 'PENDING_CONFIRMATION';
+-- ALTER TYPE "State" ADD VALUE 'PENDING_CONFIRMATION';
 
 -- DropForeignKey
 ALTER TABLE "medals" DROP CONSTRAINT "medals_ownerId_fkey";
