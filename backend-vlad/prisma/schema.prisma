@@ -17,10 +17,10 @@ model User {
   role                 Role
   hashToRegister       String     @map("hash_to_register")
   phonenumber          String?
-  createdAt            DateTime   @map("") @default(now())
+  createdAt            DateTime   @map("created_at") @default(now())
   hashPasswordRecovery String?    @map("hash_password_recovery")
   hashedRt             String?    @map("hashed_rt")
-  updatedAt            DateTime   @map("updatedAt") @default(now())
+  updatedAt            DateTime   @map("updated_at") @default(now())
   userStatus           UserStatus @map("user_status")
   medals               Medal[]
 
