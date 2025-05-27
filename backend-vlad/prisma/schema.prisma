@@ -11,45 +11,45 @@ datasource db {
 
 model User {
   id                   Int        @id @default(autoincrement())
-  createdAt            DateTime   @map("create_at") @default(now())
-  updatedAt            DateTime   @map("update_at") @default(now()) @updatedAt
   email                String     @unique
   hash                 String
-  hashedRt             String? @map("hashed_rt")
   username             String?
   role                 Role
-  hashPasswordRecovery String?    @map("hash_password_recovery")
-  userStatus           UserStatus @map("user_status")
-  hashToRegister     String @map("hash_to_register")
+  hashToRegister       String     @map("hash_to_register")
   phonenumber          String?
+  createdAt            DateTime   @map("") @default(now())
+  hashPasswordRecovery String?    @map("hash_password_recovery")
+  hashedRt             String?    @map("hashed_rt")
+  updatedAt            DateTime   @map("updatedAt") @default(now())
+  userStatus           UserStatus @map("user_status")
   medals               Medal[]
 
   @@map("users")
 }
 
 model Medal {
-  id            Int        @id @default(autoincrement())
-  createdAt     DateTime   @map("create_at") @default(now())
-  updatedAt     DateTime   @map("update_at") @default(now()) @updatedAt
-  ownerId       Int @map("owner_id")
-  status        MedalState
-  image         String?
-  description   String?
-  medalString  String @map("medal_string") @unique
-  pet_name      String @map("pet_name")
-  registerHash String @map("register_hash")
-  owner         User       @relation(fields: [ownerId], references: [id])
+  id           Int        @id @default(autoincrement())
+  status       MedalState
+  image        String?
+  description  String?
+  medalString  String     @unique @map("medal_string")
+  petName      String     @map("pet_name")
+  registerHash String     @map("register_hash")
+  createAt    DateTime   @map("created_at") @default(now())
+  ownerId      Int        @map("owner_id")
+  updateAt    DateTime   @map("updated_at")  @default(now())
+  owner        User       @relation(fields: [ownerId], references: [id])
 
   @@map("medals")
 }
 
 model VirginMedal {
-  id            Int        @id @default(autoincrement())
-  createdAt     DateTime   @map("create_at") @default(now())
-  updatedAt     DateTime?  @map("update_at") @updatedAt
-  status        MedalState
-  medalString  String   @map("medal_string")  @unique
-  registerHash String @map("register_hash")
+  id           Int        @id @default(autoincrement())
+  status       MedalState
+  medalString  String     @unique @map("medal_string")
+  registerHash String     @map("register_hash")
+  createdAt    DateTime   @map("created_at") @default(now())
+  updatedAt    DateTime? @map("updated_at") 
 
   @@map("virgin_medals")
 }
