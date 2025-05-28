@@ -34,6 +34,7 @@ export class PetComponent implements OnInit, OnDestroy{
   textButton = 'Agregar foto';
   env = environment;
   background = 'url(http://localhost:3333/pets/files/secrectIMG-20250301-WA0000.jpg)';
+  frontend = environment.frontend;
     
   constructor(
     private route: ActivatedRoute,
@@ -58,6 +59,7 @@ export class PetComponent implements OnInit, OnDestroy{
     this.spinner = true;
     this.petSubscription = this.qrCheckingService.getPet(medalString).subscribe({
       next: (pet: any) => {
+        console.log('pet', this.pet)
         this.spinner = false;
         this.pet = pet;
         //this.pet.image = `${environment.perrosQrApi}pets/files/${this.pet.image}`;
