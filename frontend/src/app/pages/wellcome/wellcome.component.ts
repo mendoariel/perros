@@ -39,7 +39,6 @@ export class WellcomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.petSubsciption = this.petService.getAllPets().subscribe({
       next:(res: any) => {
-        console.log('res ====> ', res)
         this.pets = res;
 
         this.pets = this.pets.filter((pet)=> pet.status === 'ENABLED');
@@ -56,8 +55,7 @@ export class WellcomeComponent implements OnInit, OnDestroy {
   }
 
   goToPet(pet: any) {
-    console.log(pet);
-    this.router.navigate([`/mascota/${pet.medalString}`])
+    this.router.navigate([`/mascota-publica/${pet.medalString}`])
   }
 
   ngOnDestroy(): void {
