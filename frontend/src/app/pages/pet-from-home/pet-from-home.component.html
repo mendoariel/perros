@@ -10,7 +10,7 @@
       <div class="image-container" [style.background]="pet.background"></div>
       <p style="margin-top: 5px; padding: 1em;">{{ pet.description }}</p>
       
-      <div class="connection">
+      <!-- <div class="connection">
         <h3>Conectar con mi familia</h3>
         <div class="info-message">
           <p>Si piensas que estoy perdido puedes conectar con mis dueños</p>
@@ -29,7 +29,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
       
       
       <div class="share-buttons">
@@ -38,7 +38,7 @@
           [include]="['copy', 'facebook','telegram', 'whatsapp']"
           [showIcon]="true" 
           [showText]="false" 
-          [url]="env.frontend + '/mascota/' + medalString" 
+          [url]="env.frontend + '/mascota-publica/' + medalString" 
           [description]="pet.description"
           class="pt-5">
       </share-buttons>
