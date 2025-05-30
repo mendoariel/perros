@@ -7,6 +7,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject } from 'rxjs';
 import { LoginInterface } from 'src/app/interface/login.interface';
 import { NewPasswordInterface } from 'src/app/pages/new-password/new-password.component';
+import { TokenGetterService } from 'src/app/services/token-getter.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +19,12 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private jwtHelper: JwtHelperService,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private tokenSevice: TokenGetterService
   ) { }
 
   isAuthenticated(): boolean {
-    const token = localStorage.getItem('access_token');
+    const token = this.tokenSevice.tokenGetter();
     let isAuthenticated = !this.jwtHelper.isTokenExpired(token);
     if(isAuthenticated) {
       this.putAuthenticatedTrue();
