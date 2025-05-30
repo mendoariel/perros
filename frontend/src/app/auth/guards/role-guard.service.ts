@@ -12,7 +12,10 @@ import { jwtDecode } from 'jwt-decode';
 })
 export class RoleGuardService implements CanActivate {
 
-  constructor(public auth: AuthService, public router: Router) {}
+  constructor(
+    public auth: AuthService, 
+    public router: Router
+  ) {}
   
   canActivate(route: ActivatedRouteSnapshot): boolean {
     // this will be passed from the route config

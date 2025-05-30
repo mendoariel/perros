@@ -5,12 +5,13 @@ services:
       dockerfile: Dockerfile
       context: ./frontend
       target: development
-    command: npm run start
+    command: npm run dev:ssr
     volumes:
       - ./frontend:/alberto/frontend/src/app
       - /alberto/frontend/src/app/node_modules
     ports:
       - "4200:4200"
+      - "4000:4000"
       # - "49153:49153"
     environment:
       - CHOKIDAR_USEPOLLING=true
