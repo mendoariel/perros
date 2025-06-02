@@ -1,10 +1,14 @@
 # Ignore log files
 *.log
 
+# Ignore logs directory
+logs/
+
 # Ignore local development files
 com.miperroqr.backup.plist
 backup.sh
 docker-backup.sh
 
-# Ignore logs directory
-logs/ 
+# NO ignorar archivos de backup
+!*.sql
+!*.sql.gz 
