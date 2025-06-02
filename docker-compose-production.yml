@@ -5,6 +5,11 @@ networks:
     external: true
   internal:
     external: false
+
+volumes:
+  postgres_data:
+    name: postgres_data_peludosclick
+
 services:
   peludosclick_frontend_service:
     container_name: angular-frontend
@@ -35,10 +40,6 @@ services:
     volumes:
       - ./backend-vlad:/alberto/backend/src/app
       - /alberto/backend/src/app/node_modules
-    # command: npx prisma generate
-    # command: npx prisma db push
-    # command: npx prisma db pull
-    # command: npx prisma migrate deploy
     command: npm run start:prod
     ports:
       - '3335:3335'
@@ -62,6 +63,8 @@ services:
       POSTGRES_DB: peludosclick
     ports:
       - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     labels:
       - traefik.enable=true
     networks:
@@ -87,3 +90,19 @@ services:
     networks:
       - internal
       - web
+
+  # Add this new service
+  backup:
+    build:
+      context: ./backups
+      dockerfile: Dockerfile
+    environment:
+      - TZ=America/Argentina/Buenos_Aires
+    volumes:
+      - ./backups:/var/backups/peludosclick
+      - ./backups/logs:/var/log/peludosclick
+    depends_on:
+      - postgres
+    networks:
+      - internal
+    restart: always
