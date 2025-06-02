@@ -1,0 +1,12 @@
+# Ignore backup files
+*.sql
+*.sql.gz
+*.log
+
+# Ignore local development files
+com.miperroqr.backup.plist
+backup.sh
+docker-backup.sh
+
+# Ignore logs directory
+logs/ 
