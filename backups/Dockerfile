@@ -1,7 +1,14 @@
 FROM postgres:12
 
-# Install cron and tzdata
-RUN apt-get update && apt-get install -y cron tzdata
+# Evitar interacciones durante la instalación de paquetes
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Actualizar e instalar paquetes en una sola capa
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        cron \
+        tzdata \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set timezone to Argentina
 ENV TZ=America/Argentina/Buenos_Aires
@@ -15,14 +22,12 @@ RUN chmod +x /backup.sh
 RUN mkdir -p /var/backups/peludosclick /var/log/peludosclick
 
 # Add crontab file with timestamp logging
-RUN echo "0 2 * * * date >> /var/log/peludosclick/cron.log && /backup.sh >> /var/log/peludosclick/cron.log 2>&1" > /etc/cron.d/database-backup
-RUN chmod 0644 /etc/cron.d/database-backup
-
-# Apply cron job
-RUN crontab /etc/cron.d/database-backup
+RUN echo "0 2 * * * date >> /var/log/peludosclick/cron.log && /backup.sh >> /var/log/peludosclick/cron.log 2>&1" > /etc/cron.d/database-backup \
+    && chmod 0644 /etc/cron.d/database-backup \
+    && crontab /etc/cron.d/database-backup
 
 # Create the entry point script
-RUN echo '#!/bin/bash\necho "Container starting with timezone: $(date +%Z)" >> /var/log/peludosclick/cron.log\ncron -f' > /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN echo '#!/bin/bash\necho "Container starting with timezone: $(date +%Z)" >> /var/log/peludosclick/cron.log\ncron -f' > /entrypoint.sh \
+    && chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"] 
