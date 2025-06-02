@@ -1,6 +1,4 @@
-# Ignore backup files
-*.sql
-*.sql.gz
+# Ignore log files
 *.log
 
 # Ignore local development files
