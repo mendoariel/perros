@@ -87,3 +87,22 @@ services:
     networks:
       - internal
       - web
+
+  # Add this new service
+  backup:
+    build:
+      context: ./backups
+      dockerfile: Dockerfile
+    environment:
+      - TZ=America/Argentina/Buenos_Aires
+    volumes:
+      - ./backups:/var/backups/peludosclick
+      - ./backups/logs:/var/log/peludosclick
+    depends_on:
+      - postgres
+    networks:
+      - internal
+    restart: always
+
+volumes:
+  # ... existing volumes ...
