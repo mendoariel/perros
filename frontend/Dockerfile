@@ -1,28 +1,26 @@
 # build
-FROM node:18.13.0 AS development
+FROM node:20-alpine AS development
 
 WORKDIR /alberto/frontend/src/app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install --legacy-peer-deps
 RUN npm install -g @angular/cli@17
 
 COPY . .
 
-RUN npm run build
-
 EXPOSE 4200 
-EXPOSE 49153
 EXPOSE 4000
 
-FROM nginx:1.23.2 AS production
+CMD ["npm", "run", "dev:ssr"]
 
-EXPOSE 9002
+FROM nginx:alpine AS production
 
-RUN npm run build
+COPY nginx.conf /etc/nginx/nginx.conf
 
-RUN rm -rf /usr/share/nginx/html/*
+WORKDIR /usr/share/nginx/html
+COPY dist/frontend/browser .
 
-COPY /dist/frontend /usr/share/nginx/html
+EXPOSE 80
 
