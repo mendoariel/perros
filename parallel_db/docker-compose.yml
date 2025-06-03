@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: casadesara
       POSTGRES_DB: peludosclick
     ports:
-      -  5432:5432  
+      -  5433:5432  
   # The Postgres Admin tool if we want to run some custom queries and so on against our Database
   parallel_pgadmin:
     image: dpage/pgadmin4:4.28
@@ -17,4 +17,4 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: password
     ports:
-      - 5050:80
+      - 5051:80
