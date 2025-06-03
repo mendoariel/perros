@@ -20,21 +20,22 @@ services:
       context: ./backend-vlad
       dockerfile: Dockerfile
       target: development
-    container_name: backenk-perros
+    container_name: backend-perros
     volumes:
       - ./backend-vlad:/alberto/backend/src/app
       - /alberto/backend/src/app/node_modules/
-    # command: npx prisma generate
-    # command: npx prisma db pull 
-    # command: npx prisma db push
-    # command: npx prisma migrate dev
-    command: npm run start:dev
+      - ./backend-vlad/prisma:/alberto/backend/src/app/prisma/
+    command: >
+      sh -c "npx prisma generate &&
+             npx prisma migrate deploy &&
+             npm run start:dev"
     ports:
       - '3333:3333'
       - '5555:5555'
-      - 9229:9229
+      - '9229:9229'
     depends_on: 
-      - postgres
+      postgres:
+        condition: service_healthy
     env_file: "./backend-vlad/.my-env-local"
 
     # environment:
@@ -51,6 +52,11 @@ services:
       POSTGRES_DB: peludosclick
     ports:
       -  5432:5432  
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mendoariel -d peludosclick"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   # The Postgres Admin tool if we want to run some custom queries and so on against our Database
   postgres_admin-perros:
     image: dpage/pgadmin4:4.28

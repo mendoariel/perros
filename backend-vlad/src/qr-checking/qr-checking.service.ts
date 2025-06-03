@@ -1,13 +1,12 @@
 import { BadRequestException, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
-
-import {  PostMedalDto, QRCheckingDto } from './dto/qr-checking.dto';
-import { MedalStatus } from './types';
+import { PostMedalDto, QRCheckingDto } from './dto/qr-checking.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma, Role, MedalState, UserStatus } from '@prisma/client';
+import { Prisma, Role, MedalState, UserStatus, User, Medal, VirginMedal } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';
 
 var bcrypt = require('bcryptjs');
 var createHash = require('hash-generator');
+
 @Injectable()
 export class QrService {
     constructor(
@@ -15,7 +14,11 @@ export class QrService {
         private mailService: MailService
     ) {}
     
-    async QRCheking(dto: QRCheckingDto):Promise<any> {
+    async QRCheking(dto: QRCheckingDto): Promise<{
+        status: MedalState;
+        medalString: string;
+        registerHash: string;
+    }> {
         const medal = await this.prisma.virginMedal.findFirst({
             where: {
                 medalString: dto.medalString
@@ -23,61 +26,35 @@ export class QrService {
         });
         if (!medal) throw new NotFoundException('No se encontro la medalla');
         
-        // if(medal.status === 'VIRGIN') {
-        //     const registerHashVar = await this.createHashNotUsed();
-        //     const medalStringV = medal.medalString;
-        //     const update = await this.prisma.virginMedal.update({
-        //         where: {
-        //             medalString: medalStringV
-        //         },
-        //         data: {
-        //             registerHash: registerHashVar,
-        //             status: MedalState.REGISTER_PROCESS
-        //         }
-        //     });
-
-        //     const modifyMedal = await this.prisma.virginMedal.findFirst({
-        //         where: {
-        //             medalString: dto.medalString
-        //         }
-        //     });
-    
-        //     return {
-        //         status: modifyMedal.status, 
-        //         medalString: modifyMedal.medalString,
-        //         registerHash: modifyMedal.registerHash
-        //      };
-        // }
-
         return {
             status: medal.status, 
             medalString: medal.medalString,
             registerHash: medal.registerHash
-         };
+        };
     }
 
-    async postMedal(dto: PostMedalDto): Promise<any> {
-        const virginMedal = await this.prisma.virginMedal.findUnique({
+    async postMedal(dto: PostMedalDto): Promise<{ text: string; code: string }> {
+        const virginMedal = await this.prisma.virginMedal.findFirst({
             where: {
-               medalString: dto.medalString 
+                medalString: dto.medalString 
             }
-        })
+        });
         
         if (!virginMedal) throw new NotFoundException('No se encontro la medalla');
         if (virginMedal.status !== MedalState.VIRGIN) throw new NotFoundException('Esta medalla ya no esta disponible para registrar');
         
-        const medalsJson = {
-                status: MedalState.REGISTER_PROCESS,
-                registerHash:  virginMedal.registerHash,
-                medalString: virginMedal.medalString,
-                petName: dto.petName
+        const medalsJson: Prisma.MedalCreateInput = {
+            status: MedalState.REGISTER_PROCESS,
+            registerHash: virginMedal.registerHash,
+            medalString: virginMedal.medalString,
+            petName: dto.petName,
+            owner: { connect: { id: 0 } } // This will be updated below
         };
 
-
-        // check if the user already exist and send an email to the user to confirm that you want to add this medal to your account
-        const user: any = await this.prisma.user.findFirst({
+        // check if the user already exists
+        const user = await this.prisma.user.findFirst({
             where: {
-                email: dto.ownerEmail
+                email: dto.ownerEmail.toLowerCase()
             },
             include: {
                 medals: true
@@ -85,63 +62,72 @@ export class QrService {
         });
 
         if(user) {
-          let medalCreated = await this.prisma.medal.create({
-            data: {
-                ownerId: user.id,
-                status: MedalState.REGISTER_PROCESS,
-                registerHash:  virginMedal.registerHash,
-                medalString: virginMedal.medalString,
-                petName: dto.petName
-            }
-          });
-          if(!medalCreated) throw new NotFoundException('can not create medal');
+            const medalCreated = await this.prisma.medal.create({
+                data: {
+                    status: MedalState.REGISTER_PROCESS,
+                    registerHash: virginMedal.registerHash,
+                    medalString: virginMedal.medalString,
+                    petName: dto.petName,
+                    owner: {
+                        connect: {
+                            id: user.id
+                        }
+                    }
+                }
+            });
+            if(!medalCreated) throw new NotFoundException('can not create medal');
             
-          let sendEmailConfirmMedal: any  = await this.sendEmailConfirmMedal(user.email, virginMedal.medalString);
-          if(!sendEmailConfirmMedal) throw new NotFoundException('can not send email confirm medal');
-          await this.putVirginMedalRegisterProcess(virginMedal.medalString);
-          let peludosResponse = { 
-            text: 'Le hemos enviado un email, siga las intrucciones para la activar su medalla.',
-            code: 'medalcreated'
+            const sendEmailConfirmMedal = await this.sendEmailConfirmMedal(user.email, virginMedal.medalString);
+            if(!sendEmailConfirmMedal) throw new NotFoundException('can not send email confirm medal');
+            
+            await this.putVirginMedalRegisterProcess(virginMedal.medalString);
+            
+            return { 
+                text: 'Le hemos enviado un email, siga las intrucciones para la activar su medalla.',
+                code: 'medalcreated'
             };
+        }
 
-            return peludosResponse;
-        };
-        // this code execute only if user not exist
+        // Create new user if they don't exist
         const hash = await this.hashData(dto.password);
         const unicHash = await this.createHashNotUsedToUser();
-        const userCreated: any = await this.prisma.user.create({
+        
+        const userCreated = await this.prisma.user.create({
             data: {
-                hashToRegister: unicHash,
-                email: dto.ownerEmail.toLocaleLowerCase(),
+                email: dto.ownerEmail.toLowerCase(),
+                hash,
                 userStatus: UserStatus.PENDING,
-                hash: hash,
                 role: Role.VISITOR,
+                hashToRegister: unicHash,
                 medals: {
-                    create: [
-                        medalsJson
-                    ]
+                    create: [{
+                        status: MedalState.REGISTER_PROCESS,
+                        registerHash: virginMedal.registerHash,
+                        medalString: virginMedal.medalString,
+                        petName: dto.petName
+                    }]
                 }
             },
             include: {
-                medals:   true 
+                medals: true
             }
         });
 
-        if(!userCreated) throw new NotFoundException('Can not create user')
-        // send email to confirm account
-        let sendEmail:any = await this.sendEmailConfirmAccount(userCreated.email, userCreated.hashToRegister, virginMedal.medalString);
-            if(!sendEmail) throw new NotFoundException('Can not send email acount');
-            await this.putVirginMedalRegisterProcess(virginMedal.medalString);
-            let peludosResponse = { 
-                text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta su cuenta.',
-                code: 'usercreated'
-            };
-             
-        return peludosResponse;
+        if(!userCreated) throw new NotFoundException('Can not create user');
+        
+        const sendEmail = await this.sendEmailConfirmAccount(userCreated.email, userCreated.hashToRegister, virginMedal.medalString);
+        if(!sendEmail) throw new NotFoundException('Can not send email account');
+        
+        await this.putVirginMedalRegisterProcess(virginMedal.medalString);
+        
+        return { 
+            text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta su cuenta.',
+            code: 'usercreated'
+        };
     }
 
-    async putVirginMedalRegisterProcess(medalString: string): Promise<any> {
-        let virgin = await this.prisma.virginMedal.update({
+    async putVirginMedalRegisterProcess(medalString: string): Promise<VirginMedal> {
+        const virgin = await this.prisma.virginMedal.update({
             where: {
                 medalString: medalString
             },
@@ -149,79 +135,73 @@ export class QrService {
                 status: MedalState.REGISTER_PROCESS
             }
         });
-        if(!virgin) new NotFoundException('Virgin medal not found!')
+        if(!virgin) throw new NotFoundException('Virgin medal not found!');
         return virgin;
     }
 
-    async getPet(medalString: string): Promise<any> {
-        let medal: any = await this.prisma.medal.findFirst({
+    async getPet(medalString: string): Promise<{
+        petName: string;
+        phone: string | null;
+        image: string | null;
+        description: string | null;
+    }> {
+        const medal = await this.prisma.medal.findFirst({
             where: {
                 medalString: medalString
+            },
+            include: {
+                owner: true
             }
         });
 
         if(!medal) throw new NotFoundException('No records for this medal');
-        let user: any = await this.prisma.user.findFirst({
-            where:{
-                id: medal.ownerId
-            }
-        });
+        if(!medal.owner) throw new NotFoundException('No user for this medal');
 
-        if(!user) throw new NotFoundException('No user for this medal');
-        let response = {
+        return {
             petName: medal.petName,
-            phone: user.phonenumber,
+            phone: medal.owner.phonenumber,
             image: medal.image,
             description: medal.description
-        }
-
-        return response;
+        };
     }
 
-    async isThisEmailTaken(email: string) {
-        let user = await this.prisma.user.findFirst({
+    async isThisEmailTaken(email: string): Promise<{ emailIsTaken: boolean }> {
+        const user = await this.prisma.user.findFirst({
             where: {
                 email: email
             }
         });
 
-        let emailTaken;
-        user ?  emailTaken = true : emailTaken = false;
-
-        return { emailIsTaken: emailTaken }
+        return { emailIsTaken: !!user };
     }
 
-    async sendEmailConfirmAccount(userEmail: string, hashToRegister: string, medalString: string) {
+    async sendEmailConfirmAccount(userEmail: string, hashToRegister: string, medalString: string): Promise<boolean> {
         const url = `${process.env.FRONTEND_URL}/confirmar-cuenta?hashEmail=${userEmail}&hashToRegister=${hashToRegister}&medalString=${medalString}`;
         try {
             await this.mailService.sendConfirmAccount(userEmail, url);
             return true;
         } catch (error) {
             console.error('into try catch error===> ', error);
-            throw new ServiceUnavailableException('No pudimos procesara la informacion')
-            return false;
+            throw new ServiceUnavailableException('No pudimos procesara la informacion');
         }
-        
     }
 
-    async sendEmailConfirmMedal(userEmail: string, medalString: string) {
+    async sendEmailConfirmMedal(userEmail: string, medalString: string): Promise<boolean> {
         const url = `${process.env.FRONTEND_URL}/confirmar-medalla?email=${userEmail}&medalString=${medalString}`;
         try {
             await this.mailService.sendConfirmMedal(userEmail, url);
             return true;
         } catch (error) {
             console.error('into try catch error===> ', error);
-            throw new ServiceUnavailableException('No pudimos procesara la informacion')
-            return false;
+            throw new ServiceUnavailableException('No pudimos procesara la informacion');
         }
-        
     }
 
-    hashData(data: string) {
+    hashData(data: string): string {
         return bcrypt.hashSync(data, 10);
     }
 
-    async createHashNotUsed() {
+    async createHashNotUsed(): Promise<string> {
         const hash = createHash(36);
 
         const hashUsed = await this.prisma.virginMedal.findFirst({
@@ -231,9 +211,10 @@ export class QrService {
         });
 
         if(!hashUsed) return hash;
-        else this.createHashNotUsed();
+        return this.createHashNotUsed();
     }
-    async createHashNotUsedToUser() {
+
+    async createHashNotUsedToUser(): Promise<string> {
         const hash = createHash(36);
 
         const hashUsed = await this.prisma.user.findFirst({
@@ -243,6 +224,6 @@ export class QrService {
         });
 
         if(!hashUsed) return hash;
-        else this.createHashNotUsed();
+        return this.createHashNotUsedToUser();
     }
 }
