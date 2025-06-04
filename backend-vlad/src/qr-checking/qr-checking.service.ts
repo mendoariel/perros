@@ -73,7 +73,6 @@ export class QrService {
                 petName: dto.petName
         };
 
-
         // check if the user already exist and send an email to the user to confirm that you want to add this medal to your account
         const user: any = await this.prisma.user.findFirst({
             where: {
@@ -96,15 +95,25 @@ export class QrService {
           });
           if(!medalCreated) throw new NotFoundException('can not create medal');
             
+          // Send notification email to info@peludosclick.com
+          await this.mailService.sendNewPetRegistration({
+              petName: dto.petName,
+              ownerEmail: user.email,
+              medalString: virginMedal.medalString,
+              phoneNumber: user.phonenumber,
+              image: medalCreated.image,
+              description: medalCreated.description
+          });
+
           let sendEmailConfirmMedal: any  = await this.sendEmailConfirmMedal(user.email, virginMedal.medalString);
           if(!sendEmailConfirmMedal) throw new NotFoundException('can not send email confirm medal');
           await this.putVirginMedalRegisterProcess(virginMedal.medalString);
           let peludosResponse = { 
             text: 'Le hemos enviado un email, siga las intrucciones para la activar su medalla.',
             code: 'medalcreated'
-            };
+          };
 
-            return peludosResponse;
+          return peludosResponse;
         };
         // this code execute only if user not exist
         const hash = await this.hashData(dto.password);
@@ -128,14 +137,23 @@ export class QrService {
         });
 
         if(!userCreated) throw new NotFoundException('Can not create user')
+
+        // Send notification email to info@peludosclick.com for new user
+        await this.mailService.sendNewPetRegistration({
+            petName: dto.petName,
+            ownerEmail: userCreated.email,
+            medalString: virginMedal.medalString,
+            phoneNumber: userCreated.phonenumber
+        });
+
         // send email to confirm account
         let sendEmail:any = await this.sendEmailConfirmAccount(userCreated.email, userCreated.hashToRegister, virginMedal.medalString);
-            if(!sendEmail) throw new NotFoundException('Can not send email acount');
-            await this.putVirginMedalRegisterProcess(virginMedal.medalString);
-            let peludosResponse = { 
-                text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta su cuenta.',
-                code: 'usercreated'
-            };
+        if(!sendEmail) throw new NotFoundException('Can not send email acount');
+        await this.putVirginMedalRegisterProcess(virginMedal.medalString);
+        let peludosResponse = { 
+            text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta su cuenta.',
+            code: 'usercreated'
+        };
              
         return peludosResponse;
     }

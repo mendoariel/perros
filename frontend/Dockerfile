@@ -1,5 +1,5 @@
 # build
-FROM node:18.12.0 AS development
+FROM --platform=linux/arm64 node:18.12.0 AS development
 
 WORKDIR /alberto/frontend/src/app
 
@@ -15,11 +15,9 @@ RUN npm run build
 EXPOSE 4200 
 EXPOSE 49153
 
-FROM nginx:1.23.2 AS production
+FROM --platform=linux/arm64 nginx:1.23.2 AS production
 
 EXPOSE 9002
-
-RUN npm run build
 
 RUN rm -rf /usr/share/nginx/html/*
 

@@ -6,10 +6,20 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { UpdateMedalDto } from "./dto/update-medal.dto";
 import { throws } from "assert";
 import { FILE_UPLOAD_DIR } from "src/constans";
+import { MailService } from "src/mail/mail.service";
+import * as fs from 'fs';
 
 @Injectable()
 export class PetsServicie {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private mailService: MailService
+    ) {
+        // Ensure upload directory exists
+        if (!fs.existsSync(FILE_UPLOAD_DIR)) {
+            fs.mkdirSync(FILE_UPLOAD_DIR, { recursive: true });
+        }
+    }
 
     async allPet() {
         let allPets = await this.prisma.medal.findMany({
@@ -74,8 +84,39 @@ export class PetsServicie {
     }
 
     async getFileByFileName(fileName: string, res: Response) {
-        const filePath = join(process.cwd(), 'public', 'files', fileName);
-        return res.sendFile(filePath)
+        try {
+            // Get the absolute path to the backend-vlad directory
+            const backendPath = join(process.cwd());
+            const filePath = join(backendPath, 'public', 'files', fileName);
+            
+            console.log('Current working directory:', process.cwd());
+            console.log('Attempting to access file at:', filePath);
+            
+            // Check if file exists
+            if (!fs.existsSync(filePath)) {
+                console.error(`File not found: ${filePath}`);
+                throw new NotFoundException(`Archivo no encontrado: ${fileName}`);
+            }
+
+            // Log file stats
+            const stats = fs.statSync(filePath);
+            console.log('File stats:', {
+                size: stats.size,
+                permissions: stats.mode,
+                owner: stats.uid,
+                group: stats.gid
+            });
+
+            return res.sendFile(filePath, (err) => {
+                if (err) {
+                    console.error('Error sending file:', err);
+                    throw new NotFoundException(`Error sending file: ${err.message}`);
+                }
+            });
+        } catch (error) {
+            console.error('Error in getFileByFileName:', error);
+            throw new NotFoundException(`Error accessing file: ${error.message}`);
+        }
     }
 
     async loadImage(filename: string, medalString: string) {
@@ -84,6 +125,19 @@ export class PetsServicie {
                 medalString: medalString
             }
         });
+
+        // If there's an existing image, delete it first
+        if (medal?.image) {
+            const oldFilePath = join(FILE_UPLOAD_DIR, medal.image);
+            if (fs.existsSync(oldFilePath)) {
+                try {
+                    fs.unlinkSync(oldFilePath);
+                } catch (error) {
+                    console.error('Error deleting old file:', error);
+                }
+            }
+        }
+
         const updateMedal = await this.prisma.medal.update({
             where: {
                 medalString: medalString
@@ -92,17 +146,21 @@ export class PetsServicie {
                 image: filename
             }
         });
-        if(!updateMedal)  throw new NotFoundException('Sin registro de esa medalla');
-        // delete the file
-        if(medal) {
-            const fs = require('fs');
-            let path = `${FILE_UPLOAD_DIR}/${medal.image}`;
-            fs.unlink(path, (error) => { 
-                console.error(error);
-                return;
-            })
+
+        if (!updateMedal) {
+            // If update fails, try to delete the uploaded file
+            const filePath = join(FILE_UPLOAD_DIR, filename);
+            if (fs.existsSync(filePath)) {
+                try {
+                    fs.unlinkSync(filePath);
+                } catch (error) {
+                    console.error('Error deleting file after failed update:', error);
+                }
+            }
+            throw new NotFoundException('Sin registro de esa medalla');
         }
-        return {image: 'load'};
+
+        return { image: 'load' };
     }
 
     async updateMedal(email: string, medalUpdate: UpdateMedalDto) {
@@ -113,6 +171,7 @@ export class PetsServicie {
             }
         });
         if(!user) throw new NotFoundException('User not found');
+        
         let medal = await this.prisma.medal.update({
             where: { medalString: medalUpdate.medalString},
             data: {
@@ -121,6 +180,7 @@ export class PetsServicie {
             }
         });
         if(!medal) throw new NotFoundException('Medal not found');
+        
         let virgin = await this.prisma.virginMedal.update({
             where: {
                 medalString: medalUpdate.medalString
@@ -131,8 +191,16 @@ export class PetsServicie {
         });
         if(!virgin) throw new NotFoundException('Virgin Medal not found');
 
-        return medal;
+        // Send notification email with all available information
+        await this.mailService.sendNewPetRegistration({
+            petName: medal.petName,
+            ownerEmail: user.email,
+            medalString: medal.medalString,
+            phoneNumber: user.phonenumber || 'No especificado',
+            description: medal.description || 'No especificado',
+            image: medal.image
+        });
 
-        
+        return medal;
     }
 }
