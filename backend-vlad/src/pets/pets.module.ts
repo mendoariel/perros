@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PetsController } from "./pets.controller";
 import { PetsServicie } from "./pets.service";
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
@@ -9,7 +10,8 @@ import { PetsServicie } from "./pets.service";
   ],
   controllers: [PetsController],
   providers: [
-    PetsServicie
+    PetsServicie,
+    MailService
   ],
   exports: [],
 })
