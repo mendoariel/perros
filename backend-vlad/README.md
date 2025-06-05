@@ -60,7 +60,6 @@ $ npm run test:cov
 
 ## Migration
 
-
 ```bash
 
 # First time migration
@@ -68,6 +67,29 @@ $ npx prisma migrate dev --create-only
 # Push changes to database
 $ npx prisma db push
 ```
+
+## Deployment
+
+### Production Deployment Steps
+
+```bash
+# 1. Create a manual backup of the database (optional but recommended)
+$ cd backups && ./backup-manual.sh
+
+# 2. Stop the backend service
+$ docker-compose -f docker-compose-production.yml stop peludosclick_backend
+
+# 3. Pull the latest changes from your branch
+$ git pull origin your-branch-name
+
+# 4. Rebuild and start the backend service
+$ docker-compose -f docker-compose-production.yml up -d --build peludosclick_backend
+
+# 5. Monitor the logs (optional)
+$ docker-compose -f docker-compose-production.yml logs -f peludosclick_backend
+```
+
+Note: Make sure you have the correct environment variables set in your `.my-env-production` file before deploying.
 
 ## Support
 
