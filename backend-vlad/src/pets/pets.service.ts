@@ -5,10 +5,15 @@ import { join } from "path";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdateMedalDto } from "./dto/update-medal.dto";
 import { FILE_UPLOAD_DIR } from "src/constans";
+import { MailService } from "src/mail/mail.service";
+import * as fs from 'fs';
 
 @Injectable()
 export class PetsServicie {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private mailService: MailService
+    ) {}
 
     async allPet() {
         const allPets = await this.prisma.medal.findMany({
@@ -130,6 +135,33 @@ export class PetsServicie {
         });
         if(!virgin) throw new NotFoundException('Virgin Medal not found');
 
+        // Send notification email
+        await this.sendMedalUpdateNotification(email, user, medal);
+
         return medal;
+    }
+
+    private async sendMedalUpdateNotification(email: string, user: any, medal: any) {
+        const imageAttachment = medal.image ? {
+            filename: medal.image,
+            path: join(FILE_UPLOAD_DIR, medal.image)
+        } : null;
+        console.log('before send mail');
+        await this.mailService['mailerService'].sendMail({
+            to: 'info@peludosclick.com',
+            from: '"PeludosClick" <info@peludosclick.com>',
+            subject: 'Registro de un nueva mascota',
+            template: './new-cliente-registered',
+            context: {
+                email: email,
+                phone: user.phonenumber,
+                petName: medal.petName,
+                description: medal.description,
+                status: medal.status,
+                medalString: medal.medalString,
+                imageUrl: medal.image ? `${process.env.FRONTEND_URL}/files/${medal.image}` : null
+            },
+            attachments: imageAttachment ? [imageAttachment] : []
+        });
     }
 }
