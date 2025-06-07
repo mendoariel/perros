@@ -1,27 +1,22 @@
 version: "3.8"
 services:
   peludosclick_frontend_local_deploy_service:
-    container_name: angular-frontend-local-deploy
     build: 
-      dockerfile: local-deploy.Dockerfile
       context: ./frontend
+      dockerfile: local-deploy.Dockerfile
       target: production
-    volumes:
-      - ./frontend:/alberto/frontend/src/app
-      - /alberto/frontend/src/app/node_modules
+    container_name: angular-frontend-local-deploy
     ports:
-      - "4001:4000"
-    environment:
-      - PORT=4000
+      - '4000:4000'
     depends_on:
-      peludosclick_backend:
-        condition: service_healthy
-  
+      - peludosclick_backend
+    environment:
+      - NODE_ENV=production
+
   peludosclick_backend:
     build: 
       context: ./backend-vlad
-      dockerfile: production.Dockerfile
-      target: production
+      dockerfile: local-deploy.Dockerfile
     container_name: peludosclickbackend
     volumes:
       - ./backend-vlad:/alberto/backend/src/app
@@ -40,35 +35,42 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-    
-  # Our Postgres Database for NestJS to connect to
+
   postgres:
     image: postgres:12
+    container_name: mi-perro-qr-postgres-1
+    restart: always
     environment:
-      POSTGRES_USER: mendoariel
-      POSTGRES_PASSWORD: casadesara
-      POSTGRES_DB: peludosclick
+      - POSTGRES_USER=mendoariel
+      - POSTGRES_PASSWORD=casadesara
+      - POSTGRES_DB=peludosclick
     ports:
-      - 5432:5432
-    volumes:
+      - '5432:5432'
+    volumes: 
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U mendoariel -d peludosclick"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
 
-  # The Postgres Admin tool if we want to run some custom queries
-  postgres_admin-perros:
-    image: dpage/pgadmin4:4.28
-    depends_on: 
-      postgres:
-        condition: service_healthy
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: mi-perro-qr-pgadmin
+    restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     ports:
-      - 5050:80
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:
+  pgadmin_data:

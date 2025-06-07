@@ -3,9 +3,6 @@
 
 set -e
 
-echo "Generating Prisma Client..."
-npx prisma generate
-
 echo "Waiting for database..."
 until PGPASSWORD=casadesara psql -h postgres -U mendoariel -d peludosclick -c '\q'; do
   >&2 echo "Postgres is unavailable - sleeping"
