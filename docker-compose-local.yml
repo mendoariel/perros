@@ -7,13 +7,14 @@ services:
       target: development
     command: npm run dev:ssr
     volumes:
-      - ./frontend:/alberto/frontend/src/app
-      - /alberto/frontend/src/app/node_modules
+      - ./frontend:/alberto/frontend
+      - /alberto/frontend/node_modules
     ports:
       - "4200:4200"
       - "4000:4000"
       # - "49153:49153"
     environment:
+      - PORT=4000
       - CHOKIDAR_USEPOLLING=true
   backend-perros:
     build: 

@@ -1,11 +1,11 @@
 # build
 FROM node:20-alpine AS development
 
-WORKDIR /alberto/frontend/src/app
+WORKDIR /alberto/frontend
 
 COPY package*.json ./
 
-RUN npm install --legacy-peer-deps
+RUN npm install
 RUN npm install -g @angular/cli@17
 
 COPY . .
