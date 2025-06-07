@@ -1,6 +1,6 @@
 export const environment = {
-    frontend: '',
+    frontend: 'http://localhost:4001',
     title: 'environment ts',
     production: false,
-    perrosQrApi: ''
+    perrosQrApi: 'http://peludosclickbackend:3333/'
 };
