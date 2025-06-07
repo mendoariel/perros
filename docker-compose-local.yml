@@ -5,16 +5,14 @@ services:
       dockerfile: Dockerfile
       context: ./frontend
       target: development
-    command: npm run dev:ssr
+    command: ng serve --host=0.0.0.0 --port=4100 --disable-host-check --poll=500 --configuration=development
     volumes:
       - ./frontend:/alberto/frontend
       - /alberto/frontend/node_modules
     ports:
-      - "4200:4200"
-      - "4000:4000"
-      # - "49153:49153"
+      - "4100:4100"
     environment:
-      - PORT=4000
+      - PORT=4100
       - CHOKIDAR_USEPOLLING=true
   backend-perros:
     build: 
@@ -53,6 +51,8 @@ services:
       POSTGRES_DB: peludosclick
     ports:
       -  5432:5432  
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U mendoariel -d peludosclick"]
       interval: 5s
@@ -68,3 +68,6 @@ services:
       PGADMIN_DEFAULT_PASSWORD: password
     ports:
       - 5050:80
+
+volumes:
+  postgres_data:

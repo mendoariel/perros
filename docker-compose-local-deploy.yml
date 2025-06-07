@@ -6,12 +6,14 @@ services:
       dockerfile: local-deploy.Dockerfile
       target: production
     container_name: angular-frontend-local-deploy
+    command: npm run serve:ssr
     ports:
       - '4000:4000'
+    environment:
+      - NODE_ENV=local-deploy
+      - PORT=4000
     depends_on:
       - peludosclick_backend
-    environment:
-      - NODE_ENV=production
 
   peludosclick_backend:
     build: 
@@ -30,7 +32,7 @@ services:
     depends_on: 
       postgres:
         condition: service_healthy
-    env_file: "./backend-vlad/.my-env-local"
+    env_file: "./backend-vlad/.my-env-local-deploy"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3333/health"]
       interval: 30s

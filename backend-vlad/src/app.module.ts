@@ -9,6 +9,9 @@ import { QrCheckingModule } from './qr-checking/qr-checking.module';
 import { PetsModule } from './pets/pets.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { FILE_UPLOAD_DIR } from './constans';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
 @Module({
   imports: [
     MulterModule.register({
@@ -26,7 +29,9 @@ import { FILE_UPLOAD_DIR } from './constans';
       isGlobal: true
     })
   ],
+  controllers: [AppController],
   providers: [
+    AppService,
     {
       provide: APP_GUARD,
       useClass: AtGuard

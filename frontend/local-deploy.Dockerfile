@@ -17,8 +17,8 @@ RUN npm install -g @angular/cli@17
 
 COPY . .
 
-# Build the app for SSR
-RUN npm run build:ssr
+# Build the app for SSR with local-deploy configuration
+RUN npm run build:ssr-local-deploy
 
 ### STAGE 2: Run ###
 FROM node:18.13.0-slim AS production
