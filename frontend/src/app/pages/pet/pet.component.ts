@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
 import { ShareIconsModule } from 'ngx-sharebuttons/icons';
-import { Meta } from '@angular/platform-browser';
+import { MetaService } from 'src/app/services/meta.service';
 
 // Default social sharing image if pet image is not available
 const DEFAULT_SOCIAL_IMAGE = `${environment.frontend}/assets/default-pet-social.jpg`;
@@ -42,7 +42,7 @@ export class PetComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private qrCheckingService: QrChekingService,
     private router: Router,
-    private meta: Meta
+    private metaService: MetaService
   ) {}
 
   ngOnInit(): void {
@@ -52,21 +52,17 @@ export class PetComponent implements OnInit, OnDestroy {
 
   setMetaData() {
     const petImage = this.isImageLoaded ? 
-      `${environment.perrosQrApi}pets/files/${this.pet.image}` : 
-      DEFAULT_SOCIAL_IMAGE;
+      `pets/files/${this.pet.image}` : 
+      'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
     
     const description = this.pet.description || 'Conoce más sobre esta mascota en PeludosClick';
     
-    this.meta.updateTag({property: 'og:title', content: `${this.pet.petName} - PeludosClick`});
-    this.meta.updateTag({property: 'og:description', content: description});
-    this.meta.updateTag({property: 'og:image', content: petImage});
-    this.meta.updateTag({property: 'og:url', content: `${environment.frontend}/mascota/${this.medalString}`});
-    
-    this.meta.updateTag({property: 'og:type', content: 'website'});
-    this.meta.updateTag({name: 'twitter:card', content: 'summary_large_image'});
-    this.meta.updateTag({name: 'twitter:title', content: `${this.pet.petName} - PeludosClick`});
-    this.meta.updateTag({name: 'twitter:description', content: description});
-    this.meta.updateTag({name: 'twitter:image', content: petImage});
+    this.metaService.updateMetaTags({
+      title: `${this.pet.petName} - PeludosClick`,
+      description: description,
+      image: petImage,
+      url: `/mascota/${this.medalString}`
+    });
   }
 
   checkImageExists(imageUrl: string): Promise<boolean> {
@@ -99,7 +95,7 @@ export class PetComponent implements OnInit, OnDestroy {
         this.pet.tel = `tel: ${this.pet.phone}`;
         this.pet.background = this.isImageLoaded ? 
           `url(${imageUrl})` : 
-          `url(${DEFAULT_SOCIAL_IMAGE})`;
+          `url(${environment.frontend}/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg)`;
         
         this.setMetaData();
       },

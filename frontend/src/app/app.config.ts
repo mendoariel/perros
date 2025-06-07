@@ -7,7 +7,10 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { environment } from 'src/environments/environment';
 
 export function tokenGetter() {
-  return localStorage.getItem('access_token')
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('access_token');
+  }
+  return null;
 }
 
 export const appConfig: ApplicationConfig = {

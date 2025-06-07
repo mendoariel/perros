@@ -1,20 +1,21 @@
 version: "3.8"
 services:
   frontend-perros:
-    build: 
-      dockerfile: Dockerfile
+    build:
       context: ./frontend
-      target: development
-    command: npm run serve:ssr:dev
-    volumes:
-      - ./frontend:/alberto/frontend
-      - /alberto/frontend/node_modules
+      dockerfile: Dockerfile
+    command: npm run dev:ssr
     ports:
       - "4100:4100"
     environment:
-      - PORT=4100
       - NODE_ENV=development
-      - CHOKIDAR_USEPOLLING=true
+      - PORT=4100
+      - API_URL=http://backend-perros:3333
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend-perros
     networks:
       - app-network
   backend-perros:
