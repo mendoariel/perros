@@ -21,6 +21,7 @@ services:
     volumes:
       - ./backend-vlad:/alberto/backend/src/app
       - /alberto/backend/src/app/node_modules
+      - ./backend-vlad/public/files:/app/public/files
     command: >
       sh -c "./scripts/wait-for-db.sh &&
              npm run start:prod"
@@ -74,3 +75,4 @@ services:
 volumes:
   postgres_data:
   pgadmin_data:
+  uploads:
