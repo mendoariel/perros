@@ -1,26 +1,22 @@
-# build
-FROM node:20-alpine AS development
+FROM node:20-alpine
 
-WORKDIR /alberto/frontend
+WORKDIR /app
 
 COPY package*.json ./
 
 RUN npm install
 RUN npm install -g @angular/cli@17
-RUN npm install -g cross-env
 
 COPY . .
 
+ENV NODE_ENV=development
+ENV PORT=4100
+
 EXPOSE 4100
 
-CMD ["npm", "run", "serve:ssr:frontend:development"]
+# Build the application
+RUN npm run build:ssr:dev
 
-FROM nginx:alpine AS production
-
-COPY nginx.conf /etc/nginx/nginx.conf
-
-WORKDIR /usr/share/nginx/html
-COPY dist/frontend/browser .
-
-EXPOSE 80
+# Start the SSR server
+CMD ["npm", "run", "serve:ssr:dev"]
 
