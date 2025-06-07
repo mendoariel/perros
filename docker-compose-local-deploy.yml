@@ -8,9 +8,14 @@ services:
       target: production
     volumes:
       - ./frontend:/alberto/frontend/src/app
-      - /alberto/src/app/node_modules
+      - /alberto/frontend/src/app/node_modules
     ports:
-      - "9002:80"
+      - "4001:4000"
+    environment:
+      - PORT=4000
+    depends_on:
+      peludosclick_backend:
+        condition: service_healthy
   
   peludosclick_backend:
     build: 
@@ -21,16 +26,20 @@ services:
     volumes:
       - ./backend-vlad:/alberto/backend/src/app
       - /alberto/backend/src/app/node_modules
-    # command: npx prisma generate
-    # command: npx prisma db push
-    # command: npx prisma db pull
-    # command: npx prisma migrate deploy
-    command: npm run start:prod
+    command: >
+      sh -c "./scripts/wait-for-db.sh &&
+             npm run start:prod"
     ports:
-      - '3335:3335'
+      - '3333:3333'
     depends_on: 
-      - postgres
+      postgres:
+        condition: service_healthy
     env_file: "./backend-vlad/.my-env-local"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     
   # Our Postgres Database for NestJS to connect to
   postgres:
@@ -40,14 +49,26 @@ services:
       POSTGRES_PASSWORD: casadesara
       POSTGRES_DB: peludosclick
     ports:
-      -  5432:5432  
-  # The Postgres Admin tool if we want to run some custom queries and so on against our Database
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mendoariel -d peludosclick"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # The Postgres Admin tool if we want to run some custom queries
   postgres_admin-perros:
     image: dpage/pgadmin4:4.28
     depends_on: 
-       - postgres
+      postgres:
+        condition: service_healthy
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: password
     ports:
       - 5050:80
+
+volumes:
+  postgres_data:
