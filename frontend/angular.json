@@ -97,6 +97,20 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
+            },
+            "local-deploy": {
+              "buildOptimizer": true,
+              "optimization": true,
+              "vendorChunk": false,
+              "extractLicenses": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local-deploy.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -112,6 +126,9 @@
             },
             "development": {
               "browserTarget": "frontend:build:development"
+            },
+            "local-deploy": {
+              "browserTarget": "frontend:build:local-deploy"
             }
           },
           "defaultConfiguration": "development"
@@ -172,20 +189,39 @@
               "sourceMap": true,
               "extractLicenses": false,
               "vendorChunk": true
+            },
+            "local-deploy": {
+              "buildOptimizer": true,
+              "optimization": true,
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local-deploy.ts"
+                }
+              ],
+              "sourceMap": false,
+              "extractLicenses": true,
+              "vendorChunk": false
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "development"
         },
         "serve-ssr": {
           "builder": "@angular-devkit/build-angular:ssr-dev-server",
           "configurations": {
             "development": {
               "browserTarget": "frontend:build:development",
-              "serverTarget": "frontend:server:development"
+              "serverTarget": "frontend:server:development",
+              "port": 4100
             },
             "production": {
               "browserTarget": "frontend:build:production",
               "serverTarget": "frontend:server:production"
+            },
+            "local-deploy": {
+              "browserTarget": "frontend:build:local-deploy",
+              "serverTarget": "frontend:server:local-deploy"
             }
           },
           "defaultConfiguration": "development"
