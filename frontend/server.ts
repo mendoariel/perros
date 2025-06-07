@@ -51,13 +51,13 @@ function run(): void {
   console.log('Current NODE_ENV:', process.env['NODE_ENV']);
   console.log('Is Development?', isDevelopment);
   
-  const port = isDevelopment ? 4100 : (parseInt(process.env['PORT'] || '4000', 10));
+  const port = 4100;  // Fixed port for development
   console.log('Selected Port:', port);
 
   // Start up the Node server
   const server = app();
   server.listen(port, '0.0.0.0', () => {
-    console.log(`Node Express server listening on http://localhost:${port}`);
+    console.log(`Node Express server listening on http://0.0.0.0:${port}`);
   });
 }
 

@@ -213,7 +213,8 @@
             "development": {
               "browserTarget": "frontend:build:development",
               "serverTarget": "frontend:server:development",
-              "port": 4100
+              "port": 4100,
+              "host": "0.0.0.0"
             },
             "production": {
               "browserTarget": "frontend:build:production",

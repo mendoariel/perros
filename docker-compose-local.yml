@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
       context: ./frontend
       target: development
-    command: ng serve --host=0.0.0.0 --port=4100 --disable-host-check --poll=500 --configuration=development
+    command: npm run serve:ssr:dev
     volumes:
       - ./frontend:/alberto/frontend
       - /alberto/frontend/node_modules
@@ -13,7 +13,10 @@ services:
       - "4100:4100"
     environment:
       - PORT=4100
+      - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
+    networks:
+      - app-network
   backend-perros:
     build: 
       context: ./backend-vlad
@@ -71,3 +74,7 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
