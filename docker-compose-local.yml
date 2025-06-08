@@ -4,13 +4,14 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      target: development
+    container_name: mi-perro-qr-frontend-perros-1
     command: npm run dev:ssr
     ports:
-      - "4100:4100"
+      - '4100:4100'
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=local-deploy
       - PORT=4100
-      - API_URL=http://backend-perros:3333
     volumes:
       - ./frontend:/app
       - /app/node_modules
