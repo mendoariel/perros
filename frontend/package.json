@@ -10,7 +10,7 @@
     "build-prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "dev:ssr": "cross-env NODE_ENV=development PORT=4100 ng run frontend:serve-ssr:development",
+    "dev:ssr": "ng run frontend:serve-ssr",
     "serve:ssr": "node dist/frontend/server/main.js",
     "build:ssr": "ng build && ng run frontend:server",
     "build:ssr:dev": "ng build --configuration development && ng run frontend:server:development",
