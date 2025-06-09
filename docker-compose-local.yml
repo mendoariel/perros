@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
       target: development
     container_name: mi-perro-qr-frontend-perros-1
-    command: npm run serve:ssr:dev
+    command: npm run start
     ports:
       - '4100:4100'
     environment:
@@ -15,6 +15,7 @@ services:
       - HOST=0.0.0.0
       - BACKEND_URL=http://localhost:3333
     volumes:
+      - ./frontend:/alberto/frontend/src/app
       - /alberto/frontend/src/app/node_modules
     depends_on:
       - backend-perros
