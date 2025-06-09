@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --host=0.0.0.0 --port 4100 --disable-host-check --poll 500 --configuration development",
+    "start": "ng serve --host 0.0.0.0 --poll 2000 --port 4100 --disable-host-check",
     "build": "ng build",
     "build-local": "ng build --configuration development",
     "build-local-deploy": "ng build --configuration local-deploy",
@@ -14,7 +14,7 @@
     "serve:ssr": "node dist/frontend/server/main.js",
     "build:ssr": "ng build && ng run frontend:server",
     "build:ssr:dev": "ng build --configuration development && ng run frontend:server:development",
-    "serve:ssr:dev": "cross-env NODE_ENV=development PORT=4100 node dist/frontend/server/main.js",
+    "serve:ssr:dev": "ng run frontend:serve-ssr",
     "build:ssr-local-deploy": "ng build --configuration local-deploy && ng run frontend:server:local-deploy",
     "prerender": "ng run frontend:prerender"
   },

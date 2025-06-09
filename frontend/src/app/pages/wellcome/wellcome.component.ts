@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, afterRender } from '@angular/core';
+import { Component, inject, OnInit, afterRender, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { Router, RouterModule } from '@angular/router';
@@ -7,7 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { PetsService } from 'src/app/services/pets.services';
 import { environment } from 'src/environments/environment';
 import { PeludosclickFooterComponent } from 'src/app/shared/components/peludosclick-footer/peludosclick-footer.component';
-import { Observable, map, of, catchError, BehaviorSubject } from 'rxjs';
+import { Observable, map, of, catchError, Subscription } from 'rxjs';
 
 interface Pet {
   petName: string;
@@ -32,12 +32,12 @@ interface Pet {
   templateUrl: './wellcome.component.html',
   styleUrls: ['./wellcome.component.scss']
 })
-export class WellcomeComponent implements OnInit {
+export class WellcomeComponent implements OnInit, OnDestroy {
   private petService = inject(PetsService);
   private router = inject(Router);
+  private subscription: Subscription | null = null;
   
-  private petsSubject = new BehaviorSubject<Pet[]>([]);
-  pets$ = this.petsSubject.asObservable();
+  pets: Pet[] = [];
   loading = true;
   error: string | null = null;
   
@@ -52,15 +52,26 @@ export class WellcomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    // La carga de datos se maneja en afterRender
+    setTimeout(() => {
+      //this.loading = false;
+    }, 3000);
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   loadPets() {
     this.loading = true;
     this.error = null;
     
-    this.petService.getPets().pipe(
-      map(pets => pets.filter(pet => pet.status === 'ENABLED')),
+    this.subscription = this.petService.getPets().pipe(
+      map(pets => {
+        this.loading = false;
+        return pets.filter(pet => pet.status === 'ENABLED');
+      }),
       map(pets => pets.map(pet => ({
         ...pet,
         background: `url(${environment.perrosQrApi}pets/files/${pet.image})`,
@@ -73,11 +84,12 @@ export class WellcomeComponent implements OnInit {
       })
     ).subscribe({
       next: (pets) => {
-        this.petsSubject.next(pets);
+        this.pets = pets;
         this.loading = false;
+        console.log('pets ', this.pets);
       },
       error: (error) => {
-        console.error('Error in subscription:', error);
+        console.error('Error loading pets:', error);
         this.error = 'Error al cargar las mascotas. Por favor, intenta de nuevo más tarde.';
         this.loading = false;
       }
