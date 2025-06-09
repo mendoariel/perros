@@ -19,7 +19,7 @@ export const appConfig: ApplicationConfig = {
       JwtModule.forRoot({
         config: {
           tokenGetter: tokenGetter,
-          allowedDomains: [environment.production ? 'api.peludosclick.com' : 'localhost:3333']
+          allowedDomains: [environment.perrosQrApi, 'backend-perros:3333', 'api.peludosclick.com']
         }
       })
     ),

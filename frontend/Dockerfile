@@ -5,6 +5,11 @@ RUN npm install
 RUN npm install -g @angular/cli@17
 COPY . .
 EXPOSE 4100
+ENV NODE_ENV=development
+ENV PORT=4100
+ENV HOST=0.0.0.0
+ENV BACKEND_URL=http://backend-perros:3333
+CMD ["npm", "run", "serve:ssr"]
 
 # FROM node:18.13.0-slim AS production
 # WORKDIR /alberto/frontend/src/app

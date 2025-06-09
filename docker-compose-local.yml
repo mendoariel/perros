@@ -6,19 +6,25 @@ services:
       dockerfile: Dockerfile
       target: development
     container_name: mi-perro-qr-frontend-perros-1
-    command: npm run dev:ssr
+    command: npm run serve:ssr
     ports:
       - '4100:4100'
     environment:
-      - NODE_ENV=local-deploy
+      - NODE_ENV=development
       - PORT=4100
+      - HOST=0.0.0.0
+      - BACKEND_URL=http://backend-perros:3333
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - ./frontend:/alberto/frontend/src/app
+      - /alberto/frontend/src/app/node_modules
     depends_on:
       - backend-perros
     networks:
-      - app-network
+      app-network:
+        aliases:
+          - frontend-perros
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   backend-perros:
     build: 
       context: ./backend-vlad
@@ -41,6 +47,13 @@ services:
       postgres:
         condition: service_healthy
     env_file: "./backend-vlad/.my-env-local"
+    networks:
+      app-network:
+        aliases:
+          - backend-perros
+      default:
+        aliases:
+          - backend-perros
 
     # environment:
     #   DATABASE_URL: postgres://user:password@postgres:5432/biciarbol?schema=public
