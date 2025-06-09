@@ -36,7 +36,23 @@
 
     <h3>Algunas mascotas conectadas</h3>
    
-    <div class="pets-container" *ngIf="pets.length > 0">
+    <!-- Loading state -->
+    <div class="loading-container" *ngIf="loading">
+      <mat-spinner></mat-spinner>
+      <p>Cargando mascotas...</p>
+    </div>
+
+    <!-- Error state -->
+    <div class="error-container" *ngIf="error">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="loadPets()">
+        Intentar de nuevo
+      </button>
+    </div>
+
+    <!-- Pets list -->
+    <div class="pets-container" *ngIf="!loading && !error && (pets$ | async) as pets">
       <section class="pelu-card" *ngFor="let pet of pets" (click)="goToPet(pet)">
           <h2>{{ pet.petName }}</h2>
           <article class="image">
@@ -46,6 +62,11 @@
             <p>{{ pet.description }}</p>
           </article>
       </section>
+    </div>
+
+    <!-- No pets state -->
+    <div class="no-pets-container" *ngIf="!loading && !error && (pets$ | async)?.length === 0">
+      <p>No hay mascotas disponibles en este momento.</p>
     </div>
   </section>
   <app-peludosclick-footer></app-peludosclick-footer>

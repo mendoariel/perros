@@ -1,9 +1,9 @@
 export interface Pet {
-    id?: string;
-    name: string;
-    breed: string;
-    age: number;
-    owner: string;
-    createdAt?: Date;
-    updatedAt?: Date;
+    petName: string;
+    image: string;
+    status: string;
+    description: string;
+    medalString: string;
+    background?: string;
+    link?: string;
 } 

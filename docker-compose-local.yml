@@ -6,23 +6,20 @@ services:
       dockerfile: Dockerfile
       target: development
     container_name: mi-perro-qr-frontend-perros-1
-    command: npm run serve:ssr
+    command: npm run serve:ssr:dev
     ports:
       - '4100:4100'
     environment:
       - NODE_ENV=development
       - PORT=4100
       - HOST=0.0.0.0
-      - BACKEND_URL=http://backend-perros:3333
+      - BACKEND_URL=http://localhost:3333
     volumes:
-      - ./frontend:/alberto/frontend/src/app
       - /alberto/frontend/src/app/node_modules
     depends_on:
       - backend-perros
     networks:
-      app-network:
-        aliases:
-          - frontend-perros
+      - app-network
     extra_hosts:
       - "host.docker.internal:host-gateway"
   backend-perros:
@@ -48,19 +45,7 @@ services:
         condition: service_healthy
     env_file: "./backend-vlad/.my-env-local"
     networks:
-      app-network:
-        aliases:
-          - backend-perros
-      default:
-        aliases:
-          - backend-perros
-
-    # environment:
-    #   DATABASE_URL: postgres://user:password@postgres:5432/biciarbol?schema=public
-    #   NODE_ENV: development
-    #   JWT_SECRET: hard_to_guess_secret_123
-    #   PORT: 3333
-    #   FRONTEND_URL: 'http://localhost:4200'
+      - app-network
   postgres:
     image: postgres:12
     environment:
@@ -76,6 +61,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - app-network
   # The Postgres Admin tool if we want to run some custom queries and so on against our Database
   postgres_admin-perros:
     image: dpage/pgadmin4:4.28
@@ -86,6 +73,8 @@ services:
       PGADMIN_DEFAULT_PASSWORD: password
     ports:
       - 5050:80
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
