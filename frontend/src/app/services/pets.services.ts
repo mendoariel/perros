@@ -1,8 +1,9 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Injectable, Inject, PLATFORM_ID } from "@angular/core";
-import { environment } from "src/environments/environment";
-import { Observable } from "rxjs";
-import { Pet } from "../models/pet.model";
+import { HttpClient } from '@angular/common/http';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Pet } from '../models/pet.model';
+import { isPlatformServer } from '@angular/common';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -35,5 +36,17 @@ export class PetsService {
 
     deletePet(id: string): Observable<void> {
         return this.http.delete<void>(`${this.getApiUrl()}pets/${id}`);
+    }
+
+    getMyPet(medalString: string): Observable<Pet> {
+        return this.http.get<Pet>(`${this.getApiUrl()}pets/my/${medalString}`);
+    }
+
+    getMyPets(): Observable<Pet[]> {
+        return this.http.get<Pet[]>(`${this.getApiUrl()}pets/mine`);
+    }
+
+    updateMedal(body: any): Observable<any> {
+        return this.http.put<any>(`${this.getApiUrl()}pets/update-medal`, body);
     }
 }

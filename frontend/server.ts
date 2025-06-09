@@ -37,7 +37,10 @@ export function app(): express.Express {
         documentFilePath: indexHtml,
         url: `${protocol}://${headers.host}${originalUrl}`,
         publicPath: distFolder,
-        providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
+        providers: [
+          { provide: APP_BASE_HREF, useValue: baseUrl },
+          { provide: 'NODE_ENV', useValue: process.env['NODE_ENV'] }
+        ],
       })
       .then((html) => res.send(html))
       .catch((err) => next(err));
@@ -51,7 +54,7 @@ function run(): void {
   console.log('Current NODE_ENV:', process.env['NODE_ENV']);
   console.log('Is Development?', isDevelopment);
   
-  const port = 4100;  // Fixed port for development
+  const port = parseInt(process.env['PORT'] || '4100', 10);
   console.log('Selected Port:', port);
 
   // Start up the Node server
