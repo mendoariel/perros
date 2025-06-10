@@ -17,16 +17,19 @@ RUN npm install -g @angular/cli@17
 
 COPY . .
 
-RUN npm run build-prod --production
-
+# Build the app for SSR
+RUN npm run build:ssr
 
 ### STAGE 2: Run ###
-FROM nginx:1.23.2 AS production
+FROM node:18.13.0-slim AS production
 
-EXPOSE 80
+WORKDIR /alberto/frontend/src/app
 
-RUN rm -rf /usr/share/nginx/html/*
+COPY --from=build /alberto/frontend/src/app/dist ./dist
+COPY --from=build /alberto/frontend/src/app/package*.json ./
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+RUN npm install --production
 
-COPY --from=build /alberto/frontend/src/app/dist/frontend /usr/share/nginx/html
+EXPOSE 9002
+
+CMD ["npm", "run", "serve:ssr"]
