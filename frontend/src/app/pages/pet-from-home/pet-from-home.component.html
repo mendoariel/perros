@@ -43,8 +43,10 @@
           [include]="['copy', 'facebook','telegram', 'whatsapp']"
           [showIcon]="true" 
           [showText]="false" 
-          [url]="env.frontend + '/mascota-publica/' + medalString" 
+          [url]="'https://peludosclick.com/mascota-publica/' + medalString" 
+          [title]="pet.petName + ' - PeludosClick'"
           [description]="pet.description"
+          [image]="pet.background"
           class="pt-5">
         </share-buttons>
       </div>

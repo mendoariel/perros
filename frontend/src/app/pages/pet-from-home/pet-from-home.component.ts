@@ -57,20 +57,39 @@ export class PetFromHomeComponent implements OnInit, OnDestroy {
     
     // Construct absolute URLs
     const petImageUrl = this.isImageLoaded ? 
-      `${this.env.perrosQrApi}pets/files/${this.pet.image}` : 
-      `${environment.frontend}/${DEFAULT_SOCIAL_IMAGE}`;
+      `pets/files/${this.pet.image}` : 
+      'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
     
     const description = this.pet.description || 'Conoce más sobre esta mascota en PeludosClick';
     
-    const metaData = {
-      title: `${this.pet.petName} - PeludosClick`,
-      description: description,
-      image: petImageUrl,
-      url: `/mascota-publica/${this.medalString}`
+    // Ensure the image is loaded before setting meta tags
+    const img = new Image();
+    img.onload = () => {
+      const metaData = {
+        title: `${this.pet.petName} - PeludosClick`,
+        description: description,
+        image: petImageUrl,
+        url: `/mascota-publica/${this.medalString}`
+      };
+      
+      console.log('Updating meta tags with:', metaData);
+      this.metaService.updateMetaTags(metaData);
     };
-    
-    console.log('Updating meta tags with:', metaData);
-    this.metaService.updateMetaTags(metaData);
+    img.onerror = () => {
+      // If image fails to load, use default image
+      const metaData = {
+        title: `${this.pet.petName} - PeludosClick`,
+        description: description,
+        image: 'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg',
+        url: `/mascota-publica/${this.medalString}`
+      };
+      
+      console.log('Updating meta tags with default image:', metaData);
+      this.metaService.updateMetaTags(metaData);
+    };
+    img.src = this.isImageLoaded ? 
+      `https://api.peludosclick.com/pets/files/${this.pet.image}` : 
+      `https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
   }
 
   checkImageExists(imageUrl: string): Promise<boolean> {
