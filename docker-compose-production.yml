@@ -13,10 +13,11 @@ volumes:
 services:
   peludosclick_frontend_service:
     container_name: angular-frontend
-    build: 
+    build:
       dockerfile: production.Dockerfile
       context: ./frontend
       target: production
+    mem_limit: 3g
     volumes:
       - ./frontend:/alberto/frontend/src/app
       - /alberto/src/app/node_modules
