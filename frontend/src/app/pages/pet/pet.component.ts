@@ -52,8 +52,8 @@ export class PetComponent implements OnInit, OnDestroy {
 
   setMetaData() {
     const petImage = this.isImageLoaded ? 
-      `pets/files/${this.pet.image}` : 
-      'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
+      `https://api.peludosclick.com/pets/files/${this.pet.image}` : 
+      `https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
     
     const description = this.pet.description || 'Conoce más sobre esta mascota en PeludosClick';
     
@@ -61,7 +61,7 @@ export class PetComponent implements OnInit, OnDestroy {
       title: `${this.pet.petName} - PeludosClick`,
       description: description,
       image: petImage,
-      url: `/mascota/${this.medalString}`
+      url: `https://peludosclick.com/mascota/${this.medalString}`
     });
   }
 
