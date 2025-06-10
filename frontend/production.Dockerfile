@@ -1,6 +1,6 @@
 ### STAGE 1: Build ###
 
-FROM node:18.12.0 AS build
+FROM node:18.13.0 AS build
 # Create images of node, tha main that know you count with a machine
 
 # Specify the work folder 
@@ -12,21 +12,24 @@ COPY package*.json ./
 RUN npm install
 # Create the node_module folder intalls liabriries that are into package.json
 
-RUN npm install -g @angular/cli@16.1.0
+RUN npm install -g @angular/cli@17
 # install into images of node tha include ubuntu machine, becoause node include ubuntu
 
 COPY . .
 
-RUN npm run build-prod --production
-
+# Build the app for SSR
+RUN npm run build:ssr
 
 ### STAGE 2: Run ###
-FROM nginx:1.23.2 AS production
+FROM node:18.13.0-slim AS production
 
-EXPOSE 80
+WORKDIR /alberto/frontend/src/app
 
-RUN rm -rf /usr/share/nginx/html/*
+COPY --from=build /alberto/frontend/src/app/dist ./dist
+COPY --from=build /alberto/frontend/src/app/package*.json ./
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+RUN npm install --production
 
-COPY --from=build /alberto/frontend/src/app/dist/frontend /usr/share/nginx/html
+EXPOSE 9002
+
+CMD ["npm", "run", "serve:ssr"]

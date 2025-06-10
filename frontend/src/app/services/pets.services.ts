@@ -1,30 +1,52 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { environment } from "src/environments/environment";
+import { HttpClient } from '@angular/common/http';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Pet } from '../models/pet.model';
+import { isPlatformServer } from '@angular/common';
+import { environment } from 'src/environments/environment';
 
-@Injectable({providedIn: 'root'})
+@Injectable({
+    providedIn: 'root'
+})
 export class PetsService {
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        @Inject(PLATFORM_ID) private platformId: Object
+    ) { }
 
-    getMyPets(): any {
-        let token = localStorage.getItem('access_token');
-        let header = new HttpHeaders().set('Authorization',`Bearer ${token}`);
-        return this.http.get(`${environment.perrosQrApi}pets/mine`, {headers: header});
+    private getApiUrl() {
+        return environment.perrosQrApi;
     }
 
-    getMyPet(medalString: string): any {
-        let token = localStorage.getItem('access_token');
-        let header = new HttpHeaders().set('Authorization',`Bearer ${token}`);
-        return this.http.get(`${environment.perrosQrApi}pets/my/${medalString}`, {headers: header});
+    getPets(): Observable<Pet[]> {
+        return this.http.get<Pet[]>(`${this.getApiUrl()}pets`);
     }
 
-    getAllPets(): any {
-        return this.http.get(`${environment.perrosQrApi}pets`);
+    getPetById(id: string): Observable<Pet> {
+        return this.http.get<Pet>(`${this.getApiUrl()}pets/${id}`);
     }
 
-    updateMedal(body: any): any {
-        let token = localStorage.getItem('access_token');
-        let header = new HttpHeaders().set('Authorization',`Bearer ${token}`);
-        return this.http.put(`${environment.perrosQrApi}pets/update-medal`, body, {headers: header});
+    createPet(pet: Pet): Observable<Pet> {
+        return this.http.post<Pet>(`${this.getApiUrl()}pets`, pet);
+    }
+
+    updatePet(id: string, pet: Pet): Observable<Pet> {
+        return this.http.put<Pet>(`${this.getApiUrl()}pets/${id}`, pet);
+    }
+
+    deletePet(id: string): Observable<void> {
+        return this.http.delete<void>(`${this.getApiUrl()}pets/${id}`);
+    }
+
+    getMyPet(medalString: string): Observable<Pet> {
+        return this.http.get<Pet>(`${this.getApiUrl()}pets/my/${medalString}`);
+    }
+
+    getMyPets(): Observable<Pet[]> {
+        return this.http.get<Pet[]>(`${this.getApiUrl()}pets/mine`);
+    }
+
+    updateMedal(body: any): Observable<any> {
+        return this.http.put<any>(`${this.getApiUrl()}pets/update-medal`, body);
     }
 }

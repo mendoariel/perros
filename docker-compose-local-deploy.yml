@@ -1,0 +1,80 @@
+version: "3.8"
+services:
+  peludosclick_frontend_local_deploy_service:
+    build: 
+      context: ./frontend
+      dockerfile: local-deploy.Dockerfile
+      target: production
+    container_name: angular-frontend-local-deploy
+    command: npm run serve:ssr
+    ports:
+      - '4000:4000'
+    environment:
+      - NODE_ENV=local-deploy
+      - PORT=4000
+    depends_on:
+      - peludosclick_backend
+
+  peludosclick_backend:
+    build: 
+      context: ./backend-vlad
+      dockerfile: local-deploy.Dockerfile
+    container_name: peludosclickbackend
+    volumes:
+      - ./backend-vlad:/alberto/backend/src/app
+      - /alberto/backend/src/app/node_modules
+      - ./backend-vlad/public/files:/app/public/files
+    command: >
+      sh -c "./scripts/wait-for-db.sh &&
+             npm run start:prod"
+    ports:
+      - '3333:3333'
+    depends_on: 
+      postgres:
+        condition: service_healthy
+    env_file: "./backend-vlad/.my-env-local-deploy"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  postgres:
+    image: postgres:12
+    container_name: mi-perro-qr-postgres-1
+    restart: always
+    environment:
+      - POSTGRES_USER=mendoariel
+      - POSTGRES_PASSWORD=casadesara
+      - POSTGRES_DB=peludosclick
+    ports:
+      - '5432:5432'
+    volumes: 
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mendoariel -d peludosclick"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: mi-perro-qr-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+  uploads:

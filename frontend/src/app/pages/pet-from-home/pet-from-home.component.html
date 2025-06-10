@@ -34,27 +34,20 @@
       
       <div class="share-buttons">
         <h3>Compartir</h3>
-        <share-buttons theme="circles-dark"
+        <div *ngIf="spinner" class="share-loading">
+          <mat-spinner diameter="30"></mat-spinner>
+          <p>Cargando opciones para compartir...</p>
+        </div>
+        <share-buttons *ngIf="!spinner"
+          theme="circles-dark"
           [include]="['copy', 'facebook','telegram', 'whatsapp']"
           [showIcon]="true" 
           [showText]="false" 
           [url]="env.frontend + '/mascota-publica/' + medalString" 
           [description]="pet.description"
           class="pt-5">
-      </share-buttons>
-      
-      <!-- <share-buttons theme="modern-dark"
-      [include]="['copy', 'facebook', 'email', 'messenger', 'mix', 'line', 'linkedin', 'pinterest', 'print', 'reddit', 'sms', 'telegram', 'tumblr', 'twitter', 'viber', 'vk', 'xing', 'whatsapp']"
-      [showIcon]="true" [showText]="true" url="https://rodrigo.kamada.com.br/" description="Angular Share Buttons"
-      twitterAccount="rodrigokamada" class="pt-5">
-    </share-buttons>
-    
-    <share-buttons theme="modern-dark"
-    [include]="['copy', 'facebook', 'email', 'messenger', 'mix', 'line', 'linkedin', 'pinterest', 'print', 'reddit', 'sms', 'telegram', 'tumblr', 'twitter', 'viber', 'vk', 'xing', 'whatsapp']"
-    [showIcon]="false" [showText]="true" url="https://rodrigo.kamada.com.br/" description="Angular Share Buttons"
-    twitterAccount="rodrigokamada" class="pt-5">
-  </share-buttons> -->
-</div>
+        </share-buttons>
+      </div>
 
 </div>
 </section>

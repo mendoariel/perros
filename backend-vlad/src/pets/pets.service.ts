@@ -1,10 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma, MedalState } from "@prisma/client";
-import e, { Response } from "express";
+import { Response } from "express";
 import { join } from "path";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdateMedalDto } from "./dto/update-medal.dto";
-import { throws } from "assert";
 import { FILE_UPLOAD_DIR } from "src/constans";
 import { MailService } from "src/mail/mail.service";
 import * as fs from 'fs';
@@ -17,19 +16,17 @@ export class PetsServicie {
     ) {}
 
     async allPet() {
-        let allPets = await this.prisma.medal.findMany({
+        const allPets = await this.prisma.medal.findMany({
             where: {
-              status: 'ENABLED' 
+                status: MedalState.ENABLED
             },
             select: {
-              petName: true,
-              image: true,
-              status: true,
-              description: true,
-              medalString: true
+                petName: true,
+                image: true,
+                status: true,
+                description: true,
+                medalString: true
             }
-            
-            
         });
         if(!allPets) throw new NotFoundException('Sin registro');
         
@@ -37,50 +34,47 @@ export class PetsServicie {
     }
 
     async getMyPets(email: string) {
-        let owner = await this.prisma.user.findUnique({
+        const owner = await this.prisma.user.findFirst({
             where: {
                 email: email.toLocaleLowerCase()
             },
             include: {
-              medals: true 
+                medals: true
             }
-            
         });
         if(!owner) throw new NotFoundException('Sin registro');
         return owner.medals;
     }
 
     async getMyPet(email: string, medalString: string) {
-        let user: any = await this.prisma.user.findUnique({
+        const user = await this.prisma.user.findFirst({
             where: {
                 email: email.toLocaleLowerCase()
             },
             include: {
                 medals: {
                     where: {
-                      medalString: medalString 
+                        medalString: medalString
                     }
                 }
             }
-            
         });
-        if(!user) throw new NotFoundException('Sin registro');
-        let response: any = {
-            petName: user.medals[0].petName,
-            image: user.medals[0].image,
-            description: user.medals[0].description,
+        if(!user || !user.medals.length) throw new NotFoundException('Sin registro');
+        
+        const medal = user.medals[0];
+        return {
+            petName: medal.petName,
+            image: medal.image,
+            description: medal.description,
             phone: user.phonenumber,
-            status: user.medals[0].status,
-            medalString: user.medals[0].medalString
-        }
-
-
-        return response;
+            status: medal.status,
+            medalString: medal.medalString
+        };
     }
 
     async getFileByFileName(fileName: string, res: Response) {
         const filePath = join(process.cwd(), 'public', 'files', fileName);
-        return res.sendFile(filePath)
+        return res.sendFile(filePath);
     }
 
     async loadImage(filename: string, medalString: string) {
@@ -89,6 +83,9 @@ export class PetsServicie {
                 medalString: medalString
             }
         });
+
+        if(!medal) throw new NotFoundException('Sin registro de esa medalla');
+
         const updateMedal = await this.prisma.medal.update({
             where: {
                 medalString: medalString
@@ -97,41 +94,43 @@ export class PetsServicie {
                 image: filename
             }
         });
-        if(!updateMedal)  throw new NotFoundException('Sin registro de esa medalla');
-        // delete the file
-        if(medal) {
+
+        // delete the old file if it exists
+        if(medal.image) {
             const fs = require('fs');
-            let path = `${FILE_UPLOAD_DIR}/${medal.image}`;
+            const path = `${FILE_UPLOAD_DIR}/${medal.image}`;
             fs.unlink(path, (error) => { 
-                console.error(error);
-                return;
-            })
+                if(error) console.error(error);
+            });
         }
-        return {image: 'load'};
+
+        return { image: 'load' };
     }
 
     async updateMedal(email: string, medalUpdate: UpdateMedalDto) {
-        let user = await this.prisma.user.update({
-            where: { email: email},
+        const user = await this.prisma.user.update({
+            where: { email },
             data: {
                 phonenumber: medalUpdate.phoneNumber
             }
         });
         if(!user) throw new NotFoundException('User not found');
-        let medal = await this.prisma.medal.update({
-            where: { medalString: medalUpdate.medalString},
+
+        const medal = await this.prisma.medal.update({
+            where: { medalString: medalUpdate.medalString },
             data: {
                 description: medalUpdate.description,
-                status: 'ENABLED'
+                status: MedalState.ENABLED
             }
         });
         if(!medal) throw new NotFoundException('Medal not found');
-        let virgin = await this.prisma.virginMedal.update({
+
+        const virgin = await this.prisma.virginMedal.update({
             where: {
                 medalString: medalUpdate.medalString
             },
             data: {
-                status: 'ENABLED'
+                status: MedalState.ENABLED
             }
         });
         if(!virgin) throw new NotFoundException('Virgin Medal not found');

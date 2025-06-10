@@ -1,6 +1,6 @@
 export const environment = {
-    frontend: '',
-    title: 'environment ts',
+    frontend: 'http://localhost:4100',
+    title: 'Local Development',
     production: false,
-    perrosQrApi: ''
+    perrosQrApi: 'http://localhost:3333/'
 };

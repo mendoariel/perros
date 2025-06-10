@@ -8,7 +8,7 @@ import { MailService } from 'src/mail/mail.service';
 import { UtilService } from 'src/services/util.service';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { ConfirmAccountDto } from './dto/confirm-account.dto';
-import { UserStatus, MedalState } from '@prisma/client';
+import { Prisma, UserStatus, MedalState, Role } from '@prisma/client';
 import { ConfirmMedalto } from './dto/confirm-medal.dto';
 
 var bcrypt = require('bcryptjs');
@@ -40,7 +40,7 @@ export class AuthService {
     // }
 
     async signinLocal(dto: AuthDto): Promise<Tokens> {
-        const user = await this.prisma.user.findUnique({
+        const user = await this.prisma.user.findFirst({
             where: {
                 email: dto.email.toLocaleLowerCase(),
                 userStatus: UserStatus.ACTIVE
@@ -60,27 +60,34 @@ export class AuthService {
     }
     
     async logout(userId: number) {
-        await this.prisma.user.update({
+        const user = await this.prisma.user.findFirst({
             where: {
                 id: userId,
                 hashedRt: {
-                    not: null,
+                    not: null
                 }
-            },
-            data: {
-                hashedRt: null
             }
-        })
+        });
+
+        if (user) {
+            await this.prisma.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    hashedRt: null
+                }
+            });
+        }
     }
 
     async confirmAccount(dto: ConfirmAccountDto) {
-        
-        const user = await this.prisma.user.findUnique({
+        const user = await this.prisma.user.findFirst({
             where: {
                 email: dto.email.toLocaleLowerCase()
             },
             include: {
-              medals:   true 
+                medals: true
             }
         });
 
@@ -97,8 +104,8 @@ export class AuthService {
             }
         });
 
-        // udpate medal status
-        const medalUpdate: any = await this.prisma.medal.update({
+        // update medal status
+        const medalUpdate = await this.prisma.medal.update({
             where: {
                 medalString: dto.medalString
             },
@@ -107,8 +114,8 @@ export class AuthService {
             }
         });
 
-        // udpate medal status
-        const virginMedalUpdate: any = await this.prisma.virginMedal.update({
+        // update virgin medal status
+        const virginMedalUpdate = await this.prisma.virginMedal.update({
             where: {
                 medalString: dto.medalString
             },
@@ -117,12 +124,10 @@ export class AuthService {
             }
         });
 
-        const response = {
+        return {
             message: "user registered, medal incomplete",
             code: 5001
-        }
-
-        return response;
+        };
     }
 
     async confirmMedal(dto: ConfirmMedalto) {
@@ -221,7 +226,7 @@ export class AuthService {
         return message;
     }
 
-    async getToken(userId: number, email: string, role: string): Promise<Tokens> {
+    async getToken(userId: number, email: string, role: Role): Promise<Tokens> {
         const [at, rt] = await Promise.all([
             this.jwtService.signAsync({
                 sub: userId,
