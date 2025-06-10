@@ -21,7 +21,8 @@ services:
       - ./frontend:/alberto/frontend/src/app
       - /alberto/src/app/node_modules
     ports:
-      - "9002:80"
+      - "9002:9002"
+    command: npm run serve:ssr
     labels:
       - traefik.http.routers.peludosclick_frontend_service.rule=Host(`www.peludosclick.com`,`peludosclick.com`)
       - traefik.http.routers.peludosclick_frontend_service.tls=true
