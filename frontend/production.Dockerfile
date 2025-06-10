@@ -1,35 +1,22 @@
-### STAGE 1: Build ###
+# Production stage
+FROM node:20-alpine AS production
 
-FROM node:18.13.0 AS build
-# Create images of node, tha main that know you count with a machine
+# Set working directory
+WORKDIR /app
 
-# Specify the work folder 
-WORKDIR /alberto/frontend/src/app
-
+# Copy package files and install only production dependencies
 COPY package*.json ./
-# Copy all json pakage file file to work folder that mean that into the /alberto/frontend/src/app there is package.json
+RUN npm ci --only=production
 
-RUN npm install
-# Create the node_module folder intalls liabriries that are into package.json
+# Copy the pre-built dist folder
+COPY dist ./dist
 
-RUN npm install -g @angular/cli@17
-# install into images of node tha include ubuntu machine, becoause node include ubuntu
+# Set environment variables
+ENV PORT=9002
+ENV NODE_ENV=production
 
-COPY . .
-
-# Build the app for SSR
-RUN npm run build:ssr
-
-### STAGE 2: Run ###
-FROM node:18.13.0-slim AS production
-
-WORKDIR /alberto/frontend/src/app
-
-COPY --from=build /alberto/frontend/src/app/dist ./dist
-COPY --from=build /alberto/frontend/src/app/package*.json ./
-
-RUN npm install --production
-
+# Expose the port the app runs on
 EXPOSE 9002
 
-CMD ["npm", "run", "serve:ssr"]
+# Start the application
+CMD ["node", "dist/peludosclick-app/server/main.js"]
