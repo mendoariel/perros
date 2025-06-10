@@ -2,11 +2,15 @@ import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { routes } from './routes/routes';
-import { HttpClientModule } from '@angular/common/http'
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { JwtModule } from '@auth0/angular-jwt';
+import { environment } from 'src/environments/environment';
 
 export function tokenGetter() {
-  return localStorage.getItem('access_token')
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('access_token');
+  }
+  return null;
 }
 
 export const appConfig: ApplicationConfig = {
@@ -15,12 +19,12 @@ export const appConfig: ApplicationConfig = {
       JwtModule.forRoot({
         config: {
           tokenGetter: tokenGetter,
-          allowedDomains: ['http:/localhost:3333']
+          allowedDomains: [environment.perrosQrApi, 'api.peludosclick.com']
         }
       })
     ),
     provideAnimations(),
     provideRouter(routes),
-    importProvidersFrom(HttpClientModule)
+    provideHttpClient(withFetch())
   ]
 };

@@ -1,6 +1,6 @@
 export const environment = {
-    frontend: 'https://www.peludosclick.com',
-    production: true,
+    frontend: 'https://peludosclick.com',
     title: 'Production',
+    production: true,
     perrosQrApi: 'https://api.peludosclick.com/'
 };

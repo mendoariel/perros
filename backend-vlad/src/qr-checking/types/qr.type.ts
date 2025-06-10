@@ -1,5 +1,7 @@
+import { MedalState } from '@prisma/client';
+
 export type MedalStatus = {
-    status: string
-    medalHash: string
-    registerHash: string
+    status: MedalState;
+    medalString: string;
+    registerHash: string;
 }

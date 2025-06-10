@@ -22,7 +22,7 @@ To delete all containers including its volumes use,
 docker rm -vf $(docker ps -aq)
 
 remove all images
-docker rmi -f $(docker images -aq)
+  docker rmi -f $(docker images -aq)
 
 To delete all
 
