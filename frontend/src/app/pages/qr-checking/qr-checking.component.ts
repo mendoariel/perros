@@ -33,9 +33,23 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
 
   ngOnInit(): void {
     this.spinner = true;
+    console.log('QrCheckingComponent initialized');
     this.route.queryParams.subscribe({
       next: params => {
-        this.callCheckingService(params['medalString'])
+        console.log('Query params received:', params);
+        const medalString = params['medalString'] || params['medalstring'];
+        console.log('Medal string:', medalString);
+        if (!medalString) {
+          this.message = 'No se encontró el código de la medalla';
+          this.spinner = false;
+          return;
+        }
+        this.callCheckingService(medalString);
+      },
+      error: (error) => {
+        console.error('Error getting query params:', error);
+        this.message = 'Error al procesar la solicitud';
+        this.spinner = false;
       }
     });
   }
@@ -49,8 +63,16 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
     };
 
   callCheckingService(hash: string) {
+    console.log('Calling checking service with hash:', hash);
+    if (!hash) {
+      this.message = 'Código de medalla inválido';
+      this.spinner = false;
+      return;
+    }
+
     this.checkingSubscriber = this.qrService.checkingQr(hash).subscribe({
       next: (res: any) => {
+        console.log('Service response:', res);
         this.spinner = false;
         if(res.status === 'VIRGIN') this.goToAddPed(res.medalString);
         if(res.status === 'REGISTER_PROCESS') {
@@ -60,10 +82,11 @@ export class QrCheckingComponent implements OnInit, OnDestroy{
         if(res.status === 'ENABLED') this.goPet(res.medalString);
       },
       error: (error: any) => {
+        console.error('Error checking QR:', error);
         this.message = 'Medalla sin registro';
         this.spinner = false;
       }
-    })
+    });
   }
 
   goToAddPed(medalString: string) {
