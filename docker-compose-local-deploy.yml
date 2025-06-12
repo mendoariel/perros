@@ -76,5 +76,6 @@ services:
 
 volumes:
   postgres_data:
+    name: postgres_data_local_deploy
   pgadmin_data:
   uploads:
