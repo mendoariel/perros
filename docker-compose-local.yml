@@ -79,6 +79,7 @@ services:
 
 volumes:
   postgres_data:
+    name: postgres_data_local
 
 networks:
   app-network:
