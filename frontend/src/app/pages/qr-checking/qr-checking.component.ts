@@ -41,7 +41,6 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
     this.spinner = true;
     this.route.queryParams.subscribe(params => {
       const hash = params['medalString'];
-      console.log('Medal string from params:', hash);
       if (!hash) {
         this.message = 'No se encontró el código de la medalla';
         this.spinner = false;
@@ -56,7 +55,6 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
   }
 
   callCheckingService(hash: string) {
-    console.log('Calling checking service with hash:', hash);
     if (!hash) {
       this.message = 'Código de medalla inválido';
       this.spinner = false;
@@ -65,10 +63,8 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
 
     this.checkingSubscriber = this.qrService.checkingQr(hash).subscribe({
       next: (res: any) => {
-        console.log('Service response:', res);
         this.spinner = false;
         if(res.status === 'VIRGIN') {
-          console.log('Navigating to add pet with medal:', res.medalString);
           this.goToAddPed(res.medalString);
         }
         if(res.status === 'REGISTER_PROCESS') {
@@ -78,7 +74,6 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
         if(res.status === 'ENABLED') this.goPet(res.medalString);
       },
       error: (error: any) => {
-        console.error('Error checking QR:', error);
         this.message = 'Medalla sin registro';
         this.spinner = false;
       }
@@ -86,7 +81,6 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
   }
 
   goToAddPed(medalString: string) {
-    console.log('goToAddPed called with medal:', medalString);
     if (isPlatformBrowser(this.platformId)) {
       // Usar window.location.href para navegación en SSR
       window.location.href = `/agregar-mascota/${medalString}`;

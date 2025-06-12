@@ -51,7 +51,6 @@ export class PetFromHomeComponent implements OnDestroy {
     private navigationService: NavigationService,
     private cdr: ChangeDetectorRef
   ) {
-    console.log('PetFromHomeComponent initialized');
     afterRender(() => {
       this.loadPetData();
     });

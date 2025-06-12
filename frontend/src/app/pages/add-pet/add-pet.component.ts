@@ -81,7 +81,6 @@ export class AddPetComponent implements OnDestroy {
   private initializeComponent() {
     if (isPlatformBrowser(this.platformId)) {
       this.medalString = this.route.snapshot.params['medalString'];
-      console.log('AddPetComponent initialized with medal:', this.medalString);
     }
   }
 

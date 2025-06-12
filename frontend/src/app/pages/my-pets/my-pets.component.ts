@@ -89,11 +89,8 @@ export class MyPetsComponent implements OnDestroy {
   }
 
   goToMyPetForm(medalString: string) {
-    console.log('goToMyPetForm called with medalString:', medalString);
     if (medalString) {
       this.navigationService.goToPetForm(medalString);
-    } else {
-      console.warn('No medalString provided to goToMyPetForm');
     }
   }
 
