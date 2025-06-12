@@ -51,16 +51,11 @@ export function app(): express.Express {
 
 function run(): void {
   const isDevelopment = process.env['NODE_ENV'] === 'development';
-  console.log('Current NODE_ENV:', process.env['NODE_ENV']);
-  console.log('Is Development?', isDevelopment);
-  
   const port = parseInt(process.env['PORT'] || '4100', 10);
-  console.log('Selected Port:', port);
 
   // Start up the Node server
   const server = app();
   server.listen(port, '0.0.0.0', () => {
-    console.log(`Node Express server listening on http://0.0.0.0:${port}`);
   });
 }
 

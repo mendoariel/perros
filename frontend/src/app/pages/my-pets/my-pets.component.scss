@@ -1,37 +1,116 @@
-main {
-    background-color: darkgreen;
+.my-pets-container {
     min-height: 100vh;
-    section.main-content {
-        border: 1px solid grey;
-        padding: 1em;
-        margin: 1em;
-        background-color: white;
-        mat-card {
-            max-width: 250px;
-            
+    padding: 20px;
+    background-color: #f5f5f5;
+}
 
-            div.image-container {
-                width: 100%;
-                border: solid 1px #ddd;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                img {
-                    max-width: 100%;
-                    max-height: 200px;
-                }
-                
-                mat-icon {
-                    width: 120px !important;
-                    height: 120px !important;
-                    font-size: 7em;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                }
-            }
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    gap: 20px;
+}
+
+.error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    gap: 20px;
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    .error-icon {
+        font-size: 48px;
+        color: #f44336;
+    }
+}
+
+.pets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.pet-card {
+    background-color: #fff;
+    transition: transform 0.2s ease-in-out;
+
+    &:hover {
+        transform: translateY(-5px);
+    }
+
+    .image-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 200px;
+        background-color: #f5f5f5;
+        margin: 16px 0;
+
+        mat-icon {
+            font-size: 64px;
+            width: 64px;
+            height: 64px;
+            color: #666;
+        }
+
+        img {
+            max-height: 200px;
+            object-fit: cover;
         }
     }
-   
 
+    mat-card-header {
+        padding: 16px;
+    }
+
+    mat-card-content {
+        padding: 0 16px;
+    }
+
+    mat-card-actions {
+        padding: 16px;
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+
+.no-pets-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 20px;
+    text-align: center;
+    padding: 40px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    .no-pets-icon {
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+        color: #666;
+    }
+
+    p {
+        font-size: 1.2em;
+        color: #666;
+    }
 }

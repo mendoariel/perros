@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ROUTES } from 'src/app/core/constants/routes.constants';
+import { Component, OnDestroy, afterRender } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { Router } from '@angular/router';
@@ -12,6 +13,7 @@ import { leastOneLowerCaseValidator } from 'src/app/shared/custom-validators/lea
 import { leastOneNumberValidator } from 'src/app/shared/custom-validators/least-one-number.directive';
 import { confirmedValidator } from 'src/app/shared/custom-validators/confirmed-validator.directive';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-register',
@@ -26,7 +28,7 @@ import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/fir
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent implements OnInit, OnDestroy {
+export class RegisterComponent implements OnDestroy {
   registerForm: FormGroup = new FormGroup({
     username: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]),
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -41,27 +43,31 @@ export class RegisterComponent implements OnInit, OnDestroy {
       passwordConfirm: new FormControl('', [Validators.required]),
     }, { validators: confirmedValidator('password', 'passwordConfirm')});
   subscription: Subscription[] = [];
+  registerSubscription!: Subscription;
   pwdHide = true;
   pwdConfirmHide = true;
   
   constructor(
     private router: Router,
     private authService: AuthService,
-    private _snackBar: MatSnackBar
-  ) {}
+    private _snackBar: MatSnackBar,
+    private navigationService: NavigationService
+  ) {
+    afterRender(() => {
+      this.checkAuth();
+    });
+  }
 
-  ngOnInit(): void {
-    this.authService.isAuthenticated() ? this.router.navigate(['/']) : null;
-   }
-  
-  goHome() {
-    this.router.navigate(['/wellcome'])
+  private checkAuth() {
+    if (this.authService.isAuthenticated()) {
+      this.navigationService.goToHome();
+    }
   }
 
   register() {
     let authSubscription: Subscription = this.authService.register(this.registerForm.value).subscribe(
       res => {
-        this.router.navigate(['/login']);
+        this.navigationService.goToWelcome();
         this._snackBar.openFromComponent(MessageSnackBarComponent,{
           duration: 3000, 
           verticalPosition: 'top',
@@ -159,5 +165,21 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription.map((subscription: Subscription) => subscription.unsubscribe());
+  }
+
+  onSubmit() {
+    this.registerSubscription = this.authService.register(this.registerForm.value).subscribe({
+      next: (res: any) => {
+        this.navigationService.goToWelcome();
+        this._snackBar.openFromComponent(MessageSnackBarComponent, {
+          duration: 3000,
+          verticalPosition: 'top',
+          data: 'Registro exitoso'
+        });
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
   }
 }

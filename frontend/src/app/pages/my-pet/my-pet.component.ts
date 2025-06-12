@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ROUTES } from 'src/app/core/constants/routes.constants';
+import { Component, OnDestroy, OnInit, afterRender } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -8,6 +9,7 @@ import { MaterialModule } from 'src/app/material/material.module';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { UploadFileService } from 'src/app/services/upload-file.service';
 import { environment } from 'src/environments/environment';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-my-pet',
@@ -20,7 +22,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './my-pet.component.html',
   styleUrls: ['./my-pet.component.scss']
 })
-export class MyPetComponent implements OnInit, OnDestroy{
+export class MyPetComponent implements OnInit, OnDestroy {
   myPet: any;
   petsSubscription: Subscription | undefined;
   medalString: any;
@@ -37,24 +39,36 @@ export class MyPetComponent implements OnInit, OnDestroy{
     private router: Router,
     private petsServices: PetsService,
     private authService: AuthService,
-    private uploadFileService: UploadFileService
-  ) {}
+    private uploadFileService: UploadFileService,
+    private navigationService: NavigationService
+  ) {
+    this.route.params.subscribe(params => {
+      const medalString = params['medalString'];
+      if (medalString) {
+        this.medalString = medalString;
+        this.checkAuthAndLoadPet();
+      }
+    });
+  }
   
-  ngOnInit(): void {
+  private checkAuthAndLoadPet() {
     this.spinner = true;
-    this.medalString = this.route.snapshot.params['medalString'];
     this.isLoginSubscription = this.authService.isAuthenticatedObservable.subscribe({
       next: (res: any) => {
         if(res) {
           this.spinner = false;
           this.getOnlyMyPets(this.medalString);
         } else {
-          this.router.navigate(['login'])
+          this.navigationService.goToLogin();
         }
       }
     });
-    
   }
+
+  ngOnInit(): void {
+    //this.getMyPets();
+  }
+
   getOnlyMyPets(medalString: string) {
     this.spinner = true;
     this.petsSubscription = this.petsServices.getMyPet(medalString).subscribe({
@@ -74,11 +88,11 @@ export class MyPetComponent implements OnInit, OnDestroy{
   }
 
   complete(medalString: string) {
-    this.router.navigate(['/mi-mascota', medalString])
+    this.navigationService.goToMyPet(medalString);
   }
 
   goToMyPets() {
-    this.router.navigate(['/mis-mascotas'])
+    this.navigationService.goToMyPets();
   }
 
   onFileSelected(event: any) {
@@ -102,8 +116,8 @@ export class MyPetComponent implements OnInit, OnDestroy{
     }
   }
 
-  goToMyPetForm(medalString: string) {
-    this.router.navigate(['/formulario-mi-mascota', medalString])
+  goToPetForm(medalString: string) {
+    this.navigationService.goToPetForm(medalString);
   }
 
   ngOnDestroy(): void {

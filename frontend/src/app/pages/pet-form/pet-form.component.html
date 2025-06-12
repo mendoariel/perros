@@ -1,14 +1,17 @@
-<app-first-navbar></app-first-navbar>
 <main>
-  <section class="spinner" *ngIf="spinner">
+  <section class="spinner" *ngIf="isLoading">
     <h1>{{ spinnerMessage }}</h1>
     <mat-spinner></mat-spinner>
   </section>
-  <section class="main-content" *ngIf="!spinner">
+  <section *ngIf="!isLoading && error">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+  </section>
+  <section class="main-content" *ngIf="!isLoading && myPet">
       <h3>Formulario mi mascota</h3>
-      <mat-card  class="example-card" appearance="outlined">
+      <mat-card class="example-card" appearance="outlined">
             <mat-card-header>
-              <mat-card-title>{{ myPet.petName }}</mat-card-title>
+              <mat-card-title>{{ myPet.petName || 'Sin nombre' }}</mat-card-title>
             </mat-card-header>
             
             <div *ngIf="!myPet.image" class="image-container">
@@ -21,7 +24,6 @@
                 </button>
               </div>
             </div>
-
 
             <div *ngIf="myPet.image" class="image-container">
               <img mat-card-image [src]="env.perrosQrApi + 'pets/files/' + myPet.image" alt="Foto mascota">
@@ -39,7 +41,7 @@
                 <h2>Cargar información</h2>
                 <mat-form-field>
                   <mat-label>Teléfono:</mat-label>
-                  <input matInput formControlName="phoneNumber"  placeholder="Ej 2615551515"> 
+                  <input matInput formControlName="phoneNumber" placeholder="Ej 2615551515"> 
                   <mat-error *ngIf="phoneNumber?.hasError('required')">Ingrese teléfono</mat-error>
                   <mat-error *ngIf="phoneNumber?.hasError('minlength')">Mínimo de 10 caracteres</mat-error>
                   <mat-error *ngIf="phoneNumber?.hasError('maxlength')">Máximo de 15 caracteres</mat-error>
@@ -52,12 +54,11 @@
                   <mat-error *ngIf="description?.hasError('maxlength')">Máximo de 150 caracteres</mat-error>
                 </mat-form-field>
                 <div class="button-container">
-                  <button color="primary" [disabled]="(petForm.invalid || !myPet.image) || (phoneNumber?.value ===  this.myPet.phone && description?.value === this.myPet.description)" mat-raised-button (click)="updatePet()">Guardar</button>
-                  <button  color="accent" mat-raised-button (click)="goToMyPets()">Salir</button>
+                  <button color="primary" [disabled]="(petForm.invalid || !myPet.image) || (phoneNumber?.value === myPet.phone && description?.value === myPet.description)" mat-raised-button (click)="updatePet()">Guardar</button>
+                  <button color="accent" mat-raised-button (click)="goToMyPets()">Salir</button>
                 </div>
               </form>
             </mat-card-content>
-
       </mat-card>
   </section>
 </main>
