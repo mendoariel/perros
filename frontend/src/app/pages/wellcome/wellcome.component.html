@@ -1,6 +1,6 @@
 <main>
-  <app-first-navbar></app-first-navbar>
   <section class="main-content">
+    <p>DEBUG: loading={{ loading }} | pets={{ pets.length }}</p>
     <h1>**!Manten a tu mascota conectada
       siempre segura con nuestras chapitas QR personalizadas!**</h1>
     <!-- first -->
@@ -56,7 +56,7 @@
       <!-- Pets list -->
       <div class="pets-container" *ngIf="pets.length > 0">
         <section class="pelu-card" *ngFor="let pet of pets" (click)="goToPet(pet)">
-          <h2>{{ pet.petName }}</h2>
+          <h2>{{ pet?.petName || 'Sin nombre' }}</h2>
           <article class="image">
             <div class="image-container" [style.background]="pet.background"></div>
           </article>

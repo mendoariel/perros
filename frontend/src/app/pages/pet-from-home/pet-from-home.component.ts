@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ROUTES } from 'src/app/core/constants/routes.constants';
+import { Component, OnDestroy, afterRender, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
@@ -9,6 +10,9 @@ import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
 import { ShareIconsModule } from 'ngx-sharebuttons/icons';
 import { MetaService } from 'src/app/services/meta.service';
+import { PetsService } from 'src/app/services/pets.services';
+import { AuthService } from 'src/app/auth/services/auth.service';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 // Default social sharing image if pet image is not available
 const DEFAULT_SOCIAL_IMAGE = 'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
@@ -26,7 +30,7 @@ const DEFAULT_SOCIAL_IMAGE = 'assets/main/cat-dog-free-safe-with-medal-peldudosc
   templateUrl: './pet-from-home.component.html',
   styleUrls: ['./pet-from-home.component.scss']
 })
-export class PetFromHomeComponent implements OnInit, OnDestroy {
+export class PetFromHomeComponent implements OnDestroy {
   pet: any;
   petSubscription: Subscription | undefined;
   medalString: any;
@@ -41,15 +45,27 @@ export class PetFromHomeComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private qrCheckingService: QrChekingService,
     private router: Router,
-    private metaService: MetaService
+    private metaService: MetaService,
+    private petsServices: PetsService,
+    private authService: AuthService,
+    private navigationService: NavigationService,
+    private cdr: ChangeDetectorRef
   ) {
     console.log('PetFromHomeComponent initialized');
+    afterRender(() => {
+      this.loadPetData();
+    });
   }
 
-  ngOnInit(): void {
-    this.medalString = this.route.snapshot.params['medalString'];
-    console.log('Medal string from route:', this.medalString);
-    this.getPet(this.medalString);
+  private loadPetData() {
+    this.route.params.subscribe(params => {
+      const medalString = params['medalString'];
+      if (medalString) {
+        this.getPet(medalString);
+      } else {
+        this.navigationService.goToHome();
+      }
+    });
   }
 
   setMetaData() {
@@ -129,13 +145,14 @@ export class PetFromHomeComponent implements OnInit, OnDestroy {
           `url(${environment.frontend}/${DEFAULT_SOCIAL_IMAGE})`;
         
         this.setMetaData();
+        this.cdr.detectChanges();
       },
       error: (error: any) => {
         this.spinner = false;
         console.error('Error fetching pet:', error);
         if(error.status === 404) {
           console.log('Pet not found, redirecting to home');
-          this.router.navigate(['']);
+          this.navigationService.goToHome();
         }
       }
     });
@@ -146,5 +163,9 @@ export class PetFromHomeComponent implements OnInit, OnDestroy {
       console.log('Unsubscribing from pet subscription');
       this.petSubscription.unsubscribe();
     }
+  }
+
+  handleError(error: any) {
+    this.navigationService.goToHome();
   }
 }

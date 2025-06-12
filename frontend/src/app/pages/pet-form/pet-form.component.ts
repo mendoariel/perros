@@ -1,11 +1,12 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { ROUTES } from 'src/app/core/constants/routes.constants';
+import { Component, Inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, finalize, take } from 'rxjs';
 import { PetsService } from 'src/app/services/pets.services';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { MaterialModule } from 'src/app/material/material.module';
-import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
+// import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { UploadFileService } from 'src/app/services/upload-file.service';
 import { environment } from 'src/environments/environment';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,42 +16,43 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
-
+import { NavigationService } from 'src/app/core/services/navigation.service';
+import { Pet } from 'src/app/models/pet.model';
 
 @Component({
   selector: 'app-pet-form',
   standalone: true,
   imports: [
-          CommonModule,
-          MaterialModule,
-          FirstNavbarComponent,
-          FormsModule,
-          ReactiveFormsModule
-        ],
+    CommonModule,
+    MaterialModule,
+    // FirstNavbarComponent,
+    FormsModule,
+    ReactiveFormsModule
+  ],
   templateUrl: './pet-form.component.html',
   styleUrls: ['./pet-form.component.scss']
 })
-export class PetFormComponent implements OnInit, OnDestroy{
-  myPet: any;
+export class PetFormComponent implements OnDestroy {
+  myPet: Pet | null = null;
   petsSubscription: Subscription | undefined;
-  medalString: any;
+  medalString: string | null = null;
   isLoginSubscription: Subscription | undefined;
   uploadSubscription: Subscription | undefined;
   phoneSubscription: Subscription | undefined;
   medalUpdateSubscription: Subscription | undefined;
-  spinner = false;
+  isLoading = true;
   spinnerMessage = 'Cargando...';
   textButton = 'Agregar foto';
-  loadPet = false;
   env = environment;
+  error: string | null = null;
 
   petForm: FormGroup = new FormGroup({
-      phoneNumber: new FormControl('', [
-        Validators.required, 
-        Validators.minLength(10), 
-        Validators.maxLength(13)
-      ]),
-      description: new FormControl('', [Validators.required,  Validators.minLength(3), Validators.maxLength(150)])
+    phoneNumber: new FormControl('', [
+      Validators.required, 
+      Validators.minLength(10), 
+      Validators.maxLength(13)
+    ]),
+    description: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(150)])
   });
   
   constructor(
@@ -60,172 +62,267 @@ export class PetFormComponent implements OnInit, OnDestroy{
     private authService: AuthService,
     private uploadFileService: UploadFileService,
     public dialog: MatDialog,
-    private _snackBar: MatSnackBar
-  ) {}
-  
-  ngOnInit(): void {
-    this.spinner = true;
-    this.medalString = this.route.snapshot.params['medalString'];
-    this.isLoginSubscription = this.authService.isAuthenticatedObservable.subscribe({
-      next: (res: any) => {
-        if(res) {
-          this.spinner = false;
-          this.getOnlyMyPet(this.medalString);
-          this.subscribeValidationPhone();
-        } else {
-          this.router.navigate(['login'])
-        }
+    private _snackBar: MatSnackBar,
+    private navigationService: NavigationService
+  ) {
+    this.route.params.subscribe(params => {
+      const medalString = params['medalString'];
+      if (medalString) {
+        this.medalString = medalString;
+        this.checkAuthAndLoadPet();
       }
     });
+  }
+  
+  private checkAuthAndLoadPet() {
+    // Limpiar estado anterior
+    this.myPet = null;
+    this.error = null;
+    this.isLoading = true;
+    this.spinnerMessage = 'Cargando...';
+    // Continuar con la lógica existente
+    console.log('checkAuthAndLoadPet called');
+    console.log('medalString from route:', this.medalString);
 
-    
+    if (!this.medalString) {
+      this.error = 'No se encontró el identificador de la mascota';
+      this.isLoading = false;
+      this.navigationService.goToMyPets();
+      return;
+    }
+
+    this.isLoginSubscription = this.authService.isAuthenticatedObservable
+      .pipe(
+        take(1),
+        finalize(() => {
+          console.log('Auth check completed');
+        })
+      )
+      .subscribe({
+        next: (res: boolean) => {
+          console.log('Auth check result:', res);
+          if (res) {
+            this.getOnlyMyPet(this.medalString!);
+            this.subscribeValidationPhone();
+          } else {
+            this.isLoading = false;
+            this.navigationService.goToLogin();
+          }
+        },
+        error: (error: any) => {
+          console.error('Auth error:', error);
+          this.error = 'Error al verificar la autenticación';
+          this.isLoading = false;
+        }
+      });
   }
 
   subscribeValidationPhone() {
+    if (this.phoneSubscription) {
+      this.phoneSubscription.unsubscribe();
+    }
+    
     this.phoneSubscription = this.phoneNumber?.valueChanges.subscribe({
-      next: (value: any)=> {
-        if(!this.isNumber(value[value.length-1])) {
-          let char = value[value.length-1];
-          value = value.replace(char, "");
-          this.phoneNumber?.setValue(value);
+      next: (value: string) => {
+        if (value && !this.isNumber(value[value.length - 1])) {
+          const newValue = value.slice(0, -1);
+          this.phoneNumber?.setValue(newValue);
         }
       }
     });
   }
 
   isNumber(value: string): boolean {
-    let isNumber = false;
-    if(value === "0" || value === "1" || value === "2" || value === "3" || value === "4" || value === "5" || value === "6" || value === "7" || value === "8" || value === "9") {
-      isNumber = true;
-    } 
-    return isNumber;
+    return /^[0-9]$/.test(value);
   }
+
   getOnlyMyPet(medalString: string) {
-    this.spinner = true;
-    this.petsSubscription = this.petsServices.getMyPet(medalString).subscribe({
-      next: (myPet: any) => {
-        this.spinner = false;
-        this.myPet = myPet;
-        if(this.myPet.status === 'ENABLED') this.editMode();
-      },
-      error: (error: any) => {
-        this.spinner  = false;
-        console.error(error)
-      }
-    });
-  }
-
-  editMode() {
-    this.myPet.description ? this.description?.setValue(this.myPet.description) : null;
-    this.myPet.phone ? this.phoneNumber?.setValue(this.myPet.phone) : null;
-  }
-
-  complete(medalString: string) {
-    this.router.navigate(['/mi-mascota', medalString])
-  }
-
-  goToMyPets() {
-    this.router.navigate(['/mis-mascotas'])
-  }
-
-  onFileSelected(event: any) {
-    this.spinner = true;
-    if(event && event.target && event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0];
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('medalString', this.myPet.medalString);
-      this.uploadSubscription = this.uploadFileService.uploadProfileServie(formData).subscribe({
-        next: (res: any) => {
-          if(res.image === 'load')
-          this.getOnlyMyPet(this.medalString);
-          
+    console.log('getOnlyMyPet called with medalString:', medalString);
+    if (this.petsSubscription) {
+      this.petsSubscription.unsubscribe();
+    }
+    
+    this.error = null;
+    
+    this.petsSubscription = this.petsServices.getMyPet(medalString)
+      .pipe(finalize(() => {
+        console.log('getMyPet completed');
+        this.isLoading = false;
+      }))
+      .subscribe({
+        next: (myPet: Pet) => {
+          console.log('Pet data received:', myPet);
+          this.myPet = myPet;
+          if (this.myPet.status === 'ENABLED') {
+            this.editMode();
+          }
         },
         error: (error: any) => {
-          this.spinner = false;
-          console.error(error);
+          console.error('Error loading pet:', error);
+          this.error = error?.error?.message || 'Error al cargar la mascota';
+          this.isLoading = false;
           this.openDialog(error);
         }
       });
+  }
+
+  editMode() {
+    console.log('editMode called, myPet:', this.myPet);
+    if (this.myPet) {
+      if (this.myPet.description) {
+        this.description?.setValue(this.myPet.description);
+      }
+      if (this.myPet.phone) {
+        this.phoneNumber?.setValue(this.myPet.phone);
+      }
     }
   }
 
-  updatePet():void {
-    this.spinner = true;
-    let body = {
+  complete(medalString: string) {
+    this.navigationService.goToMyPet(medalString);
+  }
+
+  goToMyPets() {
+    this.navigationService.goToMyPets();
+  }
+
+  onFileSelected(event: any) {
+    console.log('onFileSelected called');
+    if (!event?.target?.files?.length || this.isLoading) {
+      console.log('No file selected or loading');
+      return;
+    }
+
+    if (this.uploadSubscription) {
+      this.uploadSubscription.unsubscribe();
+    }
+
+    this.isLoading = true;
+    this.error = null;
+    const file = event.target.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('medalString', this.myPet?.medalString || '');
+
+    this.uploadSubscription = this.uploadFileService.uploadProfileServie(formData)
+      .pipe(finalize(() => {
+        console.log('Upload completed');
+        this.isLoading = false;
+      }))
+      .subscribe({
+        next: (res: any) => {
+          console.log('Upload response:', res);
+          if (res.image === 'load') {
+            this.getOnlyMyPet(this.medalString!);
+          }
+        },
+        error: (error: any) => {
+          console.error('Upload error:', error);
+          this.error = error?.error?.message || 'Error al subir la imagen';
+          this.isLoading = false;
+          this.openDialog(error);
+        }
+      });
+  }
+
+  updatePet(): void {
+    console.log('updatePet called');
+    if (!this.myPet?.medalString || this.isLoading) {
+      console.log('Cannot update: no medalString or loading');
+      this.error = 'No se puede actualizar la mascota sin identificador';
+      return;
+    }
+
+    if (this.medalUpdateSubscription) {
+      this.medalUpdateSubscription.unsubscribe();
+    }
+
+    this.isLoading = true;
+    this.error = null;
+
+    const body = {
       phoneNumber: this.phoneNumber?.value,
       description: this.description?.value,
       medalString: this.myPet.medalString
-    }
-    this.medalUpdateSubscription = this.petsServices.updateMedal(body).subscribe({
-      next: (medal: any)=>{ 
-        this.spinner = false;
-        this.openSnackBar();
-        this.goToMyPets();
-      },
-      error: (error: any)=>{
-         console.error(error);
-         this.spinner = false;
-         this.openDialog(error)
+    };
+
+    this.medalUpdateSubscription = this.petsServices.updateMedal(body)
+      .pipe(finalize(() => {
+        console.log('Update completed');
+        this.isLoading = false;
+      }))
+      .subscribe({
+        next: (res: any) => {
+          console.log('Update response:', res);
+          this.openSnackBar();
+          setTimeout(() => {
+            this.goToMyPets();
+          }, 1500); // Redirige después de 1.5 segundos
+        },
+        error: (error: any) => {
+          console.error('Update error:', error);
+          this.error = error?.error?.message || 'Error al actualizar la mascota';
+          this.openDialog(error);
         }
-    });
+      });
   }
 
   get phoneNumber(): FormControl | undefined {
-    if (this.petForm.get('phoneNumber')) {
-      return this.petForm.get('phoneNumber') as FormControl;
-    } else return undefined;
+    return this.petForm.get('phoneNumber') as FormControl;
   }
 
   get description(): FormControl | undefined {
-    if (this.petForm.get('description')) {
-      return this.petForm.get('description') as FormControl;
-    } else return undefined;
+    return this.petForm.get('description') as FormControl;
   }
 
   openDialog(data: any): void {
-    const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
-      data: data,
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+    this.dialog.open(DialogOverviewExampleDialog, {
+      width: '250px',
+      data: data
     });
   }
 
   openSnackBar() {
-      this._snackBar.openFromComponent(MessageSnackBarComponent,{
-        duration: 3000, 
-        verticalPosition: 'top',
-        data: 'Datos modificados correctamente'
-      })
-    };
+    this._snackBar.openFromComponent(MessageSnackBarComponent, {
+      duration: 5000,
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
+      data: 'Mascota actualizada correctamente'
+    });
+  }
 
   ngOnDestroy(): void {
-    this.petsSubscription ? this.petsSubscription.unsubscribe(): null;
-    this.isLoginSubscription ? this.isLoginSubscription.unsubscribe(): null;
-    this.uploadSubscription ? this.uploadSubscription.unsubscribe(): null;
-    this.phoneSubscription ? this.phoneSubscription.unsubscribe(): null;
-    this.medalUpdateSubscription ? this.medalUpdateSubscription.unsubscribe(): null;
+    if (this.petsSubscription) {
+      this.petsSubscription.unsubscribe();
+    }
+    if (this.isLoginSubscription) {
+      this.isLoginSubscription.unsubscribe();
+    }
+    if (this.uploadSubscription) {
+      this.uploadSubscription.unsubscribe();
+    }
+    if (this.phoneSubscription) {
+      this.phoneSubscription.unsubscribe();
+    }
+    if (this.medalUpdateSubscription) {
+      this.medalUpdateSubscription.unsubscribe();
+    }
   }
 }
 
-
-export interface DialogData {
-  animal: string;
-  name: string;
-}
 @Component({
   selector: 'dialog-overview-example-dialog',
-  template: `<h1 mat-dialog-title>No pudimos cargar la imagen</h1>
-                <div mat-dialog-content>
-                  <p>{{ data.error.message }}</p>
-                </div>
-                <div mat-dialog-actions>
-                  <button mat-button (click)="onNoClick()">Cerrar</button>
-                </div>
-`,
+  template: `
+    <h2 mat-dialog-title>Error</h2>
+    <mat-dialog-content>
+      {{ data.error?.message || 'Ha ocurrido un error' }}
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>OK</button>
+    </mat-dialog-actions>
+  `,
   standalone: true,
-  imports: [MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule],
+  imports: [MatDialogModule, MatButtonModule]
 })
 export class DialogOverviewExampleDialog {
   constructor(

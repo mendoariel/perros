@@ -21,14 +21,22 @@ export class AuthService {
     private jwtHelper: JwtHelperService,
     private cookieService: CookieService,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) { }
+  ) {
+    // Inicializar el estado de autenticación al crear el servicio
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('access_token');
+      if (token && !this.jwtHelper.isTokenExpired(token)) {
+        this.authenticated.next(true);
+      }
+    }
+  }
 
   isAuthenticated(): boolean {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('access_token');
-      const isAuthenticated = !this.jwtHelper.isTokenExpired(token);
-      if(isAuthenticated) {
-        this.putAuthenticatedTrue();
+      const isAuthenticated = Boolean(token && !this.jwtHelper.isTokenExpired(token));
+      if (isAuthenticated !== this.authenticated.value) {
+        this.authenticated.next(isAuthenticated);
       }
       return isAuthenticated;
     }
@@ -41,6 +49,9 @@ export class AuthService {
 
   putAuthenticatedFalse() {
     this.authenticated.next(false);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('access_token');
+    }
   }
 
   login(body: LoginInterface) {
@@ -56,6 +67,7 @@ export class AuthService {
     let header = {
       headers: new HttpHeaders().set('Authorization', `Bearer ${token}`)
     };
+    this.putAuthenticatedFalse();
     return this.http.post(`${environment.perrosQrApi}auth/logout`, {}, header);
   }
   

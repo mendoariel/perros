@@ -1,29 +1,70 @@
-<main>
-  <app-first-navbar></app-first-navbar>
+<main class="my-pets-container">
   <section class="main-content">
-      <mat-card *ngFor="let pet of myPets" class="example-card" appearance="outlined">
+    <!-- Loading state -->
+    <div class="loading-container" *ngIf="spinner">
+      <mat-spinner></mat-spinner>
+      <p>Cargando mascotas...</p>
+    </div>
+
+    <!-- Error state -->
+    <div class="error-container" *ngIf="!spinner && error">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="getOnlyMyPets()">
+        Intentar de nuevo
+      </button>
+    </div>
+
+    <!-- Content when not loading -->
+    <ng-container *ngIf="!spinner && !error">
+      <!-- Debug info -->
+      <div *ngIf="myPets">
+        <p>Número de mascotas: {{ myPets.length }}</p>
+      </div>
+
+      <!-- Pets grid -->
+      <div class="pets-grid" *ngIf="myPets && myPets.length > 0">
+        <mat-card *ngFor="let pet of myPets" class="pet-card" appearance="outlined">
           <mat-card-header>
             <div mat-card-avatar class="example-header-image"></div>
             <mat-card-title>{{ pet.petName }}</mat-card-title>
           </mat-card-header>
+          
           <div *ngIf="pet.status === 'INCOMPLETE'" class="image-container">
             <mat-icon>pets</mat-icon>
           </div>
-          <div *ngIf="(pet.status === 'ENABLED')" class="image-container">
-            <img mat-card-image [src]="env.perrosQrApi + 'pets/files/' + pet.image" alt="Foto de Rosa Mosqueta">
+          
+          <div *ngIf="pet.status === 'ENABLED' && pet.image" class="image-container">
+            <img mat-card-image [src]="env.perrosQrApi + 'pets/files/' + pet.image" alt="Foto de mascota">
           </div>
 
           <mat-card-content style="margin-top: 2em;">
             <p *ngIf="pet.status === 'INCOMPLETE'">
               Cargar una imagen de tu mascota para terminar el proceso
             </p>
+            <p *ngIf="pet.status === 'ENABLED'">
+              {{ pet.description || 'Sin descripción' }}
+            </p>
           </mat-card-content>
+
           <mat-card-actions *ngIf="pet.status === 'INCOMPLETE'">
             <button (click)="goToMyPetForm(pet.medalString)" style="margin-left: auto;" mat-raised-button color="primary">Completar</button>
           </mat-card-actions>
-          <mat-card-actions *ngIf="(pet.status === 'ENABLED')">
+
+          <mat-card-actions *ngIf="pet.status === 'ENABLED'">
             <button (click)="goToMyPet(pet.medalString)" style="margin-left: auto;" mat-raised-button color="primary">Ver Detalles</button>
           </mat-card-actions>
         </mat-card>
+      </div>
+
+      <!-- No pets message -->
+      <div class="no-pets-container" *ngIf="!myPets || myPets.length === 0">
+        <mat-icon class="no-pets-icon">pets</mat-icon>
+        <p>No tienes mascotas registradas.</p>
+        <button mat-raised-button color="primary" (click)="navigationService.goToAddPet('')">
+          Registrar una mascota
+        </button>
+      </div>
+    </ng-container>
   </section>
 </main>

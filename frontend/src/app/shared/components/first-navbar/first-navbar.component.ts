@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, afterRender, AfterRenderRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
+import { MatMenuModule } from '@angular/material/menu';
 import { Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { Subscription } from 'rxjs';
 import { SidenavService } from '../../services/sidenav.services';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-first-navbar',
@@ -13,49 +15,62 @@ import { SidenavService } from '../../services/sidenav.services';
   imports: [
     CommonModule,
     MaterialModule,
-    HttpClientModule
+    HttpClientModule,
+    MatMenuModule
   ],
   templateUrl: './first-navbar.component.html',
   styleUrls: ['./first-navbar.component.scss']
 })
-export class FirstNavbarComponent implements OnInit {
-  authenticated: boolean | undefined;
+export class FirstNavbarComponent {
+  authenticated: boolean = false;
   logoutSubscription!: Subscription;
   authenticatedSubscription!: Subscription;
   sidenavSuscription!: Subscription;
   statusSidenav = false;
 
   constructor(
-      private router: Router,
-      private authService: AuthService,
-      private sidenavService: SidenavService
-    ) {}
+    private router: Router,
+    private authService: AuthService,
+    private sidenavService: SidenavService,
+    private navigationService: NavigationService,
+    private cdr: ChangeDetectorRef
+  ) {
+    // AfterRender se ejecuta después de que el componente se haya renderizado en el navegador
+    afterRender(() => {
+      this.setupAuthSubscription();
+    });
+  }
 
-  ngOnInit(): void {
+  private setupAuthSubscription() {
     this.authenticatedSubscription = this.authService.isAuthenticatedObservable.subscribe(
       res => {
-        res ? this.authenticated = true : this.authenticated = false
+        this.authenticated = res;
+        this.cdr.detectChanges();
       }
     );
+    // Forzar comprobación inmediata al inicializar
+    this.authenticated = this.authService.isAuthenticated();
+    this.cdr.detectChanges();
   }
   
   addFriasElement() {
-    this.router.navigate(['/add-frias-element'])
+    this.navigationService.goToError();
   }
+
   login() {
-    this.router.navigate(['/login'])
+    this.navigationService.goToLogin();
   }
 
   register() {
-    this.router.navigate(['/register'])
+    this.navigationService.goToRegister();
   }
 
   goTo(route: string) {
-    this.router.navigate([`/${route}`])
+    this.navigationService.navigate(route);
   }
 
   goHome() {
-    this.router.navigate([`/`])
+    this.navigationService.goToHome();
   }
 
   logout() {
@@ -63,7 +78,7 @@ export class FirstNavbarComponent implements OnInit {
       next: (res: any)=> {
         this.authService.putAuthenticatedFalse();
         localStorage.removeItem('access_token');
-        this.router.navigate([''])
+        this.navigationService.goToHome();
       },
       error : (error)=> {console.error(error)}
     });

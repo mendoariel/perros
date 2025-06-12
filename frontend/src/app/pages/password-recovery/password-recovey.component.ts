@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ROUTES } from 'src/app/core/constants/routes.constants';
+import { Component, OnDestroy, OnInit, afterRender } from '@angular/core';
 import { CommonModule, NgIf } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { Router } from '@angular/router';
@@ -12,6 +13,7 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 
 @Component({
@@ -28,7 +30,7 @@ import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/fir
   templateUrl: './password-recovery.component.html',
   styleUrls: ['./password-recovery.component.scss']
 })
-export class PasswordRecoveryComponent implements OnInit, OnDestroy {
+export class PasswordRecoveryComponent implements OnDestroy {
   recoveryPasswordSubscription!: Subscription;
   passwordRecoveryForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.email, Validators.required])
@@ -37,14 +39,16 @@ export class PasswordRecoveryComponent implements OnInit, OnDestroy {
     private router: Router,
     private authService: AuthService,
     private cookieService: CookieService,
-    private _snackBar: MatSnackBar
-  ) {}
-
-  ngOnInit(): void {
+    private _snackBar: MatSnackBar,
+    private navigationService: NavigationService
+  ) {
+    afterRender(() => {
+      this.checkAuth();
+    });
   }
-  
+
   goHome() {
-    this.router.navigate(['/'])
+    this.navigationService.goToHome();
   }
 
   passwordRecovery() {
@@ -81,5 +85,11 @@ export class PasswordRecoveryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if(this.recoveryPasswordSubscription) this.recoveryPasswordSubscription.unsubscribe();
+  }
+
+  checkAuth() {
+    if (this.authService.isAuthenticated()) {
+      this.navigationService.goToHome();
+    }
   }
 }
