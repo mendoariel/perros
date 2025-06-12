@@ -1,6 +1,6 @@
 export const ROUTES = {
     // Auth routes
-    LOGIN: '/login',
+    LOGIN: 'login',
     REGISTER: '/register',
     PASSWORD_RECOVERY: '/recuperar-cuenta',
     NEW_PASSWORD: '/crear-nueva-clave',

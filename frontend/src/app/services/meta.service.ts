@@ -11,7 +11,6 @@ export class MetaService {
   private readonly apiBaseUrl = 'https://api.peludosclick.com';
   
   constructor(private meta: Meta) {
-    console.log('MetaService initialized');
   }
 
   updateMetaTags(options: {
@@ -20,8 +19,6 @@ export class MetaService {
     image?: string;
     url?: string;
   }) {
-    console.log('Updating meta tags with options:', options);
-    
     // Default values
     const defaultImage = 'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
     const defaultTitle = 'PeludosClick - Chapitas QR para mascotas';
@@ -51,13 +48,6 @@ export class MetaService {
       (options.url.startsWith('http') ? options.url : `${this.metaBaseUrl}${options.url.startsWith('/') ? options.url : `/${options.url}`}`) : 
       this.metaBaseUrl;
 
-    console.log('Final meta tag values:', {
-      title,
-      description,
-      imageUrl,
-      url
-    });
-
     try {
       // Update primary meta tags
       this.meta.updateTag({ name: 'title', content: title });
@@ -83,9 +73,7 @@ export class MetaService {
       this.meta.updateTag({ name: 'twitter:image:alt', content: title });
       this.meta.updateTag({ name: 'twitter:site', content: '@peludosClick' });
 
-      console.log('Meta tags updated successfully');
     } catch (error) {
-      console.error('Error updating meta tags:', error);
     }
   }
 } 

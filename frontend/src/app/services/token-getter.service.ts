@@ -7,11 +7,9 @@ export class TokenGetterService {
 
     constructor(@Inject(DOCUMENT) private document: Document) {
         this.token = document.defaultView?.localStorage.getItem('access_token');
-        console.log('local', this.token)
     }
 
     tokenGetter() {
-        console.log('local ', this.token)
         return this.token.getItem('access_token')
     }
 }
