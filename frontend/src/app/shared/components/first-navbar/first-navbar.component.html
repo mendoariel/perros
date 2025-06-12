@@ -14,9 +14,19 @@
             <mat-icon>menu</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="goTo('mis-mascotas')">Mis mascotas </button>
-            <button mat-menu-item (click)="goTo('wellcome')">Toda las mascotas</button>
-            <button mat-menu-item (click)="logout()">Cerrar </button>
+            <button mat-menu-item (click)="goTo('mis-mascotas')">
+                <mat-icon>pets</mat-icon>
+                <span>Mis mascotas</span>
+            </button>
+            <button mat-menu-item (click)="goTo('wellcome')">
+                <mat-icon>view_list</mat-icon>
+                <span>Todas las mascotas</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="logout()">
+                <mat-icon>exit_to_app</mat-icon>
+                <span>Cerrar sesión</span>
+            </button>
         </mat-menu>
     </section>
 </mat-toolbar>

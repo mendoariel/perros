@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ROUTES } from 'src/app/core/constants/routes.constants';
+import { Component, OnDestroy, afterRender } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MaterialModule } from 'src/app/material/material.module';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -14,6 +15,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
 import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { MedalInterface, RegisteredMedalInterface } from 'src/app/interface/medals.interfae';
+import { PLATFORM_ID, Inject } from '@angular/core';
+import { PetsService } from 'src/app/services/pets.services';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-add-pet',
@@ -28,7 +32,7 @@ import { MedalInterface, RegisteredMedalInterface } from 'src/app/interface/meda
   templateUrl: './add-pet.component.html',
   styleUrls: ['./add-pet.component.scss']
 })
-export class AddPetComponent implements OnInit {
+export class AddPetComponent implements OnDestroy {
   medalString = '';
   registerHash = '';
 
@@ -56,33 +60,46 @@ export class AddPetComponent implements OnInit {
   validationDoIt = false;
   emailValue = '';
   emailTaken: any;
+  addPetSubscription!: Subscription;
+  addPetBody: any; // Define the type according to your needs
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private petsServices: PetsService,
     private authService: AuthService,
     private _snackBar: MatSnackBar,
-    private qrService: QrChekingService
-  ) { }
-
-  ngOnInit(): void {
-    this.medalString = this.route.snapshot.params['medalString'];
+    private qrService: QrChekingService,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private navigationService: NavigationService
+  ) {
+    afterRender(() => {
+      this.initializeComponent();
+    });
   }
 
-  goHome() {
-    this.router.navigate(['/wellcome'])
+  private initializeComponent() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.medalString = this.route.snapshot.params['medalString'];
+      console.log('AddPetComponent initialized with medal:', this.medalString);
+    }
+  }
+
+  goToWelcome() {
+    this.navigationService.goToWelcome();
   }
 
   register() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     let body: any = this.registerForm.value;
     body.medalString = this.medalString;
     delete body.passwordConfirm;
     this.spinner = true;
-    this.spinnerMessage = 'procensando información...';
+    this.spinnerMessage = 'procesando información...';
 
     let authSubscription: Subscription = this.qrService.medalRegister(body).subscribe(
       (res: any) => {
-        //this.router.navigate(['/wellcome']);
         this.spinner = false;
         this.registeredMedal = res;
         this._snackBar.openFromComponent(MessageSnackBarComponent, {
@@ -93,18 +110,21 @@ export class AddPetComponent implements OnInit {
         this.addPet = true;
       }, error => {
         this.spinner = false;
-        console.error(error)
-        if (error.error && error.status === 500) this._snackBar.openFromComponent(MessageSnackBarComponent, {
-          duration: 5000,
-          verticalPosition: 'top',
-          data: 'No se pudo registar su medalla'
-        })
-        if (error.error && error.status === 400) this._snackBar.openFromComponent(MessageSnackBarComponent, {
-          duration: 5000,
-          verticalPosition: 'top',
-          data: error.error.message[0]
-        })
-
+        console.error(error);
+        if (error.error && error.status === 500) {
+          this._snackBar.openFromComponent(MessageSnackBarComponent, {
+            duration: 5000,
+            verticalPosition: 'top',
+            data: 'No se pudo registrar su medalla'
+          });
+        }
+        if (error.error && error.status === 400) {
+          this._snackBar.openFromComponent(MessageSnackBarComponent, {
+            duration: 5000,
+            verticalPosition: 'top',
+            data: error.error.message[0]
+          });
+        }
       }
     );
     this.addSubscription(authSubscription);
@@ -216,6 +236,17 @@ export class AddPetComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.subscription.map((subscription: Subscription) => subscription.unsubscribe());
+    this.subscription.forEach(sub => sub.unsubscribe());
+  }
+
+  onSubmit() {
+    this.addPetSubscription = this.petsServices.createPet(this.addPetBody).subscribe({
+      next: (res: any) => {
+        this.navigationService.goToWelcome();
+      },
+      error: (error: any) => {
+        console.error(error);
+      }
+    });
   }
 }

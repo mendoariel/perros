@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { ROUTES } from 'src/app/core/constants/routes.constants';
+import { Component, OnDestroy, OnInit, afterRender } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { QrChekingService } from 'src/app/services/qr-checking.service';
@@ -8,6 +9,9 @@ import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/fir
 import { MaterialModule } from 'src/app/material/material.module';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
+import { PetsService } from 'src/app/services/pets.services';
+import { AuthService } from 'src/app/auth/services/auth.service';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-confirm-medal',
@@ -20,7 +24,7 @@ import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/me
   templateUrl: './confirm-medal.component.html',
   styleUrls: ['./confirm-medal.component.scss']
 })
-export class ConfirmMedalComponent implements OnInit{
+export class ConfirmMedalComponent implements OnDestroy {
   spinner = false;
    checkingSubscriber: Subscription | undefined;
    message = '';
@@ -30,19 +34,23 @@ export class ConfirmMedalComponent implements OnInit{
      private qrService: QrChekingService,
      private route: ActivatedRoute,
      private router: Router,
-     private _snackBar: MatSnackBar
-       ) {}
-
-   ngOnInit(): void {
-     this.spinner = true;
-     this.route.queryParams.subscribe({
-       next: (params: any) => {
-         let body: ConfirmMedalInterface = {
-           email: params.email,
-           medalString: params.medalString
-         };
-         this.confirmMedal(body);
-       }
+     private _snackBar: MatSnackBar,
+     private petsServices: PetsService,
+     private authService: AuthService,
+     private navigationService: NavigationService
+   ) {
+     afterRender(() => {
+       this.spinner = true;
+       this.route.queryParams.subscribe({
+         next: (params: any) => {
+           let body: ConfirmMedalInterface = {
+             email: params.email,
+             medalString: params.medalString
+           };
+           this.confirmMedal(body);
+         }
+       });
+       this.checkAuth();
      });
    }
 
@@ -64,14 +72,22 @@ export class ConfirmMedalComponent implements OnInit{
                verticalPosition: 'top',
                data: 'Ingrese a nuestro sitio, para terminar de configurar su medalla QR'
              })
-     this.router.navigate(['login']);
+     this.navigationService.goToLogin();
    }
 
-   goToMyPets() {
-     this.router.navigate(['my-pets'])    
+   checkAuth() {
+     if (!this.authService.isAuthenticated()) {
+       this.navigationService.goToLogin();
+       return;
+     }
+     this.navigationService.goToMyPets();
+   }
+
+   navigateToMyPets() {
+     this.navigationService.goToMyPets();
    }
 
    ngOnDestroy(): void {
-     this.checkingSubscriber ? this.checkingSubscriber.unsubscribe() : null;
+     if(this.checkingSubscriber) this.checkingSubscriber.unsubscribe();
    }
 }

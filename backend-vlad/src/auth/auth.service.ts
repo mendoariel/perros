@@ -10,6 +10,7 @@ import { NewPasswordDto } from './dto/new-password.dto';
 import { ConfirmAccountDto } from './dto/confirm-account.dto';
 import { Prisma, UserStatus, MedalState, Role } from '@prisma/client';
 import { ConfirmMedalto } from './dto/confirm-medal.dto';
+import { AuthSignInDto } from './dto/auth-signin.dto';
 
 var bcrypt = require('bcryptjs');
 @Injectable()
@@ -39,7 +40,7 @@ export class AuthService {
     //     return tokens
     // }
 
-    async signinLocal(dto: AuthDto): Promise<Tokens> {
+    async signinLocal(dto: AuthSignInDto): Promise<Tokens> {
         const user = await this.prisma.user.findFirst({
             where: {
                 email: dto.email.toLocaleLowerCase(),

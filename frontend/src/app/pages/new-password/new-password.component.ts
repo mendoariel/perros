@@ -1,5 +1,6 @@
+import { ROUTES } from 'src/app/core/constants/routes.constants';
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, OnDestroy, OnInit, afterRender } from "@angular/core";
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
@@ -15,6 +16,7 @@ import { confirmedValidator } from "src/app/shared/custom-validators/confirmed-v
 import { leastOneCapitalLetterValidator } from "src/app/shared/custom-validators/least-one-capital-letter.directive";
 import { leastOneLowerCaseValidator } from "src/app/shared/custom-validators/least-one-lower-case.directive";
 import { leastOneNumberValidator } from "src/app/shared/custom-validators/least-one-number.directive";
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 export interface NewPasswordInterface {
   email: string;
@@ -38,7 +40,7 @@ export interface NewPasswordInterface {
     templateUrl: './new-password.component.html',
     styleUrls: ['./new-password.component.scss']
 })
-export class NewPasswordComponent {
+export class NewPasswordComponent implements OnDestroy {
     newPasswordSubscription!: Subscription;
     newPasswordForm: FormGroup = new FormGroup({
       password: new FormControl('', [
@@ -62,18 +64,20 @@ export class NewPasswordComponent {
     private activatedRote: ActivatedRoute,
     private authService: AuthService,
     private cookieService: CookieService,
-    private _snackBar: MatSnackBar
-  ) {}
-
-  ngOnInit(): void {
-    this.activatedRote.queryParams.subscribe(params => {
-      this.email = params['email'];
-      this.hash = params['hash'];
+    private _snackBar: MatSnackBar,
+    private navigationService: NavigationService
+  ) {
+    afterRender(() => {
+      this.activatedRote.queryParams.subscribe(params => {
+        this.email = params['email'];
+        this.hash = params['hash'];
+      });
+      this.checkAuth();
     });
   }
   
   goHome() {
-    this.router.navigate(['/'])
+    this.navigationService.goToHome();
   }
 
   newPassword() {
@@ -86,7 +90,7 @@ export class NewPasswordComponent {
           verticalPosition: 'top',
           data: res.text
         });
-        this.router.navigate(['/login']);
+        this.navigationService.goToLogin();
       },
       error : (error)=> {
         console.error(error);
@@ -158,5 +162,11 @@ export class NewPasswordComponent {
 
   ngOnDestroy() {
     if(this.newPasswordSubscription) this.newPasswordSubscription.unsubscribe();
+  }
+
+  checkAuth() {
+    if (this.authService.isAuthenticated()) {
+      this.navigationService.goToHome();
+    }
   }
 }

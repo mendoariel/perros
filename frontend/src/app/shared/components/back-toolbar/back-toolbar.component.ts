@@ -1,27 +1,26 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
-import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-back-toolbar',
   standalone: true,
   imports: [
     CommonModule,
-    MaterialModule,
-    HttpClientModule
+    MaterialModule
   ],
   templateUrl: './back-toolbar.component.html',
   styleUrls: ['./back-toolbar.component.scss']
 })
 export class BackToolbarComponent {
-  @Input() title: string = '';
   constructor(
-    private router: Router
+    private router: Router,
+    private navigationService: NavigationService
   ) {}
 
-  backMethod() {
-    this.router.navigate(['frias'])
+  goBack() {
+    this.navigationService.goToError();
   }
 }

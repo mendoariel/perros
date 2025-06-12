@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { ConfirmAccountInterface, ConfirmMedalInterface, MedalRegisterInterface } from "../interface/medals.interfae";
@@ -8,20 +8,27 @@ import { ConfirmAccountComponent } from "../pages/confirm-account/confirm-accoun
 export class QrChekingService {
     constructor(private http: HttpClient){}
 
+    private getHeaders() {
+        const token = localStorage.getItem('access_token');
+        return {
+            headers: new HttpHeaders().set('Authorization', `Bearer ${token}`)
+        };
+    }
+
     checkingQr(hash: string): any {
         return this.http.post(`${environment.perrosQrApi}qr/checking`, {"medalString": hash});
     }
 
     medalRegister(registerObject: MedalRegisterInterface) {
-        return this.http.post(`${environment.perrosQrApi}qr/pet`, registerObject);
+        return this.http.post(`${environment.perrosQrApi}qr/pet`, registerObject, this.getHeaders());
     }
 
     confirmAccount(confirmObject: ConfirmAccountInterface) {
-        return this.http.post(`${environment.perrosQrApi}auth/confirm-account`, confirmObject);
+        return this.http.post(`${environment.perrosQrApi}auth/confirm-account`, confirmObject, this.getHeaders());
     }
 
     confirmMedal(confirmObject: ConfirmMedalInterface) {
-        return this.http.post(`${environment.perrosQrApi}auth/confirm-medal`, confirmObject);
+        return this.http.post(`${environment.perrosQrApi}auth/confirm-medal`, confirmObject, this.getHeaders());
     }
 
     getPet(medalString: string): any {
