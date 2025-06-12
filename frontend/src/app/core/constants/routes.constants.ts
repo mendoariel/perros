@@ -1,23 +1,23 @@
 export const ROUTES = {
     // Auth routes
     LOGIN: 'login',
-    REGISTER: '/register',
-    PASSWORD_RECOVERY: '/recuperar-cuenta',
-    NEW_PASSWORD: '/crear-nueva-clave',
+    REGISTER: 'register',
+    PASSWORD_RECOVERY: 'recuperar-cuenta',
+    NEW_PASSWORD: 'crear-nueva-clave',
     
     // Main routes
     HOME: '/',
-    WELCOME: '/wellcome',
+    WELCOME: 'wellcome',
     
     // Pet management routes
-    MY_PETS: '/mis-mascotas',
+    MY_PETS: 'mis-mascotas',
     MY_PET: 'mi-mascota',
     PET_FORM: 'formulario-mi-mascota',
-    PUBLIC_PET: '/mascota-publica',
-    ADD_PET: '/agregar-mascota',
+    PUBLIC_PET: 'mascota-publica',
+    ADD_PET: 'agregar-mascota',
     
     // Error routes
-    ERROR: '/pagina-no-encontrada'
+    ERROR: 'pagina-no-encontrada'
 } as const;
 
 export const ROUTE_PARAMS = {
