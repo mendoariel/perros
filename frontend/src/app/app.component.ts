@@ -5,6 +5,7 @@ import { AuthService } from './auth/services/auth.service';
 import { Subscription } from 'rxjs';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { SpinnerService } from './services/spinner.service';
+import { FirstNavbarComponent } from './shared/components/first-navbar/first-navbar.component';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,8 @@ import { SpinnerService } from './services/spinner.service';
   imports: [
     CommonModule,
     RouterOutlet,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    FirstNavbarComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
@@ -27,7 +29,6 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.authService.isAuthenticated() ? this.authService.putAuthenticatedTrue() : this.authService.putAuthenticatedFalse();
     this.spinnerSubscription = this.spinnerService.spinnerStatus$.subscribe(
       res => {
         res ? this.spinner = true : this.spinner = false;

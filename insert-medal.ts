@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+const { PrismaClient } = require('@prisma/client');
 
 async function insertVirginMedal() {
   const prisma = new PrismaClient();

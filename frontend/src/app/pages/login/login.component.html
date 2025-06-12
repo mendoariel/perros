@@ -1,7 +1,6 @@
-<app-first-navbar></app-first-navbar>
 <main>
     <section>
-        <form [formGroup]="loginForm">
+        <form [formGroup]="loginForm" (ngSubmit)="login()" #loginFormDirective="ngForm">
             <h2>Ingresar</h2>
             <mat-form-field class="example-full-width">
                 <mat-label>Email:</mat-label>
@@ -11,14 +10,15 @@
             </mat-form-field>
             <mat-form-field class="example-full-width">
                 <mat-label>Password:</mat-label>
-                <button mat-icon-button matSuffix (click)="visibilityToggle()">
+                <button type="button" mat-icon-button matSuffix (click)="visibilityToggle()">
                     <mat-icon>{{getVisibility()}}</mat-icon>
                 </button>
-                <input [type]="getIputType()" matInput placeholder="Ingresar password" formControlName="password" >
+                <input [type]="getIputType()" matInput placeholder="Ingresar password" formControlName="password">
                 <mat-error *ngIf="password?.hasError('minlength')">Mínimo 8 caracteres</mat-error>
+                <mat-error *ngIf="password?.hasError('required')">Ingrese contraseña</mat-error>
             </mat-form-field>
             
-            <button [disabled]="loginForm.invalid" type="submit" mat-raised-button (click)="login()">Ingresar</button>
+            <button [disabled]="loginForm.invalid" type="submit" mat-raised-button>Ingresar</button>
 
             <p (click)="recoveryPassword()" class="recovery-password">Recuperar contraseña</p>
         </form>

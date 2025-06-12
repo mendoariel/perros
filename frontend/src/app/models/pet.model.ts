@@ -6,4 +6,5 @@ export interface Pet {
     medalString: string;
     background?: string;
     link?: string;
+    phone?: string;
 } 

@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ROUTES } from 'src/app/core/constants/routes.constants';
+import { Component, OnDestroy, afterRender } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
@@ -9,6 +10,9 @@ import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
 import { ShareIconsModule } from 'ngx-sharebuttons/icons';
 import { MetaService } from 'src/app/services/meta.service';
+import { PetsService } from 'src/app/services/pets.services';
+import { AuthService } from 'src/app/auth/services/auth.service';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 // Default social sharing image if pet image is not available
 const DEFAULT_SOCIAL_IMAGE = `${environment.frontend}/assets/default-pet-social.jpg`;
@@ -26,7 +30,7 @@ const DEFAULT_SOCIAL_IMAGE = `${environment.frontend}/assets/default-pet-social.
   templateUrl: './pet.component.html',
   styleUrls: ['./pet.component.scss']
 })
-export class PetComponent implements OnInit, OnDestroy {
+export class PetComponent implements OnDestroy {
   pet: any;
   petSubscription: Subscription | undefined;
   medalString: any;
@@ -42,18 +46,21 @@ export class PetComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private qrCheckingService: QrChekingService,
     private router: Router,
-    private metaService: MetaService
-  ) {}
-
-  ngOnInit(): void {
-    this.medalString = this.route.snapshot.params['medalString'];
-    this.getPet(this.medalString);
+    private metaService: MetaService,
+    private petsServices: PetsService,
+    private authService: AuthService,
+    private navigationService: NavigationService
+  ) {
+    afterRender(() => {
+      this.medalString = this.route.snapshot.params['medalString'];
+      this.getPet(this.medalString);
+    });
   }
 
   setMetaData() {
     const petImage = this.isImageLoaded ? 
-      `pets/files/${this.pet.image}` : 
-      'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
+      `https://api.peludosclick.com/pets/files/${this.pet.image}` : 
+      `https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
     
     const description = this.pet.description || 'Conoce más sobre esta mascota en PeludosClick';
     
@@ -61,7 +68,7 @@ export class PetComponent implements OnInit, OnDestroy {
       title: `${this.pet.petName} - PeludosClick`,
       description: description,
       image: petImage,
-      url: `/mascota/${this.medalString}`
+      url: `https://peludosclick.com/mascota/${this.medalString}`
     });
   }
 
@@ -101,13 +108,18 @@ export class PetComponent implements OnInit, OnDestroy {
       },
       error: (error: any) => {
         this.spinner = false;
-        if(error.status === 404) this.router.navigate(['']);
-        console.error('Error fetching pet:', error);
+        this.handleError(error);
       }
     });
   }
   
   ngOnDestroy(): void {
     this.petSubscription?.unsubscribe();
+  }
+
+  handleError(error: any) {
+    if(error.status === 404) {
+      this.navigationService.goToHome();
+    }
   }
 }

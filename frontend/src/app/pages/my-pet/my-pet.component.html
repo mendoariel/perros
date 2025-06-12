@@ -1,4 +1,3 @@
-<app-first-navbar></app-first-navbar>
 <main>
   <section class="spinner" *ngIf="spinner">
     <h1>{{ spinnerMessage }}</h1>
@@ -6,7 +5,7 @@
   </section>
   <section class="main-content" *ngIf="!spinner">
     <div *ngIf="myPet" class="pelu-card" appearance="outlined">
-      <h1>{{ myPet.petName }}</h1>
+      <h1>{{ myPet?.petName || 'Sin nombre' }}</h1>
       <div class="image-container" [style.background]="myPet.background"></div>
       <div class="info-container">
         <h3>Descripción:</h3>
@@ -20,7 +19,7 @@
       <div class="action-container">
         <div class="logo">
           <div class="button wame-button">
-            <button mat-raised-button color="primary" (click)="goToMyPetForm(myPet.medalString)">Editar</button>
+            <button mat-raised-button color="primary" (click)="goToPetForm(myPet.medalString)">Editar</button>
           </div>
         </div>
         <div class="logo">
