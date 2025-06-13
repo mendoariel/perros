@@ -29,9 +29,9 @@ export class FirstNavbarComponent {
   statusSidenav = false;
 
   constructor(
-    private router: Router,
-    private authService: AuthService,
-    private sidenavService: SidenavService,
+      private router: Router,
+      private authService: AuthService,
+      private sidenavService: SidenavService,
     private navigationService: NavigationService,
     private cdr: ChangeDetectorRef
   ) {

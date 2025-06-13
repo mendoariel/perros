@@ -40,9 +40,9 @@ export class MyPetsComponent implements OnDestroy {
       this.authSubscription = this.authService.isAuthenticatedObservable.subscribe(
         isAuthenticated => {
           if (!isAuthenticated) {
-            this.navigationService.goToLogin();
+      this.navigationService.goToLogin();
           } else {
-            this.getOnlyMyPets();
+    this.getOnlyMyPets();
           }
         }
       );
@@ -60,13 +60,13 @@ export class MyPetsComponent implements OnDestroy {
         
         if (response && Array.isArray(response)) {
           this.myPets = response.map(pet => ({
-            ...pet,
-            petName: pet.petName || 'Sin nombre',
-            status: pet.status || 'INCOMPLETE',
-            image: pet.image || '',
-            description: pet.description || '',
-            medalString: pet.medalString || '',
-            background: pet.background || '#f5f5f5'
+              ...pet,
+              petName: pet.petName || 'Sin nombre',
+              status: pet.status || 'INCOMPLETE',
+              image: pet.image || '',
+              description: pet.description || '',
+              medalString: pet.medalString || '',
+              background: pet.background || '#f5f5f5'
           }));
           this.cdr.detectChanges();
 

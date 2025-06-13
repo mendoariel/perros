@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, afterRender } from '@angular/core';
-import { CommonModule, isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
-import { PLATFORM_ID, Inject } from '@angular/core';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-qr-checking',
@@ -30,7 +30,7 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
     private router: Router,
     private qrService: QrChekingService,
     private _snackBar: MatSnackBar,
-    @Inject(PLATFORM_ID) private platformId: Object
+    private navigationService: NavigationService
   ) {
     afterRender(() => {
       this.checkMedalString();
@@ -81,22 +81,15 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
   }
 
   goToAddPed(medalString: string) {
-    if (isPlatformBrowser(this.platformId)) {
-      // Usar window.location.href para navegación en SSR
-      window.location.href = `/agregar-mascota/${medalString}`;
-    }
+    this.navigationService.goToAddPet(medalString);
   }
 
   goPet(medalString: string) {
-    if (isPlatformBrowser(this.platformId)) {
-      window.location.href = `/mascota/${medalString}`;
-    }
+    this.navigationService.navigate(['mascota', medalString]);
   }
 
   goHome() {
-    if (isPlatformBrowser(this.platformId)) {
-      window.location.href = '/';
-    }
+    this.navigationService.goToHome();
   }
 
   openSnackBar(message: string) {

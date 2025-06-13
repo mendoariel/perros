@@ -128,7 +128,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   getIputType() {
     return this.pwdHide ? 'password' : 'text';
-  }
+}
 
   visibilityToggle() {
     this.pwdHide = !this.pwdHide;

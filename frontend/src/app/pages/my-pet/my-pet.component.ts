@@ -46,7 +46,7 @@ export class MyPetComponent implements OnInit, OnDestroy {
       const medalString = params['medalString'];
       if (medalString) {
         this.medalString = medalString;
-        this.checkAuthAndLoadPet();
+      this.checkAuthAndLoadPet();
       }
     });
   }

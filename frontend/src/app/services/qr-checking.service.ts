@@ -11,9 +11,9 @@ export class QrChekingService {
     private getHeaders() {
         const token = localStorage.getItem('access_token');
         if (token) {
-            return {
-                headers: new HttpHeaders().set('Authorization', `Bearer ${token}`)
-            };
+        return {
+            headers: new HttpHeaders().set('Authorization', `Bearer ${token}`)
+        };
         }
         return {}; // No headers if no token
     }
