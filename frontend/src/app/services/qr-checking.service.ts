@@ -24,33 +24,41 @@ export class QrChekingService {
 
     private getApiUrl() {
         if (isPlatformServer(this.platformId)) {
-            return 'https://api.peludosclick.com/';
+            return 'http://api.peludosclick.com/';
         }
         return environment.perrosQrApi;
     }
 
+    private getHttpOptions() {
+        const options = this.getHeaders();
+        if (isPlatformServer(this.platformId)) {
+            options['timeout'] = 30000; // 30 seconds timeout for server-side requests
+        }
+        return options;
+    }
+
     checkingQr(hash: string): any {
-        return this.http.post(`${this.getApiUrl()}qr/checking`, {"medalString": hash});
+        return this.http.post(`${this.getApiUrl()}qr/checking`, {"medalString": hash}, this.getHttpOptions());
     }
 
     medalRegister(registerObject: MedalRegisterInterface) {
-        return this.http.post(`${this.getApiUrl()}qr/pet`, registerObject, this.getHeaders());
+        return this.http.post(`${this.getApiUrl()}qr/pet`, registerObject, this.getHttpOptions());
     }
 
     confirmAccount(confirmObject: ConfirmAccountInterface) {
-        return this.http.post(`${this.getApiUrl()}auth/confirm-account`, confirmObject, this.getHeaders());
+        return this.http.post(`${this.getApiUrl()}auth/confirm-account`, confirmObject, this.getHttpOptions());
     }
 
     confirmMedal(confirmObject: ConfirmMedalInterface) {
-        return this.http.post(`${this.getApiUrl()}auth/confirm-medal`, confirmObject, this.getHeaders());
+        return this.http.post(`${this.getApiUrl()}auth/confirm-medal`, confirmObject, this.getHttpOptions());
     }
 
     getPet(medalString: string): any {
-        return this.http.get(`${this.getApiUrl()}qr/pet/${medalString}`)
+        return this.http.get(`${this.getApiUrl()}qr/pet/${medalString}`, this.getHttpOptions())
     }
 
     isThisEmailTaken(email: string): any {
-        return this.http.get(`${this.getApiUrl()}qr/this-email-is-taken/${email}`);
+        return this.http.get(`${this.getApiUrl()}qr/this-email-is-taken/${email}`, this.getHttpOptions());
     }
 
     nextFunction() {
