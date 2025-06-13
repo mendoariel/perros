@@ -19,6 +19,9 @@ export class QrChekingService {
     ){}
 
     private getHeaders() {
+        if (isPlatformServer(this.platformId)) {
+            return {}; // No headers needed for server-side requests
+        }
         const token = localStorage.getItem('access_token');
         if (token) {
             return {
