@@ -33,7 +33,7 @@ export class QrChekingService {
 
     private getApiUrl() {
         if (isPlatformServer(this.platformId)) {
-            return 'https://api.peludosclick.com/';
+            return 'http://peludosclick_backend:3335/';
         }
         return environment.perrosQrApi;
     }
