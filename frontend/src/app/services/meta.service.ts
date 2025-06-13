@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
+import { isPlatformServer } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +10,13 @@ export class MetaService {
   // Use production URL for meta tags even in development
   private readonly metaBaseUrl = 'https://peludosclick.com';
   private readonly apiBaseUrl = 'https://api.peludosclick.com';
+  private readonly isServer: boolean;
   
-  constructor(private meta: Meta) {
+  constructor(
+    private meta: Meta,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isServer = isPlatformServer(platformId);
   }
 
   updateMetaTags(options: {
@@ -49,6 +55,18 @@ export class MetaService {
       this.metaBaseUrl;
 
     try {
+      console.log('[MetaService][updateMetaTags] SSR:', this.isServer, 'title:', title, 'image:', imageUrl, 'url:', url);
+      // If we're on the server, remove existing tags first to ensure clean state
+      if (this.isServer) {
+        this.meta.removeTag('property="og:title"');
+        this.meta.removeTag('property="og:description"');
+        this.meta.removeTag('property="og:image"');
+        this.meta.removeTag('property="og:url"');
+        this.meta.removeTag('name="twitter:title"');
+        this.meta.removeTag('name="twitter:description"');
+        this.meta.removeTag('name="twitter:image"');
+      }
+
       // Update primary meta tags
       this.meta.updateTag({ name: 'title', content: title });
       this.meta.updateTag({ name: 'description', content: description });
@@ -74,6 +92,7 @@ export class MetaService {
       this.meta.updateTag({ name: 'twitter:site', content: '@peludosClick' });
 
     } catch (error) {
+      console.error('Error updating meta tags:', error);
     }
   }
 } 

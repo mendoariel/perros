@@ -3,6 +3,7 @@
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
     "outDir": "./out-tsc/server",
+    "target": "es2020",
     "types": [
       "node"
     ]
@@ -10,5 +11,8 @@
   "files": [
     "src/main.server.ts",
     "server.ts"
+  ],
+  "include": [
+    "src/app/ssr-config.ts"
   ]
 }
