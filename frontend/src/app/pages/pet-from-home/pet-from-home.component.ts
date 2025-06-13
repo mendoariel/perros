@@ -72,8 +72,8 @@ export class PetFromHomeComponent implements OnDestroy, OnInit {
     
     // Construct absolute URLs
     const petImageUrl = this.isImageLoaded ? 
-      `pets/files/${this.pet.image}` : 
-      'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
+      `${environment.perrosQrApi}pets/files/${this.pet.image}` : 
+      `${environment.frontend}/${DEFAULT_SOCIAL_IMAGE}`;
     
     const description = this.pet.description || 'Conoce más sobre esta mascota en PeludosClick';
     
@@ -81,7 +81,7 @@ export class PetFromHomeComponent implements OnDestroy, OnInit {
       title: `${this.pet.petName} - PeludosClick`,
       description: description,
       image: petImageUrl,
-      url: `/mascota-publica/${this.medalString}`
+      url: `${environment.frontend}/mascota-publica/${this.medalString}`
     };
     
     console.log('Updating meta tags with:', metaData);
