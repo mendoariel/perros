@@ -1,5 +1,5 @@
 import { ROUTES } from 'src/app/core/constants/routes.constants';
-import { Component, OnDestroy, afterRender, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
@@ -30,7 +30,7 @@ const DEFAULT_SOCIAL_IMAGE = 'assets/main/cat-dog-free-safe-with-medal-peldudosc
   templateUrl: './pet-from-home.component.html',
   styleUrls: ['./pet-from-home.component.scss']
 })
-export class PetFromHomeComponent implements OnDestroy {
+export class PetFromHomeComponent implements OnDestroy, OnInit {
   pet: any;
   petSubscription: Subscription | undefined;
   medalString: any;
@@ -50,10 +50,10 @@ export class PetFromHomeComponent implements OnDestroy {
     private authService: AuthService,
     private navigationService: NavigationService,
     private cdr: ChangeDetectorRef
-  ) {
-    afterRender(() => {
-      this.loadPetData();
-    });
+  ) {}
+
+  ngOnInit() {
+    this.loadPetData();
   }
 
   private loadPetData() {
@@ -77,34 +77,15 @@ export class PetFromHomeComponent implements OnDestroy {
     
     const description = this.pet.description || 'Conoce más sobre esta mascota en PeludosClick';
     
-    // Ensure the image is loaded before setting meta tags
-    const img = new Image();
-    img.onload = () => {
-      const metaData = {
-        title: `${this.pet.petName} - PeludosClick`,
-        description: description,
-        image: petImageUrl,
-        url: `/mascota-publica/${this.medalString}`
-      };
-      
-      console.log('Updating meta tags with:', metaData);
-      this.metaService.updateMetaTags(metaData);
+    const metaData = {
+      title: `${this.pet.petName} - PeludosClick`,
+      description: description,
+      image: petImageUrl,
+      url: `/mascota-publica/${this.medalString}`
     };
-    img.onerror = () => {
-      // If image fails to load, use default image
-      const metaData = {
-        title: `${this.pet.petName} - PeludosClick`,
-        description: description,
-        image: 'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg',
-        url: `/mascota-publica/${this.medalString}`
-      };
-      
-      console.log('Updating meta tags with default image:', metaData);
-      this.metaService.updateMetaTags(metaData);
-    };
-    img.src = this.isImageLoaded ? 
-      `https://api.peludosclick.com/pets/files/${this.pet.image}` : 
-      `https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
+    
+    console.log('Updating meta tags with:', metaData);
+    this.metaService.updateMetaTags(metaData);
   }
 
   checkImageExists(imageUrl: string): Promise<boolean> {
