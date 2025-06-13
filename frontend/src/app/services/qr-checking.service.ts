@@ -1,9 +1,15 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable, Inject, PLATFORM_ID } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { ConfirmAccountInterface, ConfirmMedalInterface, MedalRegisterInterface } from "../interface/medals.interfae";
 import { ConfirmAccountComponent } from "../pages/confirm-account/confirm-account.component";
 import { isPlatformServer } from '@angular/common';
+
+interface HttpOptions {
+    headers?: HttpHeaders;
+    params?: HttpParams;
+    timeout?: number;
+}
 
 @Injectable({providedIn: 'root'})
 export class QrChekingService {
@@ -29,10 +35,10 @@ export class QrChekingService {
         return environment.perrosQrApi;
     }
 
-    private getHttpOptions() {
-        const options = this.getHeaders();
+    private getHttpOptions(): HttpOptions {
+        const options: HttpOptions = this.getHeaders();
         if (isPlatformServer(this.platformId)) {
-            options['timeout'] = 30000; // 30 seconds timeout for server-side requests
+            options.timeout = 30000; // 30 seconds timeout for server-side requests
         }
         return options;
     }
