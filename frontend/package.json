@@ -12,7 +12,7 @@
     "test": "ng test",
     "dev:ssr": "ng run frontend:serve-ssr",
     "serve:ssr": "node dist/frontend/server/main.js",
-    "build:ssr": "ng build && ng run frontend:server",
+    "build:ssr": "ng build --configuration production && ng run frontend:server:production",
     "build:ssr:dev": "ng build --configuration development && ng run frontend:server:development",
     "serve:ssr:dev": "ng run frontend:serve-ssr",
     "build:ssr-local-deploy": "ng build --configuration local-deploy && ng run frontend:server:local-deploy",

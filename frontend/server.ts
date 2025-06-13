@@ -39,7 +39,7 @@ export function app(): express.Express {
         publicPath: distFolder,
         providers: [
           { provide: APP_BASE_HREF, useValue: baseUrl },
-          { provide: 'NODE_ENV', useValue: process.env['NODE_ENV'] }
+          { provide: 'NODE_ENV', useValue: 'production' }
         ],
       })
       .then((html) => res.send(html))
@@ -50,12 +50,12 @@ export function app(): express.Express {
 }
 
 function run(): void {
-  const isDevelopment = process.env['NODE_ENV'] === 'development';
   const port = parseInt(process.env['PORT'] || '4100', 10);
 
   // Start up the Node server
   const server = app();
   server.listen(port, '0.0.0.0', () => {
+    console.log(`Node Express server listening on http://0.0.0.0:${port}`);
   });
 }
 
