@@ -90,18 +90,34 @@ export class PetFromHomeComponent implements OnDestroy, OnInit {
 
   checkImageExists(imageUrl: string): Promise<boolean> {
     return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        this.isImageLoaded = true;
-        console.log('Image loaded successfully:', imageUrl);
-        resolve(true);
-      };
-      img.onerror = () => {
-        this.isImageLoaded = false;
-        console.log('Image failed to load:', imageUrl);
-        resolve(false);
-      };
-      img.src = imageUrl;
+      if (typeof window === 'undefined') {
+        // Server-side: use fetch
+        fetch(imageUrl)
+          .then(response => {
+            this.isImageLoaded = response.ok;
+            console.log('Image fetch response:', response.ok);
+            resolve(response.ok);
+          })
+          .catch(error => {
+            console.log('Image fetch failed:', error);
+            this.isImageLoaded = false;
+            resolve(false);
+          });
+      } else {
+        // Client-side: use Image
+        const img = new Image();
+        img.onload = () => {
+          this.isImageLoaded = true;
+          console.log('Image loaded successfully:', imageUrl);
+          resolve(true);
+        };
+        img.onerror = () => {
+          this.isImageLoaded = false;
+          console.log('Image failed to load:', imageUrl);
+          resolve(false);
+        };
+        img.src = imageUrl;
+      }
     });
   }
   
