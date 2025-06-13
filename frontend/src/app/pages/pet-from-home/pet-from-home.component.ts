@@ -68,24 +68,18 @@ export class PetFromHomeComponent implements OnDestroy, OnInit {
   }
 
   setMetaData() {
-    console.log('Setting meta data for pet:', this.pet);
-    
-    // Construct absolute URLs
-    const petImageUrl = this.isImageLoaded ? 
-      `${environment.perrosQrApi}pets/files/${this.pet.image}` : 
-      `${environment.frontend}/${DEFAULT_SOCIAL_IMAGE}`;
+    const petImage = this.isImageLoaded ? 
+      `${this.env.perrosQrApi}pets/files/${this.pet.image}` : 
+      `${this.env.frontend}/${DEFAULT_SOCIAL_IMAGE}`;
     
     const description = this.pet.description || 'Conoce más sobre esta mascota en PeludosClick';
     
-    const metaData = {
+    this.metaService.updateMetaTags({
       title: `${this.pet.petName} - PeludosClick`,
       description: description,
-      image: petImageUrl,
-      url: `${environment.frontend}/mascota-publica/${this.medalString}`
-    };
-    
-    console.log('Updating meta tags with:', metaData);
-    this.metaService.updateMetaTags(metaData);
+      image: petImage,
+      url: `https://peludosclick.com/mascota-publica/${this.medalString}`
+    });
   }
 
   checkImageExists(imageUrl: string): Promise<boolean> {

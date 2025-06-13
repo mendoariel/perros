@@ -31,11 +31,12 @@ export class QrChekingService {
         return {}; // No headers if no token
     }
 
-    private getApiUrl() {
-        if (isPlatformServer(this.platformId)) {
+    getApiUrl(): string {
+        if (typeof window === 'undefined') {
+            // Server-side: use Docker service name
             return 'http://peludosclick_backend:3335/';
         }
-        return environment.perrosQrApi;
+        return this.env.perrosQrApi;
     }
 
     private getHttpOptions(): HttpOptions {

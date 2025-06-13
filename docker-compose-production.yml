@@ -12,21 +12,22 @@ volumes:
 
 services:
   peludosclick_frontend_service:
-    container_name: angular-frontend
-    build:
-      dockerfile: production.Dockerfile
+    build: 
       context: ./frontend
+      dockerfile: Dockerfile
       target: production
-    mem_limit: 3g
-    volumes:
-      - ./frontend:/alberto/frontend/src/app
-      - /alberto/src/app/node_modules
+    container_name: angular-frontend
+    command: npm run serve:ssr
     ports:
-      - "9002:9002"
+      - '9002:9002'
     environment:
       - NODE_ENV=production
       - PORT=9002
-    command: npm run serve:ssr
+    depends_on:
+      - peludosclick_backend
+    volumes:
+      - ./frontend:/alberto/frontend/src/app
+      - /alberto/src/app/node_modules
     labels:
       - traefik.http.routers.peludosclick_frontend_service.rule=Host(`www.peludosclick.com`,`peludosclick.com`)
       - traefik.http.routers.peludosclick_frontend_service.tls=true
