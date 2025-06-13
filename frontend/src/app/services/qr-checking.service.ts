@@ -13,6 +13,8 @@ interface HttpOptions {
 
 @Injectable({providedIn: 'root'})
 export class QrChekingService {
+    private env = environment;
+
     constructor(
         private http: HttpClient,
         @Inject(PLATFORM_ID) private platformId: Object
