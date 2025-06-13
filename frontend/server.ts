@@ -38,8 +38,7 @@ export function app(): express.Express {
         url: `${protocol}://${headers.host}${originalUrl}`,
         publicPath: distFolder,
         providers: [
-          { provide: APP_BASE_HREF, useValue: baseUrl },
-          { provide: 'NODE_ENV', useValue: 'production' }
+          { provide: APP_BASE_HREF, useValue: baseUrl }
         ],
       })
       .then((html) => res.send(html))
