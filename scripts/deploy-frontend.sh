@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Colores para los mensajes
