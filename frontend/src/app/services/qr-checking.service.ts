@@ -34,9 +34,12 @@ export class QrChekingService {
     }
 
     getApiUrl(): string {
+        if (this.env.production) {
+            return 'https://api.peludosclick.com/';
+        }
         if (typeof window === 'undefined') {
-            // Server-side: use container name
-            return 'http://peludosclickbackend:3335/';
+            // SSR en Docker Compose: usar el nombre del servicio
+            return 'http://peludosclick_backend:3335/';
         }
         return this.env.perrosQrApi;
     }
