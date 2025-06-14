@@ -35,8 +35,8 @@ export class QrChekingService {
 
     getApiUrl(): string {
         if (typeof window === 'undefined') {
-            // Server-side: use Docker service name
-            return 'http://peludosclick_backend:3335/';
+            // Server-side: use container name
+            return 'http://peludosclickbackend:3335/';
         }
         return this.env.perrosQrApi;
     }

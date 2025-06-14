@@ -3,8 +3,6 @@ version: "3.8"
 networks:
   web:
     external: true
-  internal:
-    external: false
 
 volumes:
   postgres_data:
@@ -34,7 +32,6 @@ services:
       - traefik.http.routers.peludosclick_frontend_service.tls.certresolver=lets-encrypt
       - traefik.port=9002
     networks:
-      - internal
       - web
   
   peludosclick_backend:
@@ -58,7 +55,6 @@ services:
       - traefik.http.routers.peludosclick_backend.tls.certresolver=lets-encrypt
       - traefik.port=3335
     networks:
-      - internal
       - web
   # Our Postgres Database for NestJS to connect to
   postgres:
@@ -74,7 +70,6 @@ services:
     labels:
       - traefik.enable=true
     networks:
-      - internal
       - web
     restart: always
 
@@ -94,7 +89,6 @@ services:
       - traefik.http.routers.postgresadmin.tls.certresolver=lets-encrypt
       - traefik.port=5050
     networks:
-      - internal
       - web
 
   # Add this new service
@@ -110,5 +104,5 @@ services:
     depends_on:
       - postgres
     networks:
-      - internal
+      - web
     restart: always
