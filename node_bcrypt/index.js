@@ -1,4 +1,3 @@
-console.log('hello world')
-var bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 
-console.log(bcrypt.hashSync('Casadesara1', 10));
+// console.log(bcrypt.hashSync('Casadesara1', 10));

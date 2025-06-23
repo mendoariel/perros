@@ -71,7 +71,6 @@ export class WellcomeComponent implements OnDestroy {
     
     this.subscription = this.petService.getPets().pipe(
       map(pets => {
-        console.log('MAP pets', pets);
         return pets.filter(pet => pet.status === 'ENABLED');
       }),
       map(pets => pets.map(pet => ({
@@ -86,7 +85,6 @@ export class WellcomeComponent implements OnDestroy {
       })
     ).subscribe({
       next: (pets) => {
-        console.log('SUBSCRIBE NEXT', pets);
         this.pets = pets;
         this.loading = false;
         this.cdr.detectChanges();

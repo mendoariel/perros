@@ -12,11 +12,9 @@ async function insertVirginMedal() {
       },
     });
     
-    console.log('Medal inserted successfully:', newMedal);
+    await prisma.$disconnect();
   } catch (error) {
     console.error('Error inserting medal:', error);
-  } finally {
-    await prisma.$disconnect();
   }
 }
 

@@ -81,8 +81,6 @@ export class PetFormComponent implements OnDestroy {
     this.isLoading = true;
     this.spinnerMessage = 'Cargando...';
     // Continuar con la lógica existente
-    console.log('checkAuthAndLoadPet called');
-    console.log('medalString from route:', this.medalString);
 
     if (!this.medalString) {
       this.error = 'No se encontró el identificador de la mascota';
@@ -95,12 +93,10 @@ export class PetFormComponent implements OnDestroy {
       .pipe(
         take(1),
         finalize(() => {
-          console.log('Auth check completed');
         })
       )
       .subscribe({
         next: (res: boolean) => {
-          console.log('Auth check result:', res);
           if (res) {
             this.getOnlyMyPet(this.medalString!);
             this.subscribeValidationPhone();
@@ -137,7 +133,6 @@ export class PetFormComponent implements OnDestroy {
   }
 
   getOnlyMyPet(medalString: string) {
-    console.log('getOnlyMyPet called with medalString:', medalString);
     if (this.petsSubscription) {
       this.petsSubscription.unsubscribe();
     }
@@ -146,12 +141,10 @@ export class PetFormComponent implements OnDestroy {
     
     this.petsSubscription = this.petsServices.getMyPet(medalString)
       .pipe(finalize(() => {
-        console.log('getMyPet completed');
         this.isLoading = false;
       }))
       .subscribe({
         next: (myPet: Pet) => {
-          console.log('Pet data received:', myPet);
           this.myPet = myPet;
           if (this.myPet.status === 'ENABLED') {
             this.editMode();
@@ -167,7 +160,6 @@ export class PetFormComponent implements OnDestroy {
   }
 
   editMode() {
-    console.log('editMode called, myPet:', this.myPet);
     if (this.myPet) {
       if (this.myPet.description) {
         this.description?.setValue(this.myPet.description);
@@ -187,9 +179,7 @@ export class PetFormComponent implements OnDestroy {
   }
 
   onFileSelected(event: any) {
-    console.log('onFileSelected called');
     if (!event?.target?.files?.length || this.isLoading) {
-      console.log('No file selected or loading');
       return;
     }
 
@@ -206,12 +196,10 @@ export class PetFormComponent implements OnDestroy {
 
     this.uploadSubscription = this.uploadFileService.uploadProfileServie(formData)
       .pipe(finalize(() => {
-        console.log('Upload completed');
         this.isLoading = false;
       }))
       .subscribe({
         next: (res: any) => {
-          console.log('Upload response:', res);
           if (res.image === 'load') {
             this.getOnlyMyPet(this.medalString!);
           }
@@ -226,9 +214,7 @@ export class PetFormComponent implements OnDestroy {
   }
 
   updatePet(): void {
-    console.log('updatePet called');
     if (!this.myPet?.medalString || this.isLoading) {
-      console.log('Cannot update: no medalString or loading');
       this.error = 'No se puede actualizar la mascota sin identificador';
       return;
     }
@@ -248,12 +234,10 @@ export class PetFormComponent implements OnDestroy {
 
     this.medalUpdateSubscription = this.petsServices.updateMedal(body)
       .pipe(finalize(() => {
-        console.log('Update completed');
         this.isLoading = false;
       }))
       .subscribe({
         next: (res: any) => {
-          console.log('Update response:', res);
           this.openSnackBar();
           setTimeout(() => {
             this.goToMyPets();
