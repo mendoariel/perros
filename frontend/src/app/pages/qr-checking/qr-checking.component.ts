@@ -36,7 +36,7 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.spinner = true;
     this.route.queryParams.subscribe(params => {
-      const hash = params['medalstring'];
+      const hash = params['medalString'] ? params['medalString'] : params['medalstring'];
       if (!hash) {
         this.message = 'No se encontró el código de la medalla';
         this.spinner = false;
