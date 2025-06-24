@@ -68,7 +68,6 @@ export class PetFromHomeComponent implements OnDestroy {
   }
 
   setMetaData() {
-    console.log('Setting meta data for pet:', this.pet);
     
     // Construct absolute URLs
     const petImageUrl = this.isImageLoaded ? 
@@ -87,7 +86,6 @@ export class PetFromHomeComponent implements OnDestroy {
         url: `/mascota-publica/${this.medalString}`
       };
       
-      console.log('Updating meta tags with:', metaData);
       this.metaService.updateMetaTags(metaData);
     };
     img.onerror = () => {
@@ -98,8 +96,6 @@ export class PetFromHomeComponent implements OnDestroy {
         image: 'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg',
         url: `/mascota-publica/${this.medalString}`
       };
-      
-      console.log('Updating meta tags with default image:', metaData);
       this.metaService.updateMetaTags(metaData);
     };
     img.src = this.isImageLoaded ? 
@@ -112,12 +108,10 @@ export class PetFromHomeComponent implements OnDestroy {
       const img = new Image();
       img.onload = () => {
         this.isImageLoaded = true;
-        console.log('Image loaded successfully:', imageUrl);
         resolve(true);
       };
       img.onerror = () => {
         this.isImageLoaded = false;
-        console.log('Image failed to load:', imageUrl);
         resolve(false);
       };
       img.src = imageUrl;
@@ -126,10 +120,8 @@ export class PetFromHomeComponent implements OnDestroy {
   
   getPet(medalString: string) {
     this.spinner = true;
-    console.log('Fetching pet data for medal string:', medalString);
     this.petSubscription = this.qrCheckingService.getPet(medalString).subscribe({
       next: async (pet: any) => {
-        console.log('Pet data received:', pet);
         this.spinner = false;
         this.pet = pet;
         
@@ -150,7 +142,6 @@ export class PetFromHomeComponent implements OnDestroy {
         this.spinner = false;
         console.error('Error fetching pet:', error);
         if(error.status === 404) {
-          console.log('Pet not found, redirecting to home');
           this.navigationService.goToHome();
         }
       }

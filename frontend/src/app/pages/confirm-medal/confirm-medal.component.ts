@@ -1,6 +1,6 @@
 import { ROUTES } from 'src/app/core/constants/routes.constants';
-import { Component, OnDestroy, OnInit, afterRender } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,7 +24,7 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   templateUrl: './confirm-medal.component.html',
   styleUrls: ['./confirm-medal.component.scss']
 })
-export class ConfirmMedalComponent implements OnDestroy {
+export class ConfirmMedalComponent implements OnInit, OnDestroy {
   spinner = false;
    checkingSubscriber: Subscription | undefined;
    message = '';
@@ -37,33 +37,47 @@ export class ConfirmMedalComponent implements OnDestroy {
      private _snackBar: MatSnackBar,
      private petsServices: PetsService,
      private authService: AuthService,
-     private navigationService: NavigationService
-   ) {
-     afterRender(() => {
-       this.spinner = true;
-       this.route.queryParams.subscribe({
-         next: (params: any) => {
-           let body: ConfirmMedalInterface = {
-             email: params.email,
-             medalString: params.medalString
-           };
-           this.confirmMedal(body);
-         }
-       });
-       this.checkAuth();
+     private navigationService: NavigationService,
+     private cdr: ChangeDetectorRef,
+     @Inject(PLATFORM_ID) private platformId: Object
+   ) {}
+
+   ngOnInit(): void {
+     this.spinner = true;
+     this.route.queryParams.subscribe(params => {
+       const email = params['email'] ? params['email'] : params['Email'];
+       const medalString = params['medalString'] ? params['medalString'] : params['medalstring'];
+       
+       if (!email || !medalString) {
+         this.message = 'Parámetros de confirmación de medalla incompletos';
+         this.spinner = false;
+         this.cdr.detectChanges();
+         return;
+       }
+
+       let body: ConfirmMedalInterface = {
+         email: email,
+         medalString: medalString
+       };
+       this.confirmMedal(body);
      });
    }
 
    confirmMedal(body: ConfirmMedalInterface) {
      this.checkingSubscriber = this.qrService.confirmMedal(body).subscribe({
        next: (res: any) => {
-         if(res.code === 5010) this.confirmMedalTrue()
+         this.spinner = false;
+         if(res.code === 5010) {
+           this.confirmMedalTrue();
+         }
+         this.cdr.detectChanges();
        },
        error: (error: any) => {
-         this.message = 'No se puedo confirmar, volver a intentar';
+         this.message = 'No se pudo confirmar, volver a intentar';
          this.spinner = false;
+         this.cdr.detectChanges();
        }
-     })
+     });
    }
 
    confirmMedalTrue() {
@@ -71,7 +85,7 @@ export class ConfirmMedalComponent implements OnDestroy {
                duration: 5000, 
                verticalPosition: 'top',
                data: 'Ingrese a nuestro sitio, para terminar de configurar su medalla QR'
-             })
+             });
      this.navigationService.goToLogin();
    }
 
@@ -88,6 +102,6 @@ export class ConfirmMedalComponent implements OnDestroy {
    }
 
    ngOnDestroy(): void {
-     if(this.checkingSubscriber) this.checkingSubscriber.unsubscribe();
+     this.checkingSubscriber ? this.checkingSubscriber.unsubscribe() : null;
    }
 }

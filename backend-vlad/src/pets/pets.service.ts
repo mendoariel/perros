@@ -146,7 +146,6 @@ export class PetsServicie {
             filename: medal.image,
             path: join(FILE_UPLOAD_DIR, medal.image)
         } : null;
-        console.log('before send mail');
         await this.mailService['mailerService'].sendMail({
             to: 'info@peludosclick.com',
             from: '"PeludosClick" <info@peludosclick.com>',
