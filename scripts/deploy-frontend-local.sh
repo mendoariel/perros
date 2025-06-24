@@ -11,24 +11,9 @@ SERVER_USER="root"
 SERVER_PATH="/root/apps/2025/peludosclick_app/perros/frontend"
 LOCAL_FRONTEND_DIR="frontend"
 
-echo -e "${YELLOW}🚀 Iniciando proceso de deploy del frontend desde local...${NC}"
-
-# Construir el frontend localmente
-echo -e "${YELLOW}📦 Construyendo el frontend...${NC}"
-cd $LOCAL_FRONTEND_DIR
-npm run build:ssr
-cd ..
-
-# Verificar si la construcción fue exitosa
-if [ ! -d "$LOCAL_FRONTEND_DIR/dist" ]; then
-    echo "❌ Error: La construcción del frontend falló"
-    exit 1
-fi
-
-echo -e "${GREEN}✅ Frontend construido exitosamente${NC}"
+echo -e "${YELLOW}🚀 Subiendo carpeta dist al servidor...${NC}"
 
 # Subir la carpeta dist al servidor
-echo -e "${YELLOW}📤 Subiendo carpeta dist al servidor...${NC}"
 rsync -avz --delete $LOCAL_FRONTEND_DIR/dist/ $SERVER_USER@$SERVER_IP:$SERVER_PATH/dist/
 
 echo -e "${GREEN}✅ Carpeta dist subida exitosamente${NC}"
