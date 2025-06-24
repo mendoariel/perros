@@ -28,31 +28,31 @@ services:
       sh -c "./scripts/wait-for-db.sh &&
              npm run start:prod"
     ports:
-      - '3333:3333'
+      - '3334:3334'
     depends_on: 
       postgres:
         condition: service_healthy
     env_file: "./backend-vlad/.my-env-local-deploy"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3333/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3334/health"]
       interval: 30s
       timeout: 10s
       retries: 5
 
   postgres:
     image: postgres:12
-    container_name: mi-perro-qr-postgres-1
+    container_name: mi-perro-qr-postgres-local-deploy
     restart: always
     environment:
       - POSTGRES_USER=mendoariel
       - POSTGRES_PASSWORD=casadesara
-      - POSTGRES_DB=peludosclick
+      - POSTGRES_DB=peludosclick_local_deploy
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes: 
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_local_deploy:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U mendoariel -d peludosclick"]
+      test: ["CMD-SHELL", "pg_isready -U mendoariel -d peludosclick_local_deploy"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -67,7 +67,7 @@ services:
       PGADMIN_CONFIG_SERVER_MODE: 'False'
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     ports:
-      - "5050:80"
+      - "5051:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
@@ -75,7 +75,7 @@ services:
         condition: service_healthy
 
 volumes:
-  postgres_data:
+  postgres_data_local_deploy:
     name: postgres_data_local_deploy
   pgadmin_data:
   uploads:

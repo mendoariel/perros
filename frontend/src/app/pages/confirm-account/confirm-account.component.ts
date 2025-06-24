@@ -1,6 +1,6 @@
 import { ROUTES } from 'src/app/core/constants/routes.constants';
-import { Component, OnDestroy, OnInit, afterRender } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,7 +23,7 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   templateUrl: './confirm-account.component.html',
   styleUrls: ['./confirm-account.component.scss']
 })
-export class ConfirmAccountComponent implements OnDestroy {
+export class ConfirmAccountComponent implements OnInit, OnDestroy {
    spinner = false;
     checkingSubscriber: Subscription | undefined;
     message = '';
@@ -35,34 +35,49 @@ export class ConfirmAccountComponent implements OnDestroy {
       private router: Router,
       private _snackBar: MatSnackBar,
       private authService: AuthService,
-      private navigationService: NavigationService
-    ) {
-      afterRender(() => {
-        this.spinner = true;
-        this.route.queryParams.subscribe({
-          next: (params: any) => {
-            let body: ConfirmAccountInterface = {
-              email: params.hashEmail,
-              userRegisterHash: params.hashToRegister,
-              medalString: params.medalString
-            };
-            this.confirmAccunt(body);
-          }
-        });
-        this.checkAuth();
+      private navigationService: NavigationService,
+      private cdr: ChangeDetectorRef,
+      @Inject(PLATFORM_ID) private platformId: Object
+    ) {}
+
+    ngOnInit(): void {
+      this.spinner = true;
+      this.route.queryParams.subscribe(params => {
+        const hashEmail = params['hashEmail'] ? params['hashEmail'] : params['hashemail'];
+        const hashToRegister = params['hashToRegister'] ? params['hashToRegister'] : params['hashtoregister'];
+        const medalString = params['medalString'] ? params['medalString'] : params['medalstring'];
+        
+        if (!hashEmail || !hashToRegister || !medalString) {
+          this.message = 'Parámetros de confirmación incompletos';
+          this.spinner = false;
+          this.cdr.detectChanges();
+          return;
+        }
+
+        let body: ConfirmAccountInterface = {
+          email: hashEmail,
+          userRegisterHash: hashToRegister,
+          medalString: medalString
+        };
+        this.confirmAccount(body);
       });
     }
 
-    confirmAccunt(body: ConfirmAccountInterface) {
+    confirmAccount(body: ConfirmAccountInterface) {
       this.checkingSubscriber = this.qrService.confirmAccount(body).subscribe({
         next: (res: any) => {
-          if(res.code === 5001) this.confirmAccountTrue()
+          this.spinner = false;
+          if(res.code === 5001) {
+            this.confirmAccountTrue();
+          }
+          this.cdr.detectChanges();
         },
         error: (error: any) => {
-          this.message = 'No se puedo confirmar, volver a intentar';
+          this.message = 'No se pudo confirmar, volver a intentar';
           this.spinner = false;
+          this.cdr.detectChanges();
         }
-      })
+      });
     }
 
     confirmAccountTrue() {
@@ -70,7 +85,7 @@ export class ConfirmAccountComponent implements OnDestroy {
                 duration: 5000, 
                 verticalPosition: 'top',
                 data: 'Ingrese a nuestro sitio, para terminar de configurar su medalla QR'
-              })
+              });
       this.navigationService.goToLogin();
     }
 

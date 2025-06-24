@@ -1,4 +1,4 @@
-import { Component, OnDestroy, afterNextRender, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 // import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
@@ -21,7 +21,7 @@ import { Pet } from 'src/app/models/pet.model';
   templateUrl: './my-pets.component.html',
   styleUrls: ['./my-pets.component.scss']
 })
-export class MyPetsComponent implements OnDestroy {
+export class MyPetsComponent implements OnInit, OnDestroy {
   myPets: Pet[] = [];
   petsSubscription: Subscription | undefined;
   authSubscription: Subscription | undefined;
@@ -35,18 +35,18 @@ export class MyPetsComponent implements OnDestroy {
     private authService: AuthService,
     public navigationService: NavigationService,
     private cdr: ChangeDetectorRef
-  ) {
-    afterNextRender(() => {
-      this.authSubscription = this.authService.isAuthenticatedObservable.subscribe(
-        isAuthenticated => {
-          if (!isAuthenticated) {
-            this.navigationService.goToLogin();
-          } else {
-            this.getOnlyMyPets();
-          }
+  ) {}
+
+  ngOnInit(): void {
+    this.authSubscription = this.authService.isAuthenticatedObservable.subscribe(
+      isAuthenticated => {
+        if (!isAuthenticated) {
+          this.navigationService.goToLogin();
+        } else {
+          this.getOnlyMyPets();
         }
-      );
-    });
+      }
+    );
   }
 
   getOnlyMyPets() {

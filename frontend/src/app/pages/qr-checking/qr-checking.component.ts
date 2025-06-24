@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, afterRender } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
@@ -7,7 +7,6 @@ import { Subscription } from 'rxjs';
 import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
-import { PLATFORM_ID, Inject } from '@angular/core';
 
 @Component({
   selector: 'app-qr-checking',
@@ -30,34 +29,29 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
     private router: Router,
     private qrService: QrChekingService,
     private _snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    afterRender(() => {
-      this.checkMedalString();
-    });
-  }
+  ) {}
 
-  private checkMedalString() {
+  ngOnInit(): void {
     this.spinner = true;
     this.route.queryParams.subscribe(params => {
-      const hash = params['medalString'];
+      const hash = params['medalString'] ? params['medalString'] : params['medalstring'];
       if (!hash) {
         this.message = 'No se encontró el código de la medalla';
         this.spinner = false;
+        this.cdr.detectChanges();
         return;
       }
       this.callCheckingService(hash);
     });
   }
 
-  ngOnInit(): void {
-    // La lógica de inicialización se mueve a checkMedalString
-  }
-
   callCheckingService(hash: string) {
     if (!hash) {
       this.message = 'Código de medalla inválido';
       this.spinner = false;
+      this.cdr.detectChanges();
       return;
     }
 
@@ -72,10 +66,12 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
           this.goHome();
         }
         if(res.status === 'ENABLED') this.goPet(res.medalString);
+        this.cdr.detectChanges();
       },
       error: (error: any) => {
         this.message = 'Medalla sin registro';
         this.spinner = false;
+        this.cdr.detectChanges();
       }
     });
   }

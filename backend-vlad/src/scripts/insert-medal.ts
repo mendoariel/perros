@@ -11,8 +11,6 @@ async function insertVirginMedal() {
         status: 'VIRGIN',
       },
     });
-    
-    console.log('Medal inserted successfully:', newMedal);
   } catch (error) {
     console.error('Error inserting medal:', error);
   } finally {
