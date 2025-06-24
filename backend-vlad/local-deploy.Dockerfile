@@ -30,6 +30,6 @@ RUN chmod +x ./scripts/wait-for-db.sh
 ENV DATABASE_URL="postgres://mendoariel:casadesara@postgres:5432/peludosclick?schema=public"
 ENV NODE_ENV=production
 
-EXPOSE 3333
+EXPOSE 3334
 
 CMD ["npm", "run", "start:prod"] 
