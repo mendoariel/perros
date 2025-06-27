@@ -1,24 +1,22 @@
-<section class="main-box">
-  <div class="alfa">
-    <header>
-      <h1>Bici</h1>
-    </header>
-   <section class="container-box">
-    <article *ngFor="let boxData of bici">
-      <app-ba-element-box [element]="boxData"></app-ba-element-box>
-    </article>
-   </section>
-   
-  </div>
-  <div class="beta">
-    <header>
-      <h2>Árbol</h2>
-    </header>
-    <section class="container-box">
-      <article class="container-box" *ngFor="let boxArbol of arbol">
-        <app-ba-element-box [element]="boxArbol"></app-ba-element-box>
-      </article>
-    </section>
+<!-- New Home Component Template -->
+<div class="home-container">
+  <div class="home-grid">
+    <!-- Pets Section -->
+    <div class="section pets-section">
+      <h2>Mascotas</h2>
+      <app-pets></app-pets>
+    </div>
     
+    <!-- Pet Shops Section -->
+    <div class="section pet-shops-section">
+      <h2>Tienda de Mascotas</h2>
+      <app-pet-shops></app-pet-shops>
+    </div>
+    
+    <!-- Get Medal Section -->
+    <div class="section get-medal-section">
+      <h2>Obtener Medalla</h2>
+      <app-get-medal></app-get-medal>
+    </div>
   </div>
-</section>
+</div>

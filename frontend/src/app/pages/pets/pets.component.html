@@ -1,1 +1,46 @@
-<p>pets works!</p>
+<div class="pets-container">
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Cargando mascotas...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-container" *ngIf="!loading && error">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadPets()">
+      Intentar de nuevo
+    </button>
+  </div>
+
+  <!-- Content when not loading -->
+  <div class="pets-content" *ngIf="!loading && !error">
+    <!-- Header Info -->
+    <div class="pets-info">
+      <mat-icon>pets</mat-icon>
+      <h3>Mascotas Registradas</h3>
+      <p>{{ pets.length }} mascotas disponibles</p>
+    </div>
+    
+    <!-- Pets Grid -->
+    <div class="pets-grid" *ngIf="pets.length > 0">
+      <div class="pet-card" *ngFor="let pet of pets">
+        <div class="pet-image">
+          <img [src]="getPetImage(pet)" [alt]="pet.petName" 
+               (error)="onImageError($event)">
+        </div>
+        <div class="pet-info">
+          <h4>{{ pet.petName || 'Sin nombre' }}</h4>
+          <p>{{ pet.description || 'Sin descripción' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- No pets message -->
+    <div class="no-pets-container" *ngIf="pets.length === 0">
+      <mat-icon class="no-pets-icon">pets</mat-icon>
+      <p>No hay mascotas disponibles en este momento.</p>
+    </div>
+  </div>
+</div>

@@ -15,16 +15,21 @@ import { PetComponent } from "../pages/pet/pet.component";
 import { PetFormComponent } from "../pages/pet-form/pet-form.component";
 import { ConfirmMedalComponent } from "../pages/confirm-medal/confirm-medal.component";
 import { PetFromHomeComponent } from "../pages/pet-from-home/pet-from-home.component";
+import { HomeComponent } from "../pages/home/home.component";
 
 export const routes: Route[] = [
     {
         path: '',
-        component: WellcomeComponent
+        component: HomeComponent
+    },
+    {
+        path: 'home',
+        redirectTo: '',
+        pathMatch: 'full'
     },
     {
         path: 'wellcome',
-        redirectTo: '',
-        pathMatch: 'full'
+        component: WellcomeComponent
     },
     {
         path: 'mascota-checking',
