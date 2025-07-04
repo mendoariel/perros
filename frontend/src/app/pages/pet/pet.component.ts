@@ -1,5 +1,5 @@
 import { ROUTES } from 'src/app/core/constants/routes.constants';
-import { Component, OnDestroy, afterRender } from '@angular/core';
+import { Component, OnDestroy, OnInit, afterRender, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
@@ -30,7 +30,7 @@ const DEFAULT_SOCIAL_IMAGE = `${environment.frontend}/assets/default-pet-social.
   templateUrl: './pet.component.html',
   styleUrls: ['./pet.component.scss']
 })
-export class PetComponent implements OnDestroy {
+export class PetComponent implements OnInit, OnDestroy {
   pet: any;
   petSubscription: Subscription | undefined;
   medalString: any;
@@ -41,6 +41,7 @@ export class PetComponent implements OnDestroy {
   background = 'url(http://localhost:3333/pets/files/secrectIMG-20250301-WA0000.jpg)';
   frontend = environment.frontend;
   isImageLoaded = false;
+  private cdr: ChangeDetectorRef;
     
   constructor(
     private route: ActivatedRoute,
@@ -49,12 +50,15 @@ export class PetComponent implements OnDestroy {
     private metaService: MetaService,
     private petsServices: PetsService,
     private authService: AuthService,
-    private navigationService: NavigationService
+    private navigationService: NavigationService,
+    cdr: ChangeDetectorRef
   ) {
-    afterRender(() => {
-      this.medalString = this.route.snapshot.params['medalString'];
-      this.getPet(this.medalString);
-    });
+    this.cdr = cdr;
+  }
+
+  ngOnInit(): void {
+    this.medalString = this.route.snapshot.params['medalString'];
+    this.getPet(this.medalString);
   }
 
   setMetaData() {
@@ -105,10 +109,12 @@ export class PetComponent implements OnDestroy {
           `url(${environment.frontend}/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg)`;
         
         this.setMetaData();
+        this.cdr.detectChanges();
       },
       error: (error: any) => {
         this.spinner = false;
         this.handleError(error);
+        this.cdr.detectChanges();
       }
     });
   }
