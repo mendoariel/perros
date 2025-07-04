@@ -1,21 +1,61 @@
 <div class="pet-shops-container">
-  <div class="shop-content">
-    <div class="shop-item">
-      <mat-icon>pets</mat-icon>
-      <h3>Productos para Mascotas</h3>
-      <p>Encuentra todo lo que necesitas para tu mascota</p>
+  <h2 class="petshops-title">Dónde conseguir la medalla</h2>
+  <div class="shops-list">
+    <!-- Escaparate Café (ahora activo) -->
+    <div class="shop-card">
+      <div class="shop-info">
+        <mat-icon>local_cafe</mat-icon>
+        <h3>ESCAPARATE Café & Libros</h3>
+        <p class="shop-address">
+          <mat-icon>location_on</mat-icon>
+          Montevideo 209, Plaza España, Godoy Cruz, Mendoza
+        </p>
+        <p class="shop-desc">
+          <mat-icon>info</mat-icon>
+          Libros, colecciones, revistas, café al paso y Popurrí
+        </p>
+        <p class="shop-instagram">
+          <mat-icon>photo_camera</mat-icon>
+          <a href="https://www.instagram.com/escaparatemza/" target="_blank" rel="noopener">&#64;escaparatemza</a>
+        </p>
+        <button mat-stroked-button color="primary" (click)="openInstagram()">
+          Ver en Instagram
+          <mat-icon>open_in_new</mat-icon>
+        </button>
+      </div>
     </div>
-    
-    <div class="shop-item">
-      <mat-icon>local_shipping</mat-icon>
-      <h3>Envío Gratis</h3>
-      <p>En pedidos superiores a $50</p>
-    </div>
-    
-    <div class="shop-item">
-      <mat-icon>star</mat-icon>
-      <h3>Calidad Garantizada</h3>
-      <p>Productos de la mejor calidad</p>
+    <!-- Hakuna Matata Pet Shop -->
+    <div class="shop-card">
+      <div class="shop-info">
+        <mat-icon>store</mat-icon>
+        <h3>HAKUNA MATATA Pet Shop</h3>
+        <p class="shop-address">
+          <mat-icon>location_on</mat-icon>
+          Beltrán 1910, M5501 Godoy Cruz, Mendoza
+        </p>
+        <p class="shop-phone">
+          <mat-icon>call</mat-icon>
+          <a href="tel:02613382462">0261 338-2462</a>
+        </p>
+        <p class="shop-facebook">
+          <mat-icon>public</mat-icon>
+          <a href="https://facebook.com" target="_blank" rel="noopener">facebook.com</a>
+        </p>
+        <p class="shop-hours">
+          <mat-icon>schedule</mat-icon>
+          Abre a las 17:00
+        </p>
+        <p class="shop-services">
+          <mat-icon>check_circle</mat-icon> Retiro en tienda
+          <span style="margin-left: 10px;"><mat-icon>local_shipping</mat-icon> Entrega a domicilio</span>
+        </p>
+        <a href="https://www.google.com.ar/maps/place/HAKUNA+MATATA+Pet+Shop/@-32.904599,-68.8544801,994m/data=!3m2!1e3!4b1!4m6!3m5!1s0x1b1f2a3d75b0dc5:0xc6bcfba6fa0370f2!8m2!3d-32.904599!4d-68.8519052!16s%2Fg%2F11b7hj84bk?entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener">
+          <button mat-stroked-button color="primary">
+            Ver en Google Maps
+            <mat-icon>open_in_new</mat-icon>
+          </button>
+        </a>
+      </div>
     </div>
   </div>
 </div>

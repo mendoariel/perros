@@ -87,11 +87,18 @@
 }
 
 .pet-card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: transform 0.2s ease;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: box-shadow 0.2s;
+  min-height: 100px;
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: 340px;
 
   &:hover {
     transform: translateY(-2px);

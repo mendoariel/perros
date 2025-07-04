@@ -1,30 +1,44 @@
 <div class="get-medal-container">
-  <div class="medal-content">
-    <div class="medal-info">
-      <mat-icon>emoji_events</mat-icon>
-      <h3>Obtén tu Medalla QR</h3>
-      <p>Registra a tu mascota y obtén una medalla con código QR para su identificación</p>
-    </div>
-    
-    <div class="medal-features">
-      <div class="feature">
-        <mat-icon>qr_code</mat-icon>
-        <span>Código QR único</span>
-      </div>
-      
-      <div class="feature">
-        <mat-icon>security</mat-icon>
-        <span>Información segura</span>
-      </div>
-      
-      <div class="feature">
-        <mat-icon>phone</mat-icon>
-        <span>Contacto directo</span>
+  <h2 class="get-medal-title">¿Cómo registrar tu medalla QR?</h2>
+  <div class="steps-list">
+    <div class="step">
+      <mat-icon class="step-icon">store</mat-icon>
+      <div>
+        <h3>1. Compra tu medalla</h3>
+        <p>Adquiere tu medalla QR en uno de los lugares indicados arriba.</p>
       </div>
     </div>
-    
-    <button mat-raised-button color="primary" class="register-button">
-      Registrar Mascota
-    </button>
+    <div class="step">
+      <mat-icon class="step-icon">assignment</mat-icon>
+      <div>
+        <h3>2. Activa tu medalla</h3>
+        <p>Ingresa tu email, el nombre de tu mascota y una contraseña.</p>
+      </div>
+    </div>
+    <div class="step">
+      <mat-icon class="step-icon">mail</mat-icon>
+      <div>
+        <h3>3. Confirma tu email</h3>
+        <p>Te enviaremos un correo para confirmar tu cuenta. ¡Revisa también el correo no deseado!</p>
+      </div>
+    </div>
+    <div class="step">
+      <mat-icon class="step-icon">pets</mat-icon>
+      <div>
+        <h3>4. Completa el perfil de tu mascota</h3>
+        <p>Inicia sesión, agrega el número de teléfono, una foto y una descripción de tu mascota.</p>
+      </div>
+    </div>
+    <div class="step">
+      <mat-icon class="step-icon">qr_code</mat-icon>
+      <div>
+        <h3>5. ¡Listo! Tu mascota está protegida</h3>
+        <p>Cuando alguien escanee la medalla, verá el perfil de tu mascota y podrá contactarte.</p>
+      </div>
+    </div>
   </div>
+  <button mat-raised-button color="primary" class="go-to-petshops" (click)="scrollToPetshops()">
+    ¿Dónde consigo una medalla?
+    <mat-icon>store</mat-icon>
+  </button>
 </div>

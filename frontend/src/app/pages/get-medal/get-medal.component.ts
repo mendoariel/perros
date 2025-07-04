@@ -10,5 +10,10 @@ import { MaterialModule } from 'src/app/material/material.module';
   styleUrls: ['./get-medal.component.scss']
 })
 export class GetMedalComponent {
-
+  scrollToPetshops() {
+    const petshopsSection = document.querySelector('.pet-shops-section');
+    if (petshopsSection) {
+      petshopsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
 }

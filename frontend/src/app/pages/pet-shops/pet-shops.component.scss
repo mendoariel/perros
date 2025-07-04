@@ -1,44 +1,75 @@
 .pet-shops-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.shop-content {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
   width: 100%;
-  max-width: 300px;
-}
-
-.shop-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  padding: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
+  justify-content: flex-start;
+  height: 100%;
+}
 
-  &:hover {
-    transform: translateY(-2px);
+.petshops-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 24px;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.shops-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: none;
+  padding-bottom: 24px;
+}
+
+.shop-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 24px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.2s;
+  min-height: 160px;
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: 340px;
+
+  &.soon {
+    opacity: 0.7;
+    background: #f3e5f5;
   }
+}
+
+.shop-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 10px;
 
   mat-icon {
-    font-size: 48px;
-    width: 48px;
-    height: 48px;
+    font-size: 40px;
     color: #673ab7;
-    margin-bottom: 10px;
+    vertical-align: middle;
+    margin-right: 10px;
+    margin-left: 0;
+    padding: 0;
+    line-height: 1;
+    min-width: 40px;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   h3 {
-    margin: 0 0 10px 0;
+    margin: 0;
     font-size: 1.1rem;
     font-weight: 600;
     color: #333;
@@ -46,8 +77,56 @@
 
   p {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: #666;
-    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: flex-start;
+    min-height: 40px;
+    text-align: left;
+    width: 100%;
+  }
+
+  .shop-address mat-icon {
+    color: #2196f3;
+  }
+  .shop-phone mat-icon {
+    color: #43a047;
+  }
+  .shop-facebook mat-icon {
+    color: #1877f3;
+  }
+  .shop-instagram mat-icon {
+    color: #e1306c;
+  }
+  .shop-hours mat-icon {
+    color: #ff9800;
+  }
+  .shop-services mat-icon {
+    color: #43a047;
+  }
+
+  a {
+    text-decoration: none;
+    color: #1877f3;
+  }
+
+  button[mat-stroked-button] {
+    margin-top: 10px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 600px) {
+  .shops-list {
+    max-width: 100%;
+    padding: 0 4px;
+  }
+  .shop-card {
+    padding: 16px 6px;
   }
 }

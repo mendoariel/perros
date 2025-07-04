@@ -1,9 +1,90 @@
 .get-medal-container {
-  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  padding: 0 8px;
+}
+
+.get-medal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 24px;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 350px;
+  margin-bottom: 24px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 24px 18px;
+  min-height: 70px;
+  width: 100%;
+  max-width: 340px;
+  margin-bottom: 12px;
+}
+
+.step-icon {
+  font-size: 28px;
+  color: #43a047;
+  flex-shrink: 0;
+  margin-right: 16px;
+  margin-left: 0;
+  padding: 0;
+  line-height: 1;
+  min-width: 28px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.step p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.go-to-petshops {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 600px) {
+  .steps-list {
+    max-width: 100%;
+    padding: 0 2px;
+  }
+  .step {
+    padding: 10px 4px;
+  }
 }
 
 .medal-content {

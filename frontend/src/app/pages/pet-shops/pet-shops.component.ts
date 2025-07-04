@@ -10,5 +10,7 @@ import { MaterialModule } from 'src/app/material/material.module';
   styleUrls: ['./pet-shops.component.scss']
 })
 export class PetShopsComponent {
-
+  openInstagram() {
+    window.open('https://www.instagram.com/escaparatemza/', '_blank');
+  }
 }
