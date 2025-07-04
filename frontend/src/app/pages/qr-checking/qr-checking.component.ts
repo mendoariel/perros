@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID, afterRender } from '@angular/core';
 import { CommonModule, isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
@@ -23,6 +23,7 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
   spinner = false;
   checkingSubscriber: Subscription | undefined;
   message = '';
+  private hash: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -31,20 +32,48 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
     private _snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) {
+    // Usar afterRender para diferir las llamadas HTTP hasta después del renderizado
+    afterRender(() => {
+      if (isPlatformBrowser(this.platformId) && this.hash) {
+        this.processHash();
+      }
+    });
+  }
 
   ngOnInit(): void {
-    this.spinner = true;
+    // Solo extraer el hash en ngOnInit, sin hacer llamadas HTTP
     this.route.queryParams.subscribe(params => {
-      const hash = params['medalString'] ? params['medalString'] : params['medalstring'];
-      if (!hash) {
+      this.hash = params['medalString'] ? params['medalString'] : params['medalstring'];
+      
+      if (!this.hash) {
         this.message = 'No se encontró el código de la medalla';
         this.spinner = false;
         this.cdr.detectChanges();
         return;
       }
-      this.callCheckingService(hash);
+
+      // Si estamos en el servidor, mostrar spinner y esperar al cliente
+      if (isPlatformServer(this.platformId)) {
+        this.spinner = true;
+        this.cdr.detectChanges();
+      } else {
+        // Si estamos en el navegador, procesar inmediatamente
+        this.processHash();
+      }
     });
+  }
+
+  private processHash(): void {
+    if (!this.hash) {
+      this.message = 'Código de medalla inválido';
+      this.spinner = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.spinner = true;
+    this.callCheckingService(this.hash);
   }
 
   callCheckingService(hash: string) {
