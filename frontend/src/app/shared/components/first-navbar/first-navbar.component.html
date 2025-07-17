@@ -1,34 +1,83 @@
-<mat-toolbar>
-    <section class="logo-container" style="cursor: pointer;" (click)="goHome()">
-        <article class="image-container">
-            <img src="assets/main/logo-peludosclick.png" alt="logo de peludos click">
-        </article>
-        <span class="logo-text">PeludosClick</span>
-    </section>
-    
-    <section *ngIf="!authenticated" class="unauthenticated">
-        <button (click)="login()" mat-button>Ingresar</button>
-    </section>
-    <section *ngIf="authenticated">
-        <button mat-button [matMenuTriggerFor]="menu">
-            <mat-icon>menu</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="goTo('mis-mascotas')">
-                <mat-icon>pets</mat-icon>
-                <span>Mis mascotas</span>
-            </button>
-            <button mat-menu-item (click)="goTo('wellcome')">
-                <mat-icon>view_list</mat-icon>
-                <span>Todas las mascotas</span>
-            </button>
-            <mat-divider></mat-divider>
-            <button mat-menu-item (click)="logout()">
-                <mat-icon>exit_to_app</mat-icon>
-                <span>Cerrar sesión</span>
-            </button>
-        </mat-menu>
-    </section>
-</mat-toolbar>
+<nav class="bg-gradient-to-r from-green-400 to-green-500 shadow-lg border-b-4 border-gray-800">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      
+      <!-- Logo Section -->
+      <div class="flex items-center space-x-3 cursor-pointer hover:bg-white/10 rounded-full px-3 py-2 transition-all duration-300" (click)="goHome()">
+        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-inner border border-gray-300 overflow-hidden">
+          <img 
+            src="assets/main/logo-peludosclick.png" 
+            alt="logo de peludos click"
+            class="w-8 h-8 object-contain"
+            (load)="onImageLoad($event)"
+            (error)="onImageError($event)"
+          >
+          <!-- Fallback icon if image fails -->
+          <mat-icon *ngIf="!logoLoaded" class="text-green-600 text-2xl">pets</mat-icon>
+        </div>
+        <span class="text-xl font-bold text-gray-800 hidden sm:block">PeludosClick</span>
+      </div>
+
+      <!-- Navigation Section -->
+      <div class="flex items-center space-x-4">
+        
+        <!-- Unauthenticated State -->
+        <div *ngIf="!authenticated" class="flex items-center space-x-2">
+          <button 
+            (click)="login()" 
+            class="bg-white/20 hover:bg-white/30 text-gray-800 font-semibold px-4 py-2 rounded-lg transition-all duration-300 border border-white/30 hover:border-white/50"
+          >
+            Ingresar
+          </button>
+        </div>
+
+        <!-- Authenticated State -->
+        <div *ngIf="authenticated" class="flex items-center space-x-2">
+          <button 
+            mat-button 
+            [matMenuTriggerFor]="menu"
+            class="bg-white/20 hover:bg-white/30 text-gray-800 font-semibold px-3 py-2 rounded-lg transition-all duration-300 border border-white/30 hover:border-white/50 flex items-center space-x-2"
+          >
+            <mat-icon class="text-xl">menu</mat-icon>
+            <span class="hidden sm:block">Menú</span>
+          </button>
+          
+          <mat-menu #menu="matMenu" class="min-w-48">
+            <div class="p-2">
+              <button 
+                mat-menu-item 
+                (click)="goTo('mis-mascotas')"
+                class="flex items-center space-x-3 w-full px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              >
+                <mat-icon class="text-green-600">pets</mat-icon>
+                <span class="font-medium">Mis mascotas</span>
+              </button>
+              
+              <button 
+                mat-menu-item 
+                (click)="goTo('wellcome')"
+                class="flex items-center space-x-3 w-full px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              >
+                <mat-icon class="text-green-600">view_list</mat-icon>
+                <span class="font-medium">Todas las mascotas</span>
+              </button>
+              
+              <div class="border-t border-gray-200 my-2"></div>
+              
+              <button 
+                mat-menu-item 
+                (click)="logout()"
+                class="flex items-center space-x-3 w-full px-4 py-3 text-left hover:bg-red-50 rounded-lg transition-colors duration-200 text-red-600"
+              >
+                <mat-icon class="text-red-500">exit_to_app</mat-icon>
+                <span class="font-medium">Cerrar sesión</span>
+              </button>
+            </div>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
 
   

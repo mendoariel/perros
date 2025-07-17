@@ -15,6 +15,7 @@ import { PetComponent } from "../pages/pet/pet.component";
 import { PetFormComponent } from "../pages/pet-form/pet-form.component";
 import { ConfirmMedalComponent } from "../pages/confirm-medal/confirm-medal.component";
 import { PetFromHomeComponent } from "../pages/pet-from-home/pet-from-home.component";
+import { HomeComponent } from "../pages/home/home.component";
 
 export const routes: Route[] = [
     {
@@ -29,6 +30,10 @@ export const routes: Route[] = [
     {
         path: 'mascota-checking',
         component: QrCheckingComponent
+    },
+    {
+        path: 'home',
+        component: HomeComponent
     },
     {
         path: 'agregar-mascota/:medalString',

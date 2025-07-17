@@ -56,6 +56,7 @@
             ],
             "styles": [
               "@angular/material/prebuilt-themes/indigo-pink.css",
+              "src/tailwind.css",
               "src/styles.scss",
               "node_modules/ngx-sharebuttons/themes/circles.scss",
               "node_modules/ngx-sharebuttons/themes/modern.scss"
@@ -154,6 +155,7 @@
             ],
             "styles": [
               "@angular/material/prebuilt-themes/indigo-pink.css",
+              "src/tailwind.css",
               "src/styles.scss"
             ],
             "scripts": []

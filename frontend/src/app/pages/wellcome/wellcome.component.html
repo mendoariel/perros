@@ -1,75 +1,134 @@
-<main>
-  <section class="main-content">
-    <h1>**!Manten a tu mascota conectada
-      siempre segura con nuestras chapitas QR personalizadas!**</h1>
-    <!-- first -->
-    <section class="peludosclick">
-      <article class="image-container">
-        <img src="assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg" alt="logo completo PeludosClick"/>
-      </article>
-      <article class="info-container">
-        <p>Con solo escanear el código QR de la
-          chapita, cualquiera podrá ver la foto de tu mascota y
-          contactarte de inmediato por WhatsApp.</p>
-      </article>
-    </section>  
-    <!-- second -->
-    <section class="peludosclick">
-      <article class="image-container">
-        <img src="assets/main/dog-do-recovery-afer-scaning.jpeg" alt="logo completo PeludosClick"/>
-      </article>
-      <article class="info-container">
-        <p>Diseñadas para proteger y facilitar el reencunetro,
-          nuestras chapitas modernas, prácticas y hechas con mucho amor.</p>
-      </article>
-    </section>  
-    <!-- third -->
-    <section class="peludosclick">
-      <article class="image-container">
-        <img src="assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg" alt="logo completo PeludosClick"/>
-      </article>
-      <article class="info-container">
-        <p>No te la pierdas!!!!!</p>
-      </article>
-    </section>  
-
-    <h3>Algunas mascotas conectadas</h3>
-   
-    <!-- Loading state -->
-    <div class="loading-container" *ngIf="loading">
-      <mat-spinner></mat-spinner>
-      <p>Cargando mascotas...</p>
+<main class="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-green-50">
+  <section class="max-w-7xl mx-auto px-4 py-8">
+    
+    <!-- Hero Section - Rediseñado con imagen real -->
+    <div class="flex items-center gap-12 mb-20">
+      <!-- Left Side - Real Illustration -->
+      <div class="w-30">
+        <div class="relative w-full">
+          <div class="bg-gradient-to-br from-purple-100 to-blue-100 rounded-3xl p-8 shadow-xl">
+            <img 
+              src="assets/main/peludos-click-love.png" 
+              alt="Hombre abrazando a su mascota"
+              class="w-full h-96 object-contain rounded-2xl"
+            />
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Side - Content (estilo del segundo gráfico) -->
+      <div class="w-70 text-left bg-[#F8F6FB] rounded-3xl p-12 relative overflow-hidden">
+        
+        
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-[#332255] mb-6 leading-tight relative z-10">
+          Conectá a tu
+          mascota con
+          vos, siempre
+        </h1>
+        <p class="text-lg text-[#555555] mb-8 leading-relaxed relative z-10">
+          PeludosClick te ayuda a encontrar
+          a tu mascota si se pierde, con una
+          medalla con QR vinculada a vos.
+        </p>
+        <button 
+          class="bg-[#5533FF] hover:bg-[#4422DD] text-white font-semibold px-8 py-4 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 relative z-10"
+        >
+          Descubrí cómo funciona
+        </button>
+      </div>
     </div>
 
-    <!-- Error state -->
-    <div class="error-container" *ngIf="!loading && error">
-      <mat-icon class="error-icon">error_outline</mat-icon>
-      <p>{{ error }}</p>
-      <button mat-raised-button color="primary" (click)="loadPets()">
-        Intentar de nuevo
-      </button>
+    <!-- How it Works Section - Rediseñado -->
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-12">
+        Cómo funciona
+      </h2>
+      
+      <!-- Feature Cards - Rediseñadas -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <!-- Card 1 -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+          <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-6">
+            <mat-icon class="text-blue-600 text-3xl">pets</mat-icon>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">Registrás a tu mascota</h3>
+          <p class="text-gray-600">Crea el perfil completo de tu mascota con fotos y datos de contacto.</p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+          <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mx-auto mb-6">
+            <mat-icon class="text-green-600 text-3xl">qr_code</mat-icon>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">Le colocás su medalla con QR</h3>
+          <p class="text-gray-600">Recibe tu medalla personalizada con código QR único.</p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+          <div class="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center mx-auto mb-6">
+            <mat-icon class="text-purple-600 text-3xl">smartphone</mat-icon>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">Cualquiera puede escanear</h3>
+          <p class="text-gray-600">Quien encuentre a tu mascota puede escanear y contactarte inmediatamente.</p>
+        </div>
+      </div>
+
+      <!-- Benefits Section -->
+      <div class="flex flex-col sm:flex-row justify-center items-center gap-8">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+            <mat-icon class="text-green-600 text-sm">check</mat-icon>
+          </div>
+          <span class="text-gray-700 font-medium">Fácil de usar</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+            <mat-icon class="text-green-600 text-sm">check</mat-icon>
+          </div>
+          <span class="text-gray-700 font-medium">Rápida conexión</span>
+        </div>
+      </div>
     </div>
 
-    <!-- Content when not loading -->
-    <ng-container *ngIf="!loading">
-      <!-- Pets list -->
-      <div class="pets-container" *ngIf="pets.length > 0">
-        <section class="pelu-card" *ngFor="let pet of pets" (click)="goToPet(pet)">
-          <h2>{{ pet?.petName || 'Sin nombre' }}</h2>
-          <article class="image">
-            <div class="image-container" [style.background]="pet.background"></div>
-          </article>
-          <article class="info">
-            <p>{{ pet.description }}</p>
-          </article>
-        </section>
+    <!-- Get Yours Now Section - Rediseñado -->
+    <div class="flex flex-col lg:flex-row-reverse items-center gap-12 mb-16">
+      <!-- Right Side - Illustration -->
+      <div class="lg:w-1/2">
+        <div class="relative">
+          <div class="bg-gradient-to-br from-green-100 to-blue-100 rounded-3xl p-8 shadow-xl">
+            <img 
+              src="assets/main/dog-do-recovery-afer-scaning.jpeg" 
+              alt="Medalla QR"
+              class="w-full h-96 object-cover rounded-2xl shadow-lg"
+            />
+          </div>
+          <!-- Floating elements -->
+          <div class="absolute -top-4 -left-4 bg-white rounded-full p-3 shadow-lg">
+            <mat-icon class="text-blue-500 text-2xl">security</mat-icon>
+          </div>
+        </div>
       </div>
+      
+      <!-- Left Side - Content -->
+      <div class="lg:w-1/2 text-center lg:text-left">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
+          Conseguí la tuya ahora
+        </h2>
+        <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+          Diseñadas para proteger y facilitar el reencuentro, nuestras chapitas modernas, prácticas y hechas con mucho amor.
+        </p>
+        <button 
+          class="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold px-8 py-4 rounded-full text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+        >
+          Conseguí la tuya ahora
+        </button>
+      </div>
+    </div>
 
-      <!-- No pets message -->
-      <div class="no-pets-container" *ngIf="pets.length === 0 && !error">
-        <p>No hay mascotas disponibles en este momento.</p>
-      </div>
-    </ng-container>
+    <!-- Pets Grid Component -->
+    <app-pets-grid></app-pets-grid>
   </section>
+  
   <app-peludosclick-footer></app-peludosclick-footer>
 </main>
