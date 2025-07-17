@@ -23,6 +23,7 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
 })
 export class FirstNavbarComponent {
   authenticated: boolean = false;
+  logoLoaded: boolean = false;
   logoutSubscription!: Subscription;
   authenticatedSubscription!: Subscription;
   sidenavSuscription!: Subscription;
@@ -82,6 +83,19 @@ export class FirstNavbarComponent {
       },
       error : (error)=> {console.error(error)}
     });
+  }
+
+  onImageError(event: any) {
+    // Si la imagen del logo falla, usar un icono como fallback
+    console.warn('Error loading logo image:', event);
+    this.logoLoaded = false;
+    this.cdr.detectChanges();
+  }
+
+  onImageLoad(event: any) {
+    // Cuando la imagen se carga correctamente
+    this.logoLoaded = true;
+    this.cdr.detectChanges();
   }
 
   ngOnDestroy() {
