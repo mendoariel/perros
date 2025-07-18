@@ -1,9 +1,49 @@
-// Estilos específicos que no se pueden lograr con Tailwind CSS
-// La mayoría de los estilos se manejan con clases de Tailwind en el HTML
+// PeludosClick Pets Grid Styles
+:root {
+  --peludos-teal: #008080;
+  --peludos-mustard: #DAA520;
+  --peludos-charcoal: #36454F;
+  --peludos-cream: #FFFDD0;
+  --peludos-mustard-light: #C8AE5C;
+  --peludos-teal-dark: #006666;
+}
 
-// Personalizaciones específicas del mat-spinner si son necesarias
-.mat-spinner {
-  // Personalizaciones específicas del spinner si son necesarias
+.step-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 1rem;
+  border: 2px solid var(--peludos-teal);
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.07);
+  background: #fff;
+  
+  &:hover {
+    border-color: var(--peludos-mustard);
+    box-shadow: 0 8px 32px 0 rgba(218, 165, 32, 0.10);
+    transform: translateY(-6px) scale(1.03);
+  }
+}
+
+// Responsive grid tweaks
+@media (max-width: 1024px) {
+  .step-card {
+    margin-bottom: 1.5rem;
+  }
+}
+
+// Spinner color
+.mat-spinner circle {
+  stroke: var(--peludos-teal);
+}
+
+// Card image background
+.bg-peludos-cream {
+  background: var(--peludos-cream);
+}
+
+// Focus states for accessibility
+button:focus,
+a:focus {
+  outline: 2px solid var(--peludos-mustard);
+  outline-offset: 2px;
 }
 
 
