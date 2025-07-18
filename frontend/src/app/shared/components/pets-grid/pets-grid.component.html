@@ -1,25 +1,25 @@
 <!-- Pets Section Header -->
 <div class="text-center mb-8">
-  <h3 class="text-2xl md:text-3xl font-bold text-white bg-green-600 rounded-full px-8 py-4 inline-block shadow-lg">
-    Algunas mascotas conectadas
+  <h3 class="text-2xl md:text-3xl font-bold text-[#008080] bg-[#FFFDD0] rounded-full px-8 py-4 inline-block shadow-lg">
+    Peludos Conectados
   </h3>
 </div>
 
 <!-- Loading State -->
 <div class="flex flex-col items-center justify-center py-12" *ngIf="loading">
   <mat-spinner class="mb-4"></mat-spinner>
-  <p class="text-white text-lg">Cargando mascotas...</p>
+  <p class="text-[#36454F] text-lg">Cargando mascotas...</p>
 </div>
 
 <!-- Error State -->
 <div class="flex flex-col items-center justify-center py-12 text-center" *ngIf="!loading && error">
-  <mat-icon class="text-red-400 text-6xl mb-4">error_outline</mat-icon>
-  <p class="text-white text-lg mb-6">{{ error }}</p>
+  <mat-icon class="text-[#DAA520] text-6xl mb-4">error_outline</mat-icon>
+  <p class="text-[#36454F] text-lg mb-6">{{ error }}</p>
   <button 
     mat-raised-button 
     color="primary" 
     (click)="loadPets()"
-    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
+    class="bg-[#DAA520] hover:bg-[#C8AE5C] text-[#36454F] px-6 py-3 rounded-lg font-semibold transition-colors duration-200 shadow"
   >
     Intentar de nuevo
   </button>
@@ -29,13 +29,13 @@
 <ng-container *ngIf="!loading">
   <!-- Pets Grid -->
   <div class="max-w-4xl mx-auto">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="pets.length > 0">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" *ngIf="pets.length > 0">
       <div 
-        class="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-300" 
-        *ngFor="let pet of pets" 
+        class="bg-white rounded-2xl shadow-lg border-2 border-[#008080]/10 hover:border-[#DAA520] overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 step-card" 
+        *ngFor="let pet of pets | slice:0:9" 
         (click)="goToPet(pet)"
       >
-        <div class="w-full aspect-square overflow-hidden">
+        <div class="w-full aspect-square overflow-hidden bg-[#FFFDD0] flex items-center justify-center">
           <img 
             [src]="pet.background" 
             [alt]="pet?.petName || 'Mascota'"
@@ -44,10 +44,10 @@
           />
         </div>
         <div class="p-4">
-          <h2 class="text-base font-semibold text-gray-800 mb-2 text-center">
+          <h2 class="text-lg font-bold text-[#008080] mb-2 text-center">
             {{ pet?.petName || 'Sin nombre' }}
           </h2>
-          <p class="text-xs text-gray-600 text-center">
+          <p class="text-xs text-[#36454F] text-center">
             {{ pet.description }}
           </p>
         </div>
@@ -58,8 +58,8 @@
   <!-- No Pets Message -->
   <div class="text-center py-12" *ngIf="pets.length === 0 && !error">
     <div class="bg-white rounded-xl shadow-lg p-8 max-w-md mx-auto">
-      <mat-icon class="text-gray-400 text-6xl mb-4">pets</mat-icon>
-      <p class="text-gray-600 text-lg">No hay mascotas disponibles en este momento.</p>
+      <mat-icon class="text-[#008080] text-6xl mb-4">pets</mat-icon>
+      <p class="text-[#36454F] text-lg">No hay mascotas disponibles en este momento.</p>
     </div>
   </div>
 </ng-container>

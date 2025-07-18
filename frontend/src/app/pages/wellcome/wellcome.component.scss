@@ -1,15 +1,178 @@
-// Estilos específicos que no se pueden lograr con Tailwind CSS
-// La mayoría de los estilos ahora se manejan con clases de Tailwind en el HTML
+// PeludosClick Welcome Component Styles
+// Custom styles that complement the Tailwind classes
 
-// Si necesitas estilos específicos para Angular Material, puedes agregarlos aquí
-// Por ejemplo, personalizaciones de mat-spinner o mat-icon
-
-.mat-spinner {
-  // Personalizaciones específicas del spinner si son necesarias
+// Custom color variables for PeludosClick brand
+:root {
+  --peludos-teal: #008080;
+  --peludos-mustard: #DAA520;
+  --peludos-charcoal: #36454F;
+  --peludos-cream: #FFFDD0;
+  --peludos-mustard-light: #C8AE5C;
+  --peludos-teal-dark: #006666;
 }
 
-// Estilos para el footer si necesita personalizaciones específicas
-app-peludosclick-footer {
-  // Personalizaciones del footer si son necesarias
+// Smooth scrolling for the entire page
+html {
+  scroll-behavior: smooth;
+}
+
+// Custom animations for the welcome component
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// Hero section animations
+.hero-content {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-image {
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+// Floating logo animation
+.floating-logo {
+  animation: float 3s ease-in-out infinite;
+}
+
+// Step cards hover effects
+.step-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+}
+
+// Gradient text effect for main heading
+.gradient-text {
+  background: linear-gradient(135deg, var(--peludos-teal), var(--peludos-mustard));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// Custom button styles
+.peludos-btn-primary {
+  background: linear-gradient(135deg, var(--peludos-mustard), var(--peludos-mustard-light));
+  border: none;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: linear-gradient(135deg, var(--peludos-mustard-light), var(--peludos-mustard));
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(218, 165, 32, 0.3);
+  }
+}
+
+.peludos-btn-secondary {
+  background: linear-gradient(135deg, var(--peludos-teal), var(--peludos-teal-dark));
+  border: none;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: linear-gradient(135deg, var(--peludos-teal-dark), var(--peludos-teal));
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 128, 128, 0.3);
+  }
+}
+
+// Points of sale cards
+.point-of-sale-card {
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  
+  &:hover {
+    border-color: var(--peludos-teal);
+    transform: translateY(-5px);
+  }
+}
+
+// Social media icons
+.social-icon {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.2) rotate(5deg);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 2.5rem;
+    line-height: 1.2;
+  }
+  
+  .step-card {
+    margin-bottom: 1rem;
+  }
+}
+
+// Loading and error states for pets grid
+.pets-loading {
+  background: linear-gradient(90deg, var(--peludos-cream), #f0f0f0, var(--peludos-cream));
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// Custom scrollbar for webkit browsers
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--peludos-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--peludos-teal);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--peludos-teal-dark);
+}
+
+// Focus states for accessibility
+button:focus,
+a:focus {
+  outline: 2px solid var(--peludos-mustard);
+  outline-offset: 2px;
+}
+
+// Print styles
+@media print {
+  .peludos-btn-primary,
+  .peludos-btn-secondary {
+    background: var(--peludos-charcoal) !important;
+    color: white !important;
+  }
 }
 
