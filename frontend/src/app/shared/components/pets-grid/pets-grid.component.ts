@@ -68,6 +68,11 @@ export class PetsGridComponent implements OnDestroy {
       map(pets => {
         return pets.filter(pet => pet.status === 'ENABLED');
       }),
+      map(pets => {
+        // Mezclar aleatoriamente las mascotas
+        const shuffledPets = this.shuffleArray([...pets]);
+        return shuffledPets;
+      }),
       map(pets => pets.map(pet => ({
         ...pet,
         background: `${environment.perrosQrApi}pets/files/${pet.image}`,
@@ -100,5 +105,19 @@ export class PetsGridComponent implements OnDestroy {
   onImageError(event: any) {
     // Si la imagen falla, usar una imagen por defecto
     event.target.src = 'assets/main/default-pet-social.jpg';
+  }
+
+  /**
+   * Mezcla aleatoriamente un array usando el algoritmo Fisher-Yates
+   * @param array - Array a mezclar
+   * @returns Array mezclado aleatoriamente
+   */
+  private shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
   }
 }

@@ -1,16 +1,20 @@
 // PeludosClick FirstNavbar Styles
 :root {
+  --peludos-primary: #006455;
   --peludos-teal: #008080;
-  --peludos-mustard: #DAA520;
+  --peludos-mustard: #FFD700;
   --peludos-charcoal: #36454F;
   --peludos-cream: #FFFDD0;
-  --peludos-mustard-light: #C8AE5C;
+  --peludos-mustard-light: #FFE55C;
+  --peludos-mustard-dark: #DAA520;
   --peludos-teal-dark: #006666;
 }
 
 // Logo container improvements
 .logo-container {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  align-items: center !important;
+  justify-content: flex-start !important;
   
   &:hover {
     transform: translateY(-2px);
@@ -20,37 +24,31 @@
 
 // Logo image specific styling
 .logo-image {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  border-radius: 50% !important;
+  object-fit: contain !important;
   background: transparent !important;
   
-  // Remove any white backgrounds
-  filter: brightness(1) contrast(1.1);
+  // Scale the mustard logo properly
+  transform: scale(1.2);
   
-  // Increase the size of the ear and position it
-  transform: scale(1.6) translate(2px, 3px);
+  // Add subtle shadow for depth
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
-// Logo container specific styling
-.logo-circle {
-  background: white !important;
-  border-radius: 50% !important;
-  overflow: hidden !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+// Logo styling without container
+.logo-image {
+  object-fit: contain !important;
+  background: transparent !important;
   
-  // Remove any padding or margins that might cause white space
-  padding: 0 !important;
-  margin: 0 !important;
+  // Scale the mustard logo properly
+  transform: scale(1.2);
   
-  // Add soft shadow for natural look
-  box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.15),
-    0 2px 6px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  // Add subtle shadow for depth
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  
+  // Perfect alignment with text
+  align-self: center;
+  margin-top: 5px;
+  margin-right: -14px;
 }
 
 // Personalizaciones específicas del mat-menu
@@ -78,6 +76,46 @@ mat-icon {
   }
 }
 
+// Specific styles for menu button to override Material Design
+::ng-deep button[mat-button][matMenuTriggerFor] {
+  background-color: #FFD700 !important;
+  color: #006455 !important;
+  border-color: #006455 !important;
+  
+  &:hover {
+    background-color: #FFE55C !important;
+    color: #006455 !important;
+  }
+  
+  mat-icon {
+    color: #006455 !important;
+  }
+  
+  span {
+    color: #006455 !important;
+  }
+}
+
+// Alternative approach with more specific selectors
+::ng-deep .mat-button.mat-menu-trigger {
+  background-color: #FFD700 !important;
+  color: #006455 !important;
+  border-color: #006455 !important;
+  
+  &:hover {
+    background-color: #FFE55C !important;
+    color: #006455 !important;
+  }
+  
+  mat-icon {
+    color: #006455 !important;
+  }
+  
+  span {
+    color: #006455 !important;
+  }
+}
+
 // Menu item hover effects
 .menu-item {
   transition: all 0.2s ease;
@@ -85,6 +123,20 @@ mat-icon {
   &:hover {
     background: rgba(0, 128, 128, 0.05) !important;
     transform: translateX(4px);
+  }
+}
+
+// Logo text alignment
+.logo-text {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  margin-top: -2px;
+  
+  .text-2xl {
+    display: flex;
+    align-items: center;
+    height: 100%;
   }
 }
 

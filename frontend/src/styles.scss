@@ -1,4 +1,46 @@
 /* You can add global styles to this file, and also import other style files */
 
+// Import global variables
+@import './styles/variables.scss';
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+// Global styles for PeludosClick menu button
+button[mat-button][matMenuTriggerFor] {
+  background-color: #FFD700 !important;
+  color: #006455 !important;
+  border-color: #006455 !important;
+  
+  &:hover {
+    background-color: #FFE55C !important;
+    color: #006455 !important;
+  }
+  
+  mat-icon {
+    color: #006455 !important;
+  }
+  
+  span {
+    color: #006455 !important;
+  }
+}
+
+.mat-button.mat-menu-trigger {
+  background-color: #FFD700 !important;
+  color: #006455 !important;
+  border-color: #006455 !important;
+  
+  &:hover {
+    background-color: #FFE55C !important;
+    color: #006455 !important;
+  }
+  
+  mat-icon {
+    color: #006455 !important;
+  }
+  
+  span {
+    color: #006455 !important;
+  }
+}
