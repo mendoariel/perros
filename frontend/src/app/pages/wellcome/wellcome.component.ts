@@ -26,6 +26,22 @@ import { PetsGridComponent } from 'src/app/shared/components/pets-grid/pets-grid
   styleUrls: ['./wellcome.component.scss']
 })
 export class WellcomeComponent {
+  private router = inject(Router);
+  
   // La lógica de mascotas se movió al componente pets-grid
   // Este componente ahora solo maneja la presentación de la página de bienvenida
+  
+  navigateToAllPets() {
+    this.router.navigate(['/mascotas']);
+  }
+
+  scrollToPuntosVenta() {
+    const element = document.getElementById('puntos-venta');
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }
+  }
 }
