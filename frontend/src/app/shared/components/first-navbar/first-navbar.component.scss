@@ -1,77 +1,177 @@
-mat-toolbar {
-    background-color: rgb(131 251 115) !important;
-    border-bottom: solid 3px rgb(18,18,18);
-    box-shadow: 0px 10px 14px 2px black;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    height: 70px;
-    padding: 0 16px;
-
-    section.logo-container {
-        display: flex;
-        align-items: center;
-        border-radius: 25px;
-        padding: 8px 12px;
-        transition: all 0.3s ease;
-        
-        &:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        article.image-container {
-            width: 32px !important;
-            height: 32px;
-            border-radius: 50%;
-            border: solid 1px #777;
-            overflow: hidden;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: inset 6px 6px 9px 0px rgba(231,245,232,1);
-            
-            img {
-                max-width: 100%;
-                height: auto;
-                object-fit: contain;
-            }
-        }
-        
-        span.logo-text {
-            font-size: 18px;
-            margin-left: 12px;
-            font-weight: 500;
-        }
-    }
-
-    section.unauthenticated {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-    }
+// PeludosClick FirstNavbar Styles
+:root {
+  --peludos-primary: #006455;
+  --peludos-teal: #008080;
+  --peludos-mustard: #FFD700;
+  --peludos-charcoal: #36454F;
+  --peludos-cream: #FFFDD0;
+  --peludos-mustard-light: #FFE55C;
+  --peludos-mustard-dark: #DAA520;
+  --peludos-teal-dark: #006666;
 }
 
-mat-toolbar button {
-    color: rgb(70, 70, 70);
-    font-size: 14px;
-    height: 40px;
-    padding: 0 16px;
-    
-    mat-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
-        line-height: 24px;
-    }
+// Logo container improvements
+.logo-container {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  align-items: center !important;
+  justify-content: flex-start !important;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 128, 128, 0.15);
+  }
 }
 
+// Logo image specific styling
+.logo-image {
+  object-fit: contain !important;
+  background: transparent !important;
+  
+  // Scale the mustard logo properly
+  transform: scale(1.2);
+  
+  // Add subtle shadow for depth
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+// Logo styling without container
+.logo-image {
+  object-fit: contain !important;
+  background: transparent !important;
+  
+  // Scale the mustard logo properly
+  transform: scale(1.2);
+  
+  // Add subtle shadow for depth
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  
+  // Perfect alignment with text
+  align-self: center;
+  margin-top: 5px;
+  margin-right: -14px;
+}
+
+// Personalizaciones específicas del mat-menu
 ::ng-deep .mat-menu-panel {
-    min-width: 180px !important;
-    
-    .mat-menu-item {
-        font-size: 14px;
-        height: 40px;
-        line-height: 40px;
-    }
+  border-radius: 16px !important;
+  box-shadow: 0 10px 25px rgba(0, 128, 128, 0.15) !important;
+  border: 1px solid rgba(0, 128, 128, 0.1) !important;
+  background: white !important;
+}
+
+// Asegurar que los iconos de Material tengan el tamaño correcto
+mat-icon {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  line-height: 20px !important;
+}
+
+// Button hover animations
+.nav-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+// Specific styles for menu button to override Material Design
+::ng-deep button[mat-button][matMenuTriggerFor] {
+  background-color: #FFD700 !important;
+  color: #006455 !important;
+  border-color: #006455 !important;
+  
+  &:hover {
+    background-color: #FFE55C !important;
+    color: #006455 !important;
+  }
+  
+  mat-icon {
+    color: #006455 !important;
+  }
+  
+  span {
+    color: #006455 !important;
+  }
+}
+
+// Alternative approach with more specific selectors
+::ng-deep .mat-button.mat-menu-trigger {
+  background-color: #FFD700 !important;
+  color: #006455 !important;
+  border-color: #006455 !important;
+  
+  &:hover {
+    background-color: #FFE55C !important;
+    color: #006455 !important;
+  }
+  
+  mat-icon {
+    color: #006455 !important;
+  }
+  
+  span {
+    color: #006455 !important;
+  }
+}
+
+// Menu item hover effects
+.menu-item {
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: rgba(0, 128, 128, 0.05) !important;
+    transform: translateX(4px);
+  }
+}
+
+// Logo text alignment
+.logo-text {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  margin-top: -2px;
+  
+  .text-2xl {
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 640px) {
+  .logo-text {
+    display: none;
+  }
+  
+  .nav-button {
+    padding: 0.5rem 1rem;
+  }
+}
+
+// Focus states for accessibility
+button:focus,
+a:focus {
+  outline: 2px solid var(--peludos-mustard);
+  outline-offset: 2px;
+}
+
+// Custom scrollbar for webkit browsers
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--peludos-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--peludos-teal);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--peludos-teal-dark);
 }

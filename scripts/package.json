@@ -1,0 +1,13 @@
+{
+  "name": "favicon-generator",
+  "version": "1.0.0",
+  "description": "Generate favicon files from SVG logo",
+  "main": "generate-favicon.js",
+  "scripts": {
+    "generate-favicon": "node generate-favicon.js"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "jsdom": "^23.0.1"
+  }
+} 

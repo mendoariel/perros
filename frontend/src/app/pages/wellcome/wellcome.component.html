@@ -1,75 +1,200 @@
-<main>
-  <section class="main-content">
-    <h1>**!Manten a tu mascota conectada
-      siempre segura con nuestras chapitas QR personalizadas!**</h1>
-    <!-- first -->
-    <section class="peludosclick">
-      <article class="image-container">
-        <img src="assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg" alt="logo completo PeludosClick"/>
-      </article>
-      <article class="info-container">
-        <p>Con solo escanear el código QR de la
-          chapita, cualquiera podrá ver la foto de tu mascota y
-          contactarte de inmediato por WhatsApp.</p>
-      </article>
-    </section>  
-    <!-- second -->
-    <section class="peludosclick">
-      <article class="image-container">
-        <img src="assets/main/dog-do-recovery-afer-scaning.jpeg" alt="logo completo PeludosClick"/>
-      </article>
-      <article class="info-container">
-        <p>Diseñadas para proteger y facilitar el reencunetro,
-          nuestras chapitas modernas, prácticas y hechas con mucho amor.</p>
-      </article>
-    </section>  
-    <!-- third -->
-    <section class="peludosclick">
-      <article class="image-container">
-        <img src="assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg" alt="logo completo PeludosClick"/>
-      </article>
-      <article class="info-container">
-        <p>No te la pierdas!!!!!</p>
-      </article>
-    </section>  
-
-    <h3>Algunas mascotas conectadas</h3>
-   
-    <!-- Loading state -->
-    <div class="loading-container" *ngIf="loading">
-      <mat-spinner></mat-spinner>
-      <p>Cargando mascotas...</p>
+<main class="min-h-screen bg-[#FFFDD0]">
+  <!-- Hero Section -->
+  <section class="max-w-7xl mx-auto px-4 py-16">
+    <div class="flex flex-col lg:flex-row items-center gap-16">
+      <!-- Left Side - Hero Image -->
+      <div class="lg:w-1/2">
+        <div class="relative">
+          <div class="bg-gradient-to-br from-[#006455]/10 to-[#FFD700]/10 rounded-3xl p-8 shadow-xl">
+            <img 
+              src="assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg" 
+              alt="Mascotas felices y seguras con medallas PeludosClick"
+              class="w-full h-96 object-cover rounded-2xl shadow-lg"
+            />
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Side - Hero Content -->
+      <div class="lg:w-1/2 text-center lg:text-left">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-[#006455] mb-6 leading-tight">
+          Protege a tu Mascota y Conéctate con la Comunidad
+        </h1>
+        <p class="text-xl text-[#36454F] mb-8 leading-relaxed">
+          PeludosClick te ayuda a encontrar a tu mascota si se pierde, con una medalla con QR vinculada a vos. 
+          Una solución moderna y efectiva para mantener a tu compañero seguro.
+        </p>
+        <button 
+          class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-8 py-4 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#006455]"
+          (click)="scrollToPuntosVenta()"
+        >
+          Protege a tu Mascota Ahora
+        </button>
+      </div>
     </div>
+  </section>
 
-    <!-- Error state -->
-    <div class="error-container" *ngIf="!loading && error">
-      <mat-icon class="error-icon">error_outline</mat-icon>
-      <p>{{ error }}</p>
-      <button mat-raised-button color="primary" (click)="loadPets()">
-        Intentar de nuevo
+  <!-- Mascotas Protegidas Section -->
+  <section class="max-w-7xl mx-auto px-4 py-16">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-[#006455] mb-4">
+        Mascotas Protegidas
+      </h2>
+      <p class="text-lg text-[#36454F]">Peludos que ya están conectados y protegidos con PeludosClick</p>
+    </div>
+    
+    <!-- Componente de Grilla de Mascotas -->
+    <app-pets-grid></app-pets-grid>
+    
+    <!-- Botón para Ver Todas las Mascotas -->
+    <div class="text-center mt-8">
+      <button 
+        class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-8 py-4 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#006455]"
+        (click)="navigateToAllPets()"
+      >
+        Ver Todas las Mascotas
       </button>
     </div>
-
-    <!-- Content when not loading -->
-    <ng-container *ngIf="!loading">
-      <!-- Pets list -->
-      <div class="pets-container" *ngIf="pets.length > 0">
-        <section class="pelu-card" *ngFor="let pet of pets" (click)="goToPet(pet)">
-          <h2>{{ pet?.petName || 'Sin nombre' }}</h2>
-          <article class="image">
-            <div class="image-container" [style.background]="pet.background"></div>
-          </article>
-          <article class="info">
-            <p>{{ pet.description }}</p>
-          </article>
-        </section>
-      </div>
-
-      <!-- No pets message -->
-      <div class="no-pets-container" *ngIf="pets.length === 0 && !error">
-        <p>No hay mascotas disponibles en este momento.</p>
-      </div>
-    </ng-container>
   </section>
+
+  <!-- Proceso de Activación Section -->
+  <section class="max-w-7xl mx-auto px-4 py-16">
+    <div class="text-center">
+      <h2 class="text-3xl md:text-4xl font-bold text-[#006455] mb-12">
+        ¿Cómo Activar tu Medalla QR?
+      </h2>
+      
+      <!-- Tarjetas de Pasos del Proceso -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <!-- Paso 1: Escaneo del QR -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border-l-4 border-[#006455]">
+          <div class="w-20 h-20 bg-gradient-to-br from-[#006455]/20 to-[#006455]/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <mat-icon class="text-[#006455] text-3xl">qr_code_scanner</mat-icon>
+          </div>
+          <h3 class="text-xl font-semibold text-[#006455] mb-4">Paso 1: Escanea tu Medalla</h3>
+          <p class="text-[#36454F]">Usa tu smartphone para escanear el código QR de tu medalla PeludosClick.</p>
+        </div>
+
+        <!-- Paso 2: Confirmación por Email -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border-l-4 border-[#FFD700]">
+          <div class="w-20 h-20 bg-gradient-to-br from-[#FFD700]/20 to-[#FFD700]/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <mat-icon class="text-[#FFD700] text-3xl">email</mat-icon>
+          </div>
+          <h3 class="text-xl font-semibold text-[#006455] mb-4">Paso 2: Confirma tu Cuenta</h3>
+          <p class="text-[#36454F]">Recibe un email de confirmación y accede a tu perfil de mascota.</p>
+        </div>
+
+        <!-- Paso 3: Completar Perfil -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border-l-4 border-[#006455]">
+          <div class="w-20 h-20 bg-gradient-to-br from-[#006455]/20 to-[#006455]/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <mat-icon class="text-[#006455] text-3xl">pets</mat-icon>
+          </div>
+          <h3 class="text-xl font-semibold text-[#006455] mb-4">Paso 3: Completa el Perfil</h3>
+          <p class="text-[#36454F]">Agrega fotos, datos de contacto y toda la información de tu mascota.</p>
+        </div>
+      </div>
+
+      <!-- Resultado Final - Mascota Protegida -->
+      <div class="bg-gradient-to-r from-[#006455] to-[#FFD700] rounded-2xl p-8 text-white shadow-xl">
+        <h3 class="text-2xl font-bold mb-4">¡Tu Mascota Está Protegida!</h3>
+        <p class="text-lg opacity-90">Cualquier persona que encuentre a tu mascota puede escanear la medalla y contactarte inmediatamente.</p>
+      </div>
+    </div>
+  </section>
+
+  
+
+  <!-- Puntos de Venta Section -->
+  <section id="puntos-venta" class="max-w-7xl mx-auto px-4 py-16">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-[#006455] mb-4">
+        Puntos de Venta PeludosClick
+      </h2>
+      <p class="text-lg text-[#36454F]">Encuentra dónde obtener tu medalla PeludosClick</p>
+    </div>
+    
+    <!-- Tarjetas de Puntos de Venta -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Veterinaria Hakuna Matata -->
+      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center mb-6">
+          <div class="w-16 h-16 bg-gradient-to-br from-[#006455]/20 to-[#006455]/30 rounded-full flex items-center justify-center mr-4">
+            <mat-icon class="text-[#006455] text-2xl">store</mat-icon>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-[#006455]">Hakuna Matata</h3>
+            <p class="text-[#36454F]">Veterinaria y Pet Shop</p>
+          </div>
+        </div>
+        <p class="text-[#36454F] mb-4">
+          Especialistas en el cuidado de mascotas con años de experiencia en la comunidad.
+        </p>
+        <div class="space-y-2 text-[#36454F]">
+          <p><strong>Dirección:</strong> Beltrán 1910, M5501 Godoy Cruz, Mendoza</p>
+          <p><strong>Horarios:</strong> Lunes a Sábado 9:00 - 13:30 y 17:00 - 20:00</p>
+          <p><strong>Teléfono:</strong> (0261) 338-2462</p>
+        </div>
+        <div class="flex gap-4 mt-6">
+          <a href="https://facebook.com" target="_blank" class="text-[#006455] hover:text-[#FFD700] transition-colors" title="Facebook de Hakuna Matata">
+            <mat-icon>facebook</mat-icon>
+          </a>
+          <a href="#" class="text-[#006455] hover:text-[#FFD700] transition-colors">
+            <mat-icon>instagram</mat-icon>
+          </a>
+          <a href="https://www.google.com.ar/maps/place/HAKUNA+MATATA+Pet+Shop/@-32.904599,-68.8544801,789m/data=!3m2!1e3!4b1!4m6!3m5!1s0x1b1f2a3d75b0dc5:0xc6bcfba6fa0370f2!8m2!3d-32.904599!4d-68.8519052!16s%2Fg%2F11b7hj84bk?entry=ttu" 
+             target="_blank" 
+             class="text-[#006455] hover:text-[#FFD700] transition-colors"
+             title="Ver en Google Maps">
+            <mat-icon>location_on</mat-icon>
+          </a>
+        </div>
+      </div>
+
+      <!-- Tienda El Escaparate -->
+      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center mb-6">
+          <div class="w-16 h-16 bg-gradient-to-br from-[#FFD700]/20 to-[#FFD700]/30 rounded-full flex items-center justify-center mr-4">
+            <mat-icon class="text-[#FFD700] text-2xl">storefront</mat-icon>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-[#006455]">El Escaparate</h3>
+            <p class="text-[#36454F]">Tienda de Mascotas</p>
+          </div>
+        </div>
+        <p class="text-[#36454F] mb-4">
+          Tu tienda de confianza para todo lo que tu mascota necesita, con productos de calidad.
+        </p>
+        <div class="space-y-2 text-[#36454F]">
+          <p><strong>Dirección:</strong> Calle Comercial 456, Buenos Aires</p>
+          <p><strong>Horarios:</strong> Lunes a Domingo 10:00 - 22:00</p>
+          <p><strong>Teléfono:</strong> (011) 9876-5432</p>
+        </div>
+        <div class="flex gap-4 mt-6">
+          <a href="#" class="text-[#006455] hover:text-[#FFD700] transition-colors">
+            <mat-icon>facebook</mat-icon>
+          </a>
+          <a href="#" class="text-[#006455] hover:text-[#FFD700] transition-colors">
+            <mat-icon>instagram</mat-icon>
+          </a>
+          <a href="#" class="text-[#006455] hover:text-[#FFD700] transition-colors">
+            <mat-icon>language</mat-icon>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Llamada a la Acción - Puntos de Venta -->
+    <div class="text-center mt-8">
+      <p class="text-lg text-[#006455] font-semibold mb-4">
+        Visita nuestras tiendas y obtén tu medalla
+      </p>
+      <button 
+        class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-8 py-4 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#006455]"
+      >
+        Encuentra tu Punto de Venta
+      </button>
+    </div>
+  </section>
+  
   <app-peludosclick-footer></app-peludosclick-footer>
 </main>

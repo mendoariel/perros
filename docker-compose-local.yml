@@ -15,8 +15,8 @@ services:
       - HOST=0.0.0.0
       - BACKEND_URL=http://localhost:3333
     volumes:
-      - ./frontend:/alberto/frontend/src/app
-      - /alberto/frontend/src/app/node_modules
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend-perros
     networks:
