@@ -1,34 +1,90 @@
-<mat-toolbar>
-    <section class="logo-container" style="cursor: pointer;" (click)="goHome()">
-        <article class="image-container">
-            <img src="assets/main/logo-peludosclick.png" alt="logo de peludos click">
-        </article>
-        <span class="logo-text">PeludosClick</span>
-    </section>
-    
-    <section *ngIf="!authenticated" class="unauthenticated">
-        <button (click)="login()" mat-button>Ingresar</button>
-    </section>
-    <section *ngIf="authenticated">
-        <button mat-button [matMenuTriggerFor]="menu">
-            <mat-icon>menu</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="goTo('mis-mascotas')">
-                <mat-icon>pets</mat-icon>
-                <span>Mis mascotas</span>
-            </button>
-            <button mat-menu-item (click)="goTo('wellcome')">
-                <mat-icon>view_list</mat-icon>
-                <span>Todas las mascotas</span>
-            </button>
-            <mat-divider></mat-divider>
-            <button mat-menu-item (click)="logout()">
-                <mat-icon>exit_to_app</mat-icon>
-                <span>Cerrar sesión</span>
-            </button>
-        </mat-menu>
-    </section>
-</mat-toolbar>
+<nav class="bg-gradient-to-r from-[#006455] to-[#005a4a] shadow-xl border-b-2 border-[#004d3d] backdrop-blur-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-20">
+      
+      <!-- Logo Section -->
+      <div class="flex items-center space-x-4 cursor-pointer hover:bg-white/10 rounded-xl px-4 py-2 transition-all duration-300 logo-container" (click)="goHome()">
+        <img 
+          src="assets/main/peludosclick-logo-mustard.svg"  
+          alt="PeludosClick Logo"
+          class="w-12 h-12 logo-image"
+          (load)="onImageLoad($event)"
+          (error)="onImageError($event)"
+        >
+        <!-- Fallback icon if image fails -->
+        <mat-icon *ngIf="!logoLoaded" class="text-[#FFD700] text-2xl">pets</mat-icon>
+        <div class="hidden sm:block logo-text">
+          <div class="text-2xl font-bold">
+            <span class="text-[#FFD700]">Peludos</span>
+            <span class="text-white">Click</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Section -->
+      <div class="flex items-center space-x-4">
+        
+        <!-- Unauthenticated State -->
+        <div *ngIf="!authenticated" class="flex items-center space-x-3">
+          <button 
+            (click)="login()" 
+            class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-6 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 border-2 border-[#006455] nav-button"
+          >
+            Ingresar
+          </button>
+        </div>
+
+        <!-- Authenticated State -->
+        <div *ngIf="authenticated" class="flex items-center space-x-3">
+          <button 
+            [matMenuTriggerFor]="menu"
+            class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-6 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2 border-2 border-[#006455] nav-button"
+          >
+            <mat-icon class="text-xl">menu</mat-icon>
+            <span class="hidden sm:block">Menú</span>
+          </button>
+          
+          <mat-menu #menu="matMenu" class="min-w-56">
+            <div class="p-3">
+              <div class="mb-3 pb-2 border-b border-[#008080]/20">
+                <div class="text-sm text-[#36454F] font-medium">PeludosClick</div>
+                <div class="text-xs text-[#36454F]/70">Tu mascota protegida</div>
+              </div>
+              
+              <button 
+                mat-menu-item 
+                (click)="goTo('mis-mascotas')"
+                class="flex items-center space-x-3 w-full px-4 py-3 text-left hover:bg-[#008080]/5 rounded-lg transition-colors duration-200 menu-item"
+              >
+                <mat-icon class="text-[#008080]">pets</mat-icon>
+                <span class="font-medium text-[#36454F]">Mis mascotas</span>
+              </button>
+              
+              <button 
+                mat-menu-item 
+                (click)="goTo('mascotas')"
+                class="flex items-center space-x-3 w-full px-4 py-3 text-left hover:bg-[#008080]/5 rounded-lg transition-colors duration-200 menu-item"
+              >
+                <mat-icon class="text-[#008080]">view_list</mat-icon>
+                <span class="font-medium text-[#36454F]">Todas las mascotas</span>
+              </button>
+              
+              <div class="border-t border-[#008080]/20 my-3"></div>
+              
+              <button 
+                mat-menu-item 
+                (click)="logout()"
+                class="flex items-center space-x-3 w-full px-4 py-3 text-left hover:bg-red-50 rounded-lg transition-colors duration-200 menu-item"
+              >
+                <mat-icon class="text-red-500">exit_to_app</mat-icon>
+                <span class="font-medium text-red-600">Cerrar sesión</span>
+              </button>
+            </div>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
 
   

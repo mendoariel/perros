@@ -1,1 +1,98 @@
-<p>pets works!</p>
+<main class="min-h-screen bg-[#FFFDD0] py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Header Section -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold text-[#006455] mb-4">
+        Todas las Mascotas Protegidas
+      </h1>
+      <p class="text-xl text-[#36454F] max-w-3xl mx-auto">
+        Descubre todos los peludos que están conectados y protegidos con PeludosClick. 
+        Cada mascota tiene su medalla QR para mantenerla segura.
+      </p>
+    </div>
+
+    <!-- Loading State -->
+    <div class="flex flex-col items-center justify-center py-12" *ngIf="loading">
+      <mat-spinner class="mb-4"></mat-spinner>
+      <p class="text-[#36454F] text-lg">Cargando todas las mascotas...</p>
+    </div>
+
+    <!-- Error State -->
+    <div class="flex flex-col items-center justify-center py-12 text-center" *ngIf="!loading && error">
+      <mat-icon class="text-[#DAA520] text-6xl mb-4">error_outline</mat-icon>
+      <p class="text-[#36454F] text-lg mb-6">{{ error }}</p>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="loadAllPets()"
+        class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] px-6 py-3 rounded-lg font-semibold transition-colors duration-200 shadow border-2 border-[#006455]"
+      >
+        Intentar de nuevo
+      </button>
+    </div>
+
+    <!-- Content when not loading -->
+    <ng-container *ngIf="!loading">
+      
+      <!-- Stats Section -->
+      <div class="bg-white rounded-2xl p-6 mb-8 shadow-lg border-2 border-[#006455]/10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+          <div>
+            <div class="text-3xl font-bold text-[#006455]">{{ pets.length }}</div>
+            <div class="text-[#36454F]">Mascotas Protegidas</div>
+          </div>
+          <div>
+            <div class="text-3xl font-bold text-[#FFD700]">100%</div>
+            <div class="text-[#36454F]">Conectadas</div>
+          </div>
+          <div>
+            <div class="text-3xl font-bold text-[#006455]">24/7</div>
+            <div class="text-[#36454F]">Protección Activa</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pets Grid -->
+      <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" *ngIf="pets.length > 0">
+          <div 
+            class="bg-white rounded-2xl shadow-lg border-2 border-[#006455]/10 hover:border-[#FFD700] overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" 
+            *ngFor="let pet of pets" 
+            (click)="goToPet(pet)"
+          >
+            <div class="w-full aspect-square overflow-hidden bg-[#FFFDD0] flex items-center justify-center">
+              <img 
+                [src]="pet.background" 
+                [alt]="pet?.petName || 'Mascota'"
+                class="w-full h-full object-cover"
+                (error)="onImageError($event)"
+              />
+            </div>
+            <div class="p-4">
+              <h2 class="text-lg font-bold text-[#006455] mb-2 text-center">
+                {{ pet?.petName || 'Sin nombre' }}
+              </h2>
+              <p class="text-sm text-[#36454F] text-center line-clamp-2">
+                {{ pet.description }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Pets Message -->
+      <div class="text-center py-12" *ngIf="pets.length === 0 && !error">
+        <div class="bg-white rounded-xl shadow-lg p-8 max-w-md mx-auto">
+          <mat-icon class="text-[#006455] text-6xl mb-4">pets</mat-icon>
+          <p class="text-[#36454F] text-lg mb-4">No hay mascotas disponibles en este momento.</p>
+          <p class="text-[#36454F] text-sm opacity-75">¡Sé el primero en registrar tu mascota!</p>
+        </div>
+      </div>
+
+    </ng-container>
+
+  </div>
+</main>
+
+<app-peludosclick-footer></app-peludosclick-footer>

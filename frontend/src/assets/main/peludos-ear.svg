@@ -1,0 +1,10 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main ear shape - smooth teal oval -->
+  <ellipse cx="20" cy="18" rx="8" ry="12" fill="#008080"/>
+  
+  <!-- Upper inner curve - creates the ear canal -->
+  <path d="M20 8C16.5 8 14 10.5 14 14C14 17.5 16.5 20 20 20C23.5 20 26 17.5 26 14C26 10.5 23.5 8 20 8Z" fill="#FFFDD0"/>
+  
+  <!-- Lower inner curve - tragus area -->
+  <ellipse cx="20" cy="16" rx="2" ry="3" fill="#008080"/>
+</svg> 
