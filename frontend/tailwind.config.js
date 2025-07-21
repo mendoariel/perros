@@ -22,9 +22,7 @@ module.exports = {
       }
     },
   },
-  plugins: [
-    require('@tailwindcss/line-clamp'),
-  ],
+  plugins: [],
   // Importante: esto evita conflictos con Angular Material
   important: false,
   // Asegurar que Tailwind no sobrescriba estilos de Angular Material
