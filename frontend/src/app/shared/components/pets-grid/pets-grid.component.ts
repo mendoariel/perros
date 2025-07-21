@@ -99,6 +99,6 @@ export class PetsGridComponent implements OnDestroy {
 
   onImageError(event: any) {
     // Si la imagen falla, usar una imagen por defecto
-    event.target.src = 'assets/default-pet-social.jpg';
+    event.target.src = 'assets/main/default-pet-social.jpg';
   }
 }
