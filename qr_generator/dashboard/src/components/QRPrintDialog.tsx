@@ -4,6 +4,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { VirginMedal } from '../types/medal';
 import { medalService } from '../services/medalService';
+import { QR_CONFIG } from '../config/qr-config';
 
 interface QRPrintDialogProps {
   isOpen: boolean;
@@ -40,16 +41,7 @@ const QRPrintDialog: React.FC<QRPrintDialogProps> = ({
 
       // Generar QR codes localmente usando los datos del backend
       const qrPromises = medalsWithQRData.map((medal: any) => {
-        return QRCode.toDataURL(medal.qrData, {
-          errorCorrectionLevel: 'H',
-          margin: 3, // Aumentado de 2 a 3 para más espacio alrededor del QR
-          scale: 8, // Aumentado de 4 a 8 para mejor resolución
-          type: "image/png",
-          color: {
-            dark: '#000000', // Negro puro para mejor contraste
-            light: '#FFFFFF' // Blanco puro para mejor contraste
-          }
-        });
+        return QRCode.toDataURL(medal.qrData, QR_CONFIG.dataURL);
       });
 
       const codes = await Promise.all(qrPromises);
@@ -220,7 +212,7 @@ const QRPrintDialog: React.FC<QRPrintDialogProps> = ({
                 >
                   <img
                     src={qrCode}
-                    alt={`QR ${medals[index]?.medal_string}`}
+                    alt={`QR ${medals[index]?.medalString}`}
                     style={{
                       width: `${qrSize}mm`,
                       height: `${qrSize}mm`

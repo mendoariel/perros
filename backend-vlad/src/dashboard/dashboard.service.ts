@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { createHash } from 'hash-generator';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class DashboardService {
@@ -8,18 +8,18 @@ export class DashboardService {
 
   // Obtener todas las medallas virgin
   async getVirginMedals() {
-    return await this.prisma.virginMedals.findMany({
+    return await this.prisma.virginMedal.findMany({
       orderBy: {
-        created_at: 'desc'
+        createdAt: 'desc'
       }
     });
   }
 
   // Obtener estadísticas
   async getStats() {
-    const total = await this.prisma.virginMedals.count();
+    const total = await this.prisma.virginMedal.count();
     
-    const statsByStatus = await this.prisma.virginMedals.groupBy({
+    const statsByStatus = await this.prisma.virginMedal.groupBy({
       by: ['status'],
       _count: {
         status: true
@@ -50,41 +50,54 @@ export class DashboardService {
 
   // Crear hash único
   private async createUniqueHash(): Promise<string> {
-    let medalString = createHash(36);
-    const existingMedal = await this.prisma.virginMedals.findFirst({
-      where: { medal_string: medalString }
+    let medalString = randomBytes(18).toString('hex');
+    console.log('Generated hash:', medalString);
+    
+    const existingMedal = await this.prisma.virginMedal.findFirst({
+      where: { medalString: medalString }
     });
     
     if (existingMedal) {
+      console.log('Hash already exists, generating new one');
       return this.createUniqueHash();
     }
     
+    console.log('Hash is unique');
     return medalString;
   }
 
   // Crear nuevas medallas virgin
   async createVirginMedals(quantity: number, registerHash: string) {
+    console.log('Creating virgin medals:', { quantity, registerHash });
     const createdMedals = [];
 
-    for (let i = 0; i < quantity; i++) {
-      const medalString = await this.createUniqueHash();
-      
-      const medal = await this.prisma.virginMedals.create({
-        data: {
-          status: 'VIRGIN',
-          medal_string: medalString,
-          register_hash: registerHash
-        }
-      });
+    try {
+      for (let i = 0; i < quantity; i++) {
+        console.log(`Creating medal ${i + 1}/${quantity}`);
+        const medalString = await this.createUniqueHash();
+        console.log('Generated medal string:', medalString);
+        
+        const medal = await this.prisma.virginMedal.create({
+          data: {
+            status: 'VIRGIN' as any,
+            medalString: medalString,
+            registerHash: registerHash
+          }
+        });
 
-      createdMedals.push(medal);
+        console.log('Created medal:', medal.id);
+        createdMedals.push(medal);
+      }
+
+      return {
+        message: `${quantity} medallas creadas exitosamente`,
+        registerHash,
+        createdCount: createdMedals.length
+      };
+    } catch (error) {
+      console.error('Error creating medals:', error);
+      throw error;
     }
-
-    return {
-      message: `${quantity} medallas creadas exitosamente`,
-      registerHash,
-      createdCount: createdMedals.length
-    };
   }
 
   // Actualizar estado de una medalla
@@ -98,11 +111,11 @@ export class DashboardService {
       throw new Error('Estado no válido');
     }
 
-    const updatedMedal = await this.prisma.virginMedals.update({
+    const updatedMedal = await this.prisma.virginMedal.update({
       where: { id },
       data: { 
-        status,
-        updated_at: new Date()
+        status: status as any,
+        updatedAt: new Date()
       }
     });
 
@@ -114,7 +127,7 @@ export class DashboardService {
 
   // Eliminar medalla
   async deleteMedal(id: number) {
-    await this.prisma.virginMedals.delete({
+    await this.prisma.virginMedal.delete({
       where: { id }
     });
 
@@ -126,7 +139,7 @@ export class DashboardService {
   // Obtener medallas para generar QR codes (solo datos, sin generar QR)
   async getMedalsForQR(medalIds: number[]) {
     try {
-      const medals = await this.prisma.virginMedals.findMany({
+      const medals = await this.prisma.virginMedal.findMany({
         where: {
           id: {
             in: medalIds
@@ -134,9 +147,9 @@ export class DashboardService {
         },
         select: {
           id: true,
-          medal_string: true,
+          medalString: true,
           status: true,
-          created_at: true
+          createdAt: true
         }
       });
 
@@ -147,7 +160,7 @@ export class DashboardService {
       // Agregar la URL que se usará para el QR
       const medalsWithQRData = medals.map(medal => ({
         ...medal,
-        qrData: `https://peludosclick.com/mascota-checking?medalString=${medal.medal_string}`
+        qrData: `https://peludosclick.com/mascota-checking?medalString=${medal.medalString}`
       }));
 
       return {
@@ -162,19 +175,19 @@ export class DashboardService {
   // Obtener medallas virgin por cantidad para generar QR
   async getVirginMedalsForQR(quantity: number) {
     try {
-      const medals = await this.prisma.virginMedals.findMany({
+      const medals = await this.prisma.virginMedal.findMany({
         where: {
           status: 'VIRGIN'
         },
         take: quantity,
         orderBy: {
-          created_at: 'asc'
+          createdAt: 'asc'
         },
         select: {
           id: true,
-          medal_string: true,
+          medalString: true,
           status: true,
-          created_at: true
+          createdAt: true
         }
       });
 
@@ -189,7 +202,7 @@ export class DashboardService {
       // Agregar la URL que se usará para el QR
       const medalsWithQRData = medals.map(medal => ({
         ...medal,
-        qrData: `https://peludosclick.com/mascota-checking?medalString=${medal.medal_string}`
+        qrData: `https://peludosclick.com/mascota-checking?medalString=${medal.medalString}`
       }));
 
       return {

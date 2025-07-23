@@ -1,10 +1,10 @@
 export interface VirginMedal {
   id: number;
   status: MedalState;
-  medal_string: string;
-  register_hash: string;
-  created_at: string;
-  updated_at?: string;
+  medalString: string;
+  registerHash: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface MedalStats {

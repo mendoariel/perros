@@ -1,31 +1,23 @@
 const QRCode = require('qrcode');
+const QR_CONFIG = require('./qr-config');
 
 async function testQRSettings() {
   console.log('Probando diferentes configuraciones de QR...\n');
   
   const testData = 'https://peludosclick.com/mascota-checking?medalString=test123';
   
-  // Test con scale 2 (configuración actual)
-  console.log('1. Generando QR con scale: 2');
+  // Test con scale 8 (configuración actual - alta calidad)
+  console.log('1. Generando QR con scale: 8 (configuración actual)');
   try {
-    const qrScale2 = await QRCode.toDataURL(testData, {
-      errorCorrectionLevel: 'H',
-      margin: 2,
-      scale: 2,
-      type: "image/png",
-      color: {
-        dark: '#000000',
-        light: '#FFFFFF'
-      }
-    });
-    console.log('✅ QR con scale 2 generado exitosamente');
-    console.log('   Longitud del data URL:', qrScale2.length, 'caracteres');
+    const qrScale8 = await QRCode.toDataURL(testData, QR_CONFIG.dataURL);
+    console.log('✅ QR con scale 8 generado exitosamente');
+    console.log('   Longitud del data URL:', qrScale8.length, 'caracteres');
   } catch (error) {
-    console.log('❌ Error generando QR con scale 2:', error.message);
+    console.log('❌ Error generando QR con scale 8:', error.message);
   }
   
-  // Test con scale 4 (configuración anterior)
-  console.log('\n2. Generando QR con scale: 4');
+  // Test con configuración anterior (scale: 4)
+  console.log('\n2. Generando QR con configuración anterior (scale: 4)');
   try {
     const qrScale4 = await QRCode.toDataURL(testData, {
       errorCorrectionLevel: 'H',
@@ -43,10 +35,10 @@ async function testQRSettings() {
     console.log('❌ Error generando QR con scale 4:', error.message);
   }
   
-  // Test con scale 8 (configuración original)
-  console.log('\n3. Generando QR con scale: 8');
+  // Test con configuración original (scale: 8, margin: 2)
+  console.log('\n3. Generando QR con configuración original (scale: 8, margin: 2)');
   try {
-    const qrScale8 = await QRCode.toDataURL(testData, {
+    const qrScale8Original = await QRCode.toDataURL(testData, {
       errorCorrectionLevel: 'H',
       margin: 2,
       scale: 8,
@@ -56,14 +48,14 @@ async function testQRSettings() {
         light: '#FFFFFF'
       }
     });
-    console.log('✅ QR con scale 8 generado exitosamente');
-    console.log('   Longitud del data URL:', qrScale8.length, 'caracteres');
+    console.log('✅ QR con configuración original generado exitosamente');
+    console.log('   Longitud del data URL:', qrScale8Original.length, 'caracteres');
   } catch (error) {
-    console.log('❌ Error generando QR con scale 8:', error.message);
+    console.log('❌ Error generando QR con configuración original:', error.message);
   }
   
-  console.log('\n🎯 Configuración actual en el dashboard: scale: 2');
-  console.log('📱 Accede a: http://localhost:3701');
+  console.log('\n🎯 Configuración actual en el dashboard: scale: 8 (alta calidad)');
+  console.log('📱 Accede a: http://localhost:3700');
 }
 
 testQRSettings(); 
