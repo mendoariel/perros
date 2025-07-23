@@ -2,6 +2,7 @@ const fs = require('fs');
 
 const qr = require('qrcode');
 const { getClient } = require('./get-client');
+const QR_CONFIG = require('./qr-config');
 
 let createHash = require('hash-generator');
 
@@ -54,12 +55,7 @@ var  qrMakeSvgFile = async function () {
         qr.toFile(
             filePath,
             data,
-            {
-                errorCorrectionalLevel: 'H',
-                margin: 2,
-                scale: 4,
-                type: "png"
-            },
+            QR_CONFIG.png,
             err => {
                 if(err) {
                     console.log('Error generation')
@@ -85,12 +81,7 @@ qrMakeSvgFile();
 qr.toFile(
     filePath,
     data,
-    {
-        errorCorrectionalLevel: 'H',
-        margin: 2,
-        scale: 4,
-        type: "svg"
-    },
+    QR_CONFIG.png,
     err => {
         if(err) {
             console.log('Error generation')

@@ -1,15 +1,38 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
+import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class DashboardAuthGuard implements CanActivate {
+  constructor(private reflector: Reflector) {
+    console.log('DashboardAuthGuard initialized');
+  }
   canActivate(context: ExecutionContext): boolean {
+    console.log('DashboardAuthGuard.canActivate called');
+    
+    // Verificar si el endpoint es público
+    const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    
+    if (isPublic) {
+      console.log('Endpoint is public, skipping authentication');
+      return true;
+    }
+    
     const request = context.switchToHttp().getRequest<Request>();
     const authHeader = request.headers.authorization;
     
     // Obtener las credenciales desde las variables de entorno
     const expectedUsername = process.env.DASHBOARD_USERNAME;
     const expectedPassword = process.env.DASHBOARD_PASSWORD;
+    
+    console.log('Dashboard Auth Debug:', {
+      expectedUsername,
+      expectedPassword: expectedPassword ? '***' : 'undefined',
+      authHeader: authHeader ? 'present' : 'missing'
+    });
     
     if (!expectedUsername || !expectedPassword) {
       console.error('Dashboard credentials not configured');

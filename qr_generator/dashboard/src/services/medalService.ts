@@ -1,22 +1,17 @@
 import axios from 'axios';
 import { VirginMedal, MedalStats, CreateMedalsRequest } from '../types/medal';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3334';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
 
 // Configurar autenticación básica
 const getAuthHeaders = () => {
-  const username = process.env.REACT_APP_DASHBOARD_USERNAME;
-  const password = process.env.REACT_APP_DASHBOARD_PASSWORD;
+  // Usar credenciales hardcodeadas para testing
+  const username = 'admin';
+  const password = 'admin123';
   
-  if (username && password) {
-    const credentials = btoa(`${username}:${password}`);
-    return {
-      'Authorization': `Basic ${credentials}`,
-      'Content-Type': 'application/json',
-    };
-  }
-  
+  const credentials = btoa(`${username}:${password}`);
   return {
+    'Authorization': `Basic ${credentials}`,
     'Content-Type': 'application/json',
   };
 };

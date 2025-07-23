@@ -84,7 +84,6 @@ services:
     container_name: qr-dashboard
     ports:
       - '3700:3700'
-      - '3334:3334'
     environment:
       - PG_HOST=postgres
       - PG_PORT=5432
@@ -92,7 +91,7 @@ services:
       - PG_PASSWORD=casadesara
       - PG_DATABASE=peludosclick
       # API URL para el frontend del dashboard (local)
-      - REACT_APP_API_URL=http://localhost:3334
+      - REACT_APP_API_URL=http://localhost:3333
       # Credenciales del dashboard (local)
       - REACT_APP_DASHBOARD_USERNAME=admin
       - REACT_APP_DASHBOARD_PASSWORD=admin123
