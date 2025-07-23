@@ -74,7 +74,7 @@ var  qrMakeSvgFile = async function () {
 
 }
 
-//qrMakeSvgFile();
+qrMakeSvgFile();
 
 // query to get all virgin medal
 
@@ -82,20 +82,20 @@ var  qrMakeSvgFile = async function () {
 //      that resgister hash === 'genesis'
 
 
-// qr.toFile(
-//     filePath,
-//     data,
-//     {
-//         errorCorrectionalLevel: 'H',
-//         margin: 2,
-//         scale: 4,
-//         type: "svg"
-//     },
-//     err => {
-//         if(err) {
-//             console.log('Error generation')
-//         } else {
-//             console.log('code generated')
-//         }
-//     }
-// );
+qr.toFile(
+    filePath,
+    data,
+    {
+        errorCorrectionalLevel: 'H',
+        margin: 2,
+        scale: 4,
+        type: "svg"
+    },
+    err => {
+        if(err) {
+            console.log('Error generation')
+        } else {
+            console.log('code generated')
+        }
+    }
+);
