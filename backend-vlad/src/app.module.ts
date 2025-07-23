@@ -7,6 +7,7 @@ import { MailModule } from './mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
 import { QrCheckingModule } from './qr-checking/qr-checking.module';
 import { PetsModule } from './pets/pets.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { FILE_UPLOAD_DIR } from './constans';
 import { AppController } from './app.controller';
@@ -23,6 +24,7 @@ import { AppService } from './app.service';
     AuthModule, 
     QrCheckingModule,
     PetsModule,
+    DashboardModule,
     PrismaModule, 
     MailModule,
     ConfigModule.forRoot({
