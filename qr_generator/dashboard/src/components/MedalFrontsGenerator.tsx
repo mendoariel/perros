@@ -13,6 +13,7 @@ interface MedalFrontConfig {
   logoSize: number;
   logoX: number; // Posición X del logo
   logoY: number; // Posición Y del logo
+  borderRadius: number; // Border radius para contenedores cuadrados
 }
 
 interface MedalBatch {
@@ -38,7 +39,8 @@ const MedalFrontsGenerator: React.FC = () => {
     logoColor: '#FFD700',
     logoSize: 20,
     logoX: 0, // Posición X del logo (centrado)
-    logoY: 0  // Posición Y del logo (centrado)
+    logoY: 0, // Posición Y del logo (centrado)
+    borderRadius: 5 // Valor por defecto para border radius
   });
 
   // Estado para configuración de PDF combinado
@@ -218,7 +220,7 @@ const MedalFrontsGenerator: React.FC = () => {
     let totalMedalsAdded = 0;
 
     // Crear lista de medallas
-    const allMedals: Array<{batch: MedalBatch, canvasData: string, width: number, height: number}> = [];
+    const allMedals: Array<{batch: MedalBatch, width: number, height: number}> = [];
     
     for (const batch of batches) {
       const quantityForThisBatch = combinedPdfConfig.batchQuantities[batch.id] || 0;
@@ -230,14 +232,11 @@ const MedalFrontsGenerator: React.FC = () => {
       console.log(`📦 Lote "${batch.name}": ${quantityForThisBatch} medallas de ${medalWidth}×${medalHeight}mm`);
       
       for (let i = 0; i < quantityForThisBatch; i++) {
-        if (batch.canvasData) {
-          allMedals.push({
-            batch,
-            canvasData: batch.canvasData,
-            width: medalWidth,
-            height: medalHeight
-          });
-        }
+        allMedals.push({
+          batch,
+          width: medalWidth,
+          height: medalHeight
+        });
       }
     }
 
@@ -289,22 +288,28 @@ const MedalFrontsGenerator: React.FC = () => {
       const fitsInHeight = finalY + medal.height <= pageHeight - spacing;
       
       console.log(`🔍 VERIFICACIÓN FINAL:`);
-      console.log(`   Ancho: ${finalX} + ${medal.width} = ${finalX + medal.width} <= ${pageWidth - spacing} = ${fitsInWidth}`);
-      console.log(`   Alto: ${finalY} + ${medal.height} = ${finalY + medal.height} <= ${pageHeight - spacing} = ${fitsInHeight}`);
+      console.log(`  - Cabe en ancho: ${fitsInWidth} (${finalX} + ${medal.width} <= ${pageWidth - spacing})`);
+      console.log(`  - Cabe en alto: ${fitsInHeight} (${finalY} + ${medal.height} <= ${pageHeight - spacing})`);
       
       if (fitsInWidth && fitsInHeight) {
-        console.log(`✅ DIBUJANDO en X=${finalX}, Y=${finalY}`);
-        pdf.addImage(medal.canvasData, 'PNG', finalX, finalY, medal.width, medal.height);
-        totalMedalsAdded++;
-        
-        // Actualizar posición
-        currentX = finalX + medal.width + spacing;
-        rowHeight = Math.max(rowHeight, medal.height);
-        
-        console.log(`📍 Siguiente posición: X=${currentX}, Y=${currentY}, AlturaFila=${rowHeight}`);
+        try {
+          // Generar canvas de la medalla con border radius en tiempo real
+          console.log(`🎨 Generando canvas para medalla con border radius...`);
+          const canvasData = await generateMedalCanvas(medal.batch.config);
+          
+          // Agregar al PDF
+          pdf.addImage(canvasData, 'PNG', finalX, finalY, medal.width, medal.height);
+          
+          console.log(`✅ Medalla agregada en posición: X=${finalX}, Y=${finalY}`);
+          currentX = finalX + medal.width + spacing;
+          rowHeight = Math.max(rowHeight, medal.height);
+          totalMedalsAdded++;
+          
+        } catch (error) {
+          console.error(`❌ Error generando medalla ${medal.batch.name}:`, error);
+        }
       } else {
-        console.log(`❌ NO SE DIBUJA - No cabe completamente`);
-        console.log(`❌ Omitiendo medalla ${i+1} (${medal.batch.name})`);
+        console.log(`❌ Medalla no cabe en la página actual`);
       }
     }
 
@@ -374,18 +379,24 @@ const MedalFrontsGenerator: React.FC = () => {
       ctx.arc(displayWidth / 2, displayHeight / 2, displayWidth / 2, 0, 2 * Math.PI);
       ctx.fill();
     } else {
-      ctx.fillRect(0, 0, displayWidth, displayHeight);
+      // Usar border radius para contenedores cuadrados
+      const borderRadius = config.borderRadius * scale;
+      ctx.beginPath();
+      ctx.roundRect(0, 0, displayWidth, displayHeight, borderRadius);
+      ctx.fill();
     }
 
-    // Crear máscara para el logo (círculo o rectángulo)
+    // Crear máscara para el logo (círculo o rectángulo con border radius)
     ctx.save();
     if (config.type === 'round') {
       ctx.beginPath();
       ctx.arc(displayWidth / 2, displayHeight / 2, displayWidth / 2, 0, 2 * Math.PI);
       ctx.clip();
     } else {
+      // Usar border radius para la máscara también
+      const borderRadius = config.borderRadius * scale;
       ctx.beginPath();
-      ctx.rect(0, 0, displayWidth, displayHeight);
+      ctx.roundRect(0, 0, displayWidth, displayHeight, borderRadius);
       ctx.clip();
     }
 
@@ -428,6 +439,101 @@ const MedalFrontsGenerator: React.FC = () => {
     }
 
     ctx.restore();
+  };
+
+  // Función auxiliar para generar canvas de medalla con border radius
+  const generateMedalCanvas = async (batchConfig: MedalFrontConfig): Promise<string> => {
+    if (!logoImage) {
+      throw new Error('Logo no cargado');
+    }
+
+    // Crear canvas temporal
+    const tempCanvas = document.createElement('canvas');
+    const ctx = tempCanvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('No se pudo crear el contexto del canvas');
+    }
+
+    // Configurar canvas
+    const scale = 4; // Para mejor calidad
+    const displayWidth = (batchConfig.type === 'round' ? batchConfig.size : batchConfig.width!) * scale;
+    const displayHeight = (batchConfig.type === 'round' ? batchConfig.size : batchConfig.height!) * scale;
+    tempCanvas.width = displayWidth;
+    tempCanvas.height = displayHeight;
+
+    // Limpiar canvas
+    ctx.clearRect(0, 0, displayWidth, displayHeight);
+
+    // Dibujar fondo
+    ctx.fillStyle = batchConfig.backgroundColor;
+    if (batchConfig.type === 'round') {
+      ctx.beginPath();
+      ctx.arc(displayWidth / 2, displayHeight / 2, displayWidth / 2, 0, 2 * Math.PI);
+      ctx.fill();
+    } else {
+      // Usar border radius para contenedores cuadrados
+      const borderRadius = batchConfig.borderRadius * scale;
+      ctx.beginPath();
+      ctx.roundRect(0, 0, displayWidth, displayHeight, borderRadius);
+      ctx.fill();
+    }
+
+    // Crear máscara para el logo (círculo o rectángulo con border radius)
+    ctx.save();
+    if (batchConfig.type === 'round') {
+      ctx.beginPath();
+      ctx.arc(displayWidth / 2, displayHeight / 2, displayWidth / 2, 0, 2 * Math.PI);
+      ctx.clip();
+    } else {
+      // Usar border radius para la máscara también
+      const borderRadius = batchConfig.borderRadius * scale;
+      ctx.beginPath();
+      ctx.roundRect(0, 0, displayWidth, displayHeight, borderRadius);
+      ctx.clip();
+    }
+
+    // Dibujar el logo de PeludosClick
+    const logoSize = batchConfig.logoSize * scale;
+    const logoX = (displayWidth / 2 - logoSize / 2) + (batchConfig.logoX * scale);
+    const logoY = (displayHeight / 2 - logoSize / 2) + (batchConfig.logoY * scale);
+
+    // Crear un canvas temporal para cambiar el color del logo
+    const logoCanvas = document.createElement('canvas');
+    const logoCtx = logoCanvas.getContext('2d');
+    if (logoCtx) {
+      logoCanvas.width = logoSize;
+      logoCanvas.height = logoSize;
+
+      // Dibujar el logo original
+      logoCtx.drawImage(logoImage, 0, 0, logoSize, logoSize);
+
+      // Obtener los datos de la imagen
+      const imageData = logoCtx.getImageData(0, 0, logoSize, logoSize);
+      const data = imageData.data;
+
+      // Cambiar el color del logo
+      const targetColor = hexToRgb(batchConfig.logoColor);
+      if (targetColor) {
+        for (let i = 0; i < data.length; i += 4) {
+          // Si el píxel no es transparente (alpha > 0)
+          if (data[i + 3] > 0) {
+            data[i] = targetColor.r;     // Red
+            data[i + 1] = targetColor.g; // Green
+            data[i + 2] = targetColor.b; // Blue
+            // Mantener el alpha original
+          }
+        }
+        logoCtx.putImageData(imageData, 0, 0);
+      }
+
+      // Dibujar el logo con el color cambiado en el canvas principal
+      ctx.drawImage(logoCanvas, logoX, logoY);
+    }
+
+    ctx.restore();
+
+    // Retornar los datos del canvas como data URL
+    return tempCanvas.toDataURL('image/png');
   };
 
   const hexToRgb = (hex: string) => {
@@ -643,6 +749,47 @@ const MedalFrontsGenerator: React.FC = () => {
                           </svg>
                         </button>
                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Border Radius (solo para contenedores cuadrados) */}
+                {config.type === 'square' && (
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Border Radius: {config.borderRadius}px
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setConfig(prev => ({ ...prev, borderRadius: Math.max(0, prev.borderRadius - 1) }))}
+                        className="p-2 rounded-lg bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 transition-colors"
+                        title="Reducir border radius"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                        </svg>
+                      </button>
+                      <input
+                        type="range"
+                        min="0"
+                        max="20"
+                        value={config.borderRadius}
+                        onChange={(e) => setConfig(prev => ({ ...prev, borderRadius: parseInt(e.target.value) }))}
+                        className="flex-1"
+                      />
+                      <button
+                        onClick={() => setConfig(prev => ({ ...prev, borderRadius: Math.min(20, prev.borderRadius + 1) }))}
+                        className="p-2 rounded-lg bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 transition-colors"
+                        title="Aumentar border radius"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                      </button>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                      <span>0px (Cuadrado)</span>
+                      <span>20px (Muy redondeado)</span>
                     </div>
                   </div>
                 )}
