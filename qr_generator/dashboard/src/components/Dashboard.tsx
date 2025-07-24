@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import VirginMedalsTable from './VirginMedalsTable';
 import CreateMedalsDialog from './CreateMedalsDialog';
 import { VirginMedal, MedalStats } from '../types/medal';
@@ -8,6 +9,7 @@ import QRPreviewDialog from './QRPreviewDialog';
 import QRStudio from './QRStudio';
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [medals, setMedals] = useState<VirginMedal[]>([]);
   const [stats, setStats] = useState<MedalStats>({
     total: 0,
@@ -69,6 +71,10 @@ const Dashboard: React.FC = () => {
     setPreviewDialogOpen(true);
   };
 
+  const handleNavigateToMedalFronts = () => {
+    navigate('/creacion-de-frentes-de-medallas');
+  };
+
   const getStatusColor = (status: string) => {
     const colors: { [key: string]: string } = {
       VIRGIN: 'bg-primary-100 text-primary-800',
@@ -116,6 +122,15 @@ const Dashboard: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span>QR Studio</span>
+          </button>
+          <button
+            className="btn-secondary flex items-center space-x-2"
+            onClick={handleNavigateToMedalFronts}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>Generar Frentes de Medallas</span>
           </button>
           <button
             className="btn-secondary flex items-center space-x-2"
