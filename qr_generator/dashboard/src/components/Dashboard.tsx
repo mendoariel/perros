@@ -5,6 +5,7 @@ import { VirginMedal, MedalStats } from '../types/medal';
 import { medalService } from '../services/medalService';
 import QRPrintDialog from './QRPrintDialog';
 import QRPreviewDialog from './QRPreviewDialog';
+import QRStudio from './QRStudio';
 
 const Dashboard: React.FC = () => {
   const [medals, setMedals] = useState<VirginMedal[]>([]);
@@ -24,6 +25,7 @@ const Dashboard: React.FC = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [printDialogOpen, setPrintDialogOpen] = useState(false);
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
+  const [qrStudioOpen, setQrStudioOpen] = useState(false);
   const [selectedMedals, setSelectedMedals] = useState<VirginMedal[]>([]);
 
   const loadData = async () => {
@@ -105,6 +107,15 @@ const Dashboard: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
             <span>Crear Medallas</span>
+          </button>
+          <button
+            className="btn-secondary flex items-center space-x-2"
+            onClick={() => setQrStudioOpen(true)}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>QR Studio</span>
           </button>
           <button
             className="btn-secondary flex items-center space-x-2"
@@ -210,6 +221,11 @@ const Dashboard: React.FC = () => {
         isOpen={previewDialogOpen}
         onClose={() => setPreviewDialogOpen(false)}
         medals={selectedMedals}
+      />
+
+      <QRStudio
+        isOpen={qrStudioOpen}
+        onClose={() => setQrStudioOpen(false)}
       />
     </div>
   );
