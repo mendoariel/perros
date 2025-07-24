@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import MedalFrontsGenerator from './components/MedalFrontsGenerator';
+import QRGenerator from './components/QRGenerator';
 import './index.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
             </div>
           } />
           <Route path="/creacion-de-frentes-de-medallas" element={<MedalFrontsGenerator />} />
+          <Route path="/creacion-de-codigos-qr" element={<QRGenerator />} />
         </Routes>
       </div>
     </Router>
