@@ -16,3 +16,7 @@ MODULE_MAIL_USER=info@peludosclick.com
 MODULE_MAIL_PASS=Yamaha600
 
 ENVIRONMENT=local
+
+# Dashboard credentials
+DASHBOARD_USERNAME=admin
+DASHBOARD_PASSWORD=admin123

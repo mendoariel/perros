@@ -1,18 +1,31 @@
 {
-  "name": "qr_generator",
+  "name": "qr-generator",
   "version": "1.0.0",
-  "description": "",
+  "description": "QR Generator for Virgin Medals",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "build": "cd dashboard && npm run build",
+    "dashboard": "cd dashboard && npm start",
+    "dashboard-build": "cd dashboard && npm run build",
+    "dashboard-full": "./start-dashboard.sh",
+    "server": "node server.js",
+    "dev-server": "nodemon server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.7",
+    "qrcode": "^1.5.3",
+    "pg": "^8.11.3",
+    "dotenv": "^16.3.1",
     "hash-generator": "^0.1.0",
-    "pg": "^8.13.3",
-    "qrcode": "^1.5.4"
-  }
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": ["qr", "medals", "generator"],
+  "author": "",
+  "license": "ISC"
 }

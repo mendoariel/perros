@@ -77,6 +77,33 @@ services:
     networks:
       - app-network
 
+  qr_dashboard:
+    build: 
+      context: ./qr_generator
+      dockerfile: Dockerfile
+    container_name: qr-dashboard
+    ports:
+      - '3700:3700'
+    environment:
+      - PG_HOST=postgres
+      - PG_PORT=5432
+      - PG_USER=mendoariel
+      - PG_PASSWORD=casadesara
+      - PG_DATABASE=peludosclick
+      # API URL para el frontend del dashboard (local)
+      - REACT_APP_API_URL=http://localhost:3333
+      # Credenciales del dashboard (local)
+      - REACT_APP_DASHBOARD_USERNAME=admin
+      - REACT_APP_DASHBOARD_PASSWORD=admin123
+    depends_on: 
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./qr_generator:/app
+      - /app/node_modules
+      - /app/dashboard/node_modules
+    networks:
+      - app-network
 volumes:
   postgres_data:
     name: postgres_data_local

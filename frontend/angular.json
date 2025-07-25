@@ -166,12 +166,7 @@
             "outputPath": "dist/frontend/server",
             "main": "server.ts",
             "tsConfig": "tsconfig.server.json",
-            "inlineStyleLanguage": "scss",
-            "styles": [
-              "@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/tailwind.css",
-              "src/styles.scss"
-            ]
+            "inlineStyleLanguage": "scss"
           },
           "configurations": {
             "production": {

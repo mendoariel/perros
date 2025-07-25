@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+  qr_dashboard_production:
+    build: 
+      context: ./qr_generator
+      dockerfile: Dockerfile
+    container_name: qr-dashboard-production
+    ports:
+      - '3800:3700'
+      - '3335:3334'
+    environment:
+      # CONEXIÓN DIRECTA A BASE DE DATOS DE PRODUCCIÓN
+      - PG_HOST=67.205.144.228
+      - PG_PORT=5432
+      - PG_USER=Silvestre1993
+      - PG_PASSWORD=iendlshLANDHG423423480
+      - PG_DATABASE=peludosclick
+      # DATABASE_URL para Prisma
+      - DATABASE_URL=postgres://Silvestre1993:iendlshLANDHG423423480@67.205.144.228:5432/peludosclick?schema=public
+      # API URL para el frontend del dashboard
+      - REACT_APP_API_URL=https://api.peludosclick.com
+      # Credenciales del dashboard (producción)
+      - REACT_APP_DASHBOARD_USERNAME=admin
+      - REACT_APP_DASHBOARD_PASSWORD=admin123
+    volumes:
+      - ./qr_generator:/app
+      - /app/node_modules
+      - /app/dashboard/node_modules
+    networks:
+      - qr-network
+    restart: unless-stopped
+
+networks:
+  qr-network:
+    driver: bridge 
