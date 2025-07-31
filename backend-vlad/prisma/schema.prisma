@@ -23,6 +23,7 @@ model User {
   updatedAt            DateTime   @map("updated_at") @default(now())
   userStatus           UserStatus @map("user_status")
   medals               Medal[]
+  medalFronts          MedalFront[]
 
   @@map("users")
 }
@@ -75,4 +76,32 @@ enum UserStatus {
   ACTIVE
   PENDING
   DISABLED
+}
+
+model MedalFront {
+  id                   String     @id @default(cuid())
+  name                 String
+  description          String     @default("")
+  fileName             String     @map("file_name")
+  type                 String     // 'round' or 'square'
+  size                 Float
+  width                Float?
+  height               Float?
+  backgroundColor      String     @map("background_color")
+  logoColor            String     @map("logo_color")
+  logoSize             Float      @map("logo_size")
+  logoX                Float      @map("logo_x")
+  logoY                Float      @map("logo_y")
+  borderRadius         Float      @map("border_radius")
+  useBackgroundImage   Boolean    @map("use_background_image")
+  backgroundImage      String?    @map("background_image")
+  backgroundImageSize  Float      @map("background_image_size")
+  backgroundImageX     Float      @map("background_image_x")
+  backgroundImageY     Float      @map("background_image_y")
+  createdAt            DateTime   @map("created_at") @default(now())
+  updatedAt            DateTime   @map("updated_at") @default(now())
+  userId               Int        @map("user_id")
+  user                 User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("medal_fronts")
 }
