@@ -3,6 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import peludosLogo from '../assets/main/peludosclick-logo-mustard.svg';
 
+// Importar todas las imágenes de la carpeta colors_tag
+import stranRed from '../assets/colors_tag/stran-red.png';
+import goldenYellow from '../assets/colors_tag/golden-yellow.png';
+import safiroBlue from '../assets/colors_tag/safiro-blue.png';
+import greenMetal from '../assets/colors_tag/green-metal.png';
+import stranberrieRed from '../assets/colors_tag/stranberrie-red.png';
+import earthBlue from '../assets/colors_tag/earth-blue.png';
+import alienGreen from '../assets/colors_tag/alien-green.png';
+import goldenNice from '../assets/colors_tag/golden-nice.png';
+import readiactikGreen from '../assets/colors_tag/readiactik-green.png';
+import pinkFlamenco from '../assets/colors_tag/pink-flamenco.png';
+import greenTag from '../assets/colors_tag/green-tag.png';
+import chatgptImage from '../assets/colors_tag/ChatGPT Image 31 jul 2025, 06_27_28 p.m..png';
+import minimalista from '../assets/colors_tag/minamalista.png';
+import verde02 from '../assets/colors_tag/verde-02.png';
+import gris from '../assets/colors_tag/gris.png';
+import blanco from '../assets/colors_tag/blanco.png';
+import negro from '../assets/colors_tag/negro.png';
+import marron from '../assets/colors_tag/marron.png';
+import rosado from '../assets/colors_tag/rosado.png';
+import morado from '../assets/colors_tag/morado.png';
+import azul from '../assets/colors_tag/azul.png';
+import verde from '../assets/colors_tag/verde.png';
+import leaveGreen from '../assets/colors_tag/leave-green.png';
+import amarillo from '../assets/colors_tag/amarillo.png';
+import naranja from '../assets/colors_tag/naranja.png';
+import rojo from '../assets/colors_tag/rojo.png';
+
 interface MedalFrontConfig {
   type: 'round' | 'square';
   size: number;
@@ -14,6 +42,11 @@ interface MedalFrontConfig {
   logoX: number; // Posición X del logo
   logoY: number; // Posición Y del logo
   borderRadius: number; // Border radius para contenedores cuadrados
+  useBackgroundImage: boolean; // Nuevo: usar imagen de fondo en lugar del logo
+  backgroundImage: string | null; // Nuevo: ruta de la imagen de fondo
+  backgroundImageSize: number; // Nuevo: tamaño de la imagen de fondo
+  backgroundImageX: number; // Nuevo: posición X de la imagen de fondo
+  backgroundImageY: number; // Nuevo: posición Y de la imagen de fondo
 }
 
 interface MedalBatch {
@@ -29,6 +62,38 @@ const MedalFrontsGenerator: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [logoLoaded, setLogoLoaded] = useState(false);
   const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
+  const [backgroundImageLoaded, setBackgroundImageLoaded] = useState(false);
+  const [backgroundImageElement, setBackgroundImageElement] = useState<HTMLImageElement | null>(null);
+
+  // Array de imágenes disponibles
+  const availableImages = [
+    { name: 'Stran Red', value: stranRed },
+    { name: 'Golden Yellow', value: goldenYellow },
+    { name: 'Safiro Blue', value: safiroBlue },
+    { name: 'Green Metal', value: greenMetal },
+    { name: 'Stranberrie Red', value: stranberrieRed },
+    { name: 'Earth Blue', value: earthBlue },
+    { name: 'Alien Green', value: alienGreen },
+    { name: 'Golden Nice', value: goldenNice },
+    { name: 'Readiactik Green', value: readiactikGreen },
+    { name: 'Pink Flamenco', value: pinkFlamenco },
+    { name: 'Green Tag', value: greenTag },
+    { name: 'ChatGPT Image', value: chatgptImage },
+    { name: 'Minimalista', value: minimalista },
+    { name: 'Verde 02', value: verde02 },
+    { name: 'Gris', value: gris },
+    { name: 'Blanco', value: blanco },
+    { name: 'Negro', value: negro },
+    { name: 'Marron', value: marron },
+    { name: 'Rosado', value: rosado },
+    { name: 'Morado', value: morado },
+    { name: 'Azul', value: azul },
+    { name: 'Verde', value: verde },
+    { name: 'Leave Green', value: leaveGreen },
+    { name: 'Amarillo', value: amarillo },
+    { name: 'Naranja', value: naranja },
+    { name: 'Rojo', value: rojo }
+  ];
 
   const [config, setConfig] = useState<MedalFrontConfig>({
     type: 'round',
@@ -40,7 +105,12 @@ const MedalFrontsGenerator: React.FC = () => {
     logoSize: 20,
     logoX: 0, // Posición X del logo (centrado)
     logoY: 0, // Posición Y del logo (centrado)
-    borderRadius: 5 // Valor por defecto para border radius
+    borderRadius: 5, // Valor por defecto para border radius
+    useBackgroundImage: false, // Valor por defecto
+    backgroundImage: null, // Valor por defecto
+    backgroundImageSize: 100, // Valor por defecto
+    backgroundImageX: 0, // Valor por defecto
+    backgroundImageY: 0 // Valor por defecto
   });
 
   // Estado para configuración de PDF combinado
@@ -56,6 +126,8 @@ const MedalFrontsGenerator: React.FC = () => {
   const [currentBatchName, setCurrentBatchName] = useState('');
   const [showBatchModal, setShowBatchModal] = useState(false);
   const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
+  const [loadingBatches, setLoadingBatches] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Eliminar el estado de zoom ya que no lo necesitamos
   // const [zoom, setZoom] = useState(1);
@@ -146,33 +218,88 @@ const MedalFrontsGenerator: React.FC = () => {
     setConfig(prev => ({ ...prev, logoX: prev.logoX + 1 }));
   };
 
-  const handleLogoReset = () => {
-    setConfig(prev => ({ 
-      ...prev, 
+    const handleLogoReset = () => {
+    setConfig(prev => ({
+      ...prev,
       logoSize: 20,
       logoX: 0,
       logoY: 0
     }));
   };
 
+  // Funciones para controlar la imagen de fondo
+  const handleBackgroundImageSizeIncrease = () => {
+    setConfig(prev => ({ ...prev, backgroundImageSize: Math.min(200, prev.backgroundImageSize + 1) }));
+  };
+
+  const handleBackgroundImageSizeDecrease = () => {
+    setConfig(prev => ({ ...prev, backgroundImageSize: Math.max(10, prev.backgroundImageSize - 1) }));
+  };
+
+  const handleBackgroundImageMoveUp = () => {
+    setConfig(prev => ({ ...prev, backgroundImageY: prev.backgroundImageY - 2 }));
+  };
+
+  const handleBackgroundImageMoveDown = () => {
+    setConfig(prev => ({ ...prev, backgroundImageY: prev.backgroundImageY + 2 }));
+  };
+
+  const handleBackgroundImageMoveLeft = () => {
+    setConfig(prev => ({ ...prev, backgroundImageX: prev.backgroundImageX - 2 }));
+  };
+
+  const handleBackgroundImageMoveRight = () => {
+    setConfig(prev => ({ ...prev, backgroundImageX: prev.backgroundImageX + 2 }));
+  };
+
+  const handleBackgroundImageReset = () => {
+    setConfig(prev => ({
+      ...prev,
+      backgroundImageSize: 100,
+      backgroundImageX: 0,
+      backgroundImageY: 0
+    }));
+  };
+
+  const handleBackgroundImageChange = (imagePath: string) => {
+    setConfig(prev => ({ ...prev, backgroundImage: imagePath }));
+  };
+
+  const handleToggleBackgroundImage = () => {
+    setConfig(prev => ({ ...prev, useBackgroundImage: !prev.useBackgroundImage }));
+  };
+
   // Funciones para manejar lotes
   const saveCurrentAsBatch = () => {
-    if (!currentBatchName.trim()) return;
+    if (!currentBatchName.trim()) {
+      alert('Por favor ingresa un nombre para el lote');
+      return;
+    }
     
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      alert('Error: No se pudo generar la imagen del lote');
+      return;
+    }
 
+    const canvasData = canvas.toDataURL('image/png');
     const newBatch: MedalBatch = {
       id: Date.now().toString(),
       name: currentBatchName.trim(),
       config: { ...config },
-      quantity: 1, // Cantidad por defecto
-      canvasData: canvas.toDataURL('image/png')
+      quantity: 1,
+      canvasData: canvasData
     };
 
-    setBatches(prev => [...prev, newBatch]);
+    setBatches(prev => {
+      const newBatches = [...prev, newBatch];
+      // Guardar en localStorage
+      localStorage.setItem('medalBatches', JSON.stringify(newBatches));
+      return newBatches;
+    });
     setCurrentBatchName('');
     setShowBatchModal(false);
+    alert(`Lote "${currentBatchName.trim()}" guardado exitosamente.`);
   };
 
   const selectBatch = (batchId: string) => {
@@ -185,10 +312,72 @@ const MedalFrontsGenerator: React.FC = () => {
   };
 
   const deleteBatch = (batchId: string) => {
-    setBatches(prev => prev.filter(b => b.id !== batchId));
-    if (selectedBatchId === batchId) {
-      setSelectedBatchId(null);
+    if (window.confirm('¿Estás seguro de que quieres eliminar este lote?')) {
+      setBatches(prev => {
+        const newBatches = prev.filter(b => b.id !== batchId);
+        // Guardar en localStorage
+        localStorage.setItem('medalBatches', JSON.stringify(newBatches));
+        return newBatches;
+      });
+      if (selectedBatchId === batchId) {
+        setSelectedBatchId(null);
+      }
     }
+  };
+
+  const clearAllBatches = () => {
+    if (batches.length === 0) {
+      alert('No hay lotes para eliminar');
+      return;
+    }
+    
+    if (window.confirm(`¿Estás seguro de que quieres eliminar todos los ${batches.length} lotes guardados? Esta acción no se puede deshacer.`)) {
+      setBatches([]);
+      setSelectedBatchId(null);
+      // Limpiar localStorage
+      localStorage.removeItem('medalBatches');
+    }
+  };
+
+  const downloadBatchImage = (batch: MedalBatch) => {
+    if (!batch.canvasData) {
+      alert('Error: No hay datos de imagen para este lote');
+      return;
+    }
+
+    const link = document.createElement('a');
+    const fileName = `medal-front-${batch.name.toLowerCase().replace(/\s+/g, '-')}.png`;
+    link.download = fileName;
+    link.href = batch.canvasData;
+    link.click();
+    
+    alert(`Archivo "${fileName}" descargado exitosamente.`);
+  };
+
+  const downloadAllBatchImages = () => {
+    if (batches.length === 0) {
+      alert('No hay lotes guardados para descargar');
+      return;
+    }
+
+    const validBatches = batches.filter(batch => batch.canvasData);
+    if (validBatches.length === 0) {
+      alert('No hay lotes con imágenes válidas para descargar');
+      return;
+    }
+
+    // Descargar cada imagen con un pequeño delay para evitar problemas del navegador
+    validBatches.forEach((batch, index) => {
+      setTimeout(() => {
+        const link = document.createElement('a');
+        const fileName = `medal-front-${batch.name.toLowerCase().replace(/\s+/g, '-')}.png`;
+        link.download = fileName;
+        link.href = batch.canvasData!;
+        link.click();
+      }, index * 500); // 500ms de delay entre descargas
+    });
+
+    alert(`${validBatches.length} archivos se están descargando. Por favor espera un momento.`);
   };
 
   const generateCombinedPDF = async () => {
@@ -355,7 +544,11 @@ const MedalFrontsGenerator: React.FC = () => {
 
   const drawMedalFront = () => {
     const canvas = canvasRef.current;
-    if (!canvas || !logoImage) return;
+    if (!canvas) return;
+    
+    // Verificar que tengamos el logo o la imagen de fondo cargada
+    if (!config.useBackgroundImage && !logoImage) return;
+    if (config.useBackgroundImage && !backgroundImageElement) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -400,42 +593,52 @@ const MedalFrontsGenerator: React.FC = () => {
       ctx.clip();
     }
 
-    // Dibujar el logo de PeludosClick
-    const logoSize = config.logoSize * scale;
-    const logoX = (displayWidth / 2 - logoSize / 2) + (config.logoX * scale);
-    const logoY = (displayHeight / 2 - logoSize / 2) + (config.logoY * scale);
+    // Dibujar el logo de PeludosClick o la imagen de fondo
+    if (config.useBackgroundImage && backgroundImageElement) {
+      // Dibujar imagen de fondo
+      const imageSize = config.backgroundImageSize * scale;
+      const imageX = (displayWidth / 2 - imageSize / 2) + (config.backgroundImageX * scale);
+      const imageY = (displayHeight / 2 - imageSize / 2) + (config.backgroundImageY * scale);
+      
+      ctx.drawImage(backgroundImageElement, imageX, imageY, imageSize, imageSize);
+    } else if (logoImage) {
+      // Dibujar el logo de PeludosClick
+      const logoSize = config.logoSize * scale;
+      const logoX = (displayWidth / 2 - logoSize / 2) + (config.logoX * scale);
+      const logoY = (displayHeight / 2 - logoSize / 2) + (config.logoY * scale);
 
-    // Crear un canvas temporal para cambiar el color del logo
-    const tempCanvas = document.createElement('canvas');
-    const tempCtx = tempCanvas.getContext('2d');
-    if (tempCtx) {
-      tempCanvas.width = logoSize;
-      tempCanvas.height = logoSize;
+      // Crear un canvas temporal para cambiar el color del logo
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      if (tempCtx) {
+        tempCanvas.width = logoSize;
+        tempCanvas.height = logoSize;
 
-      // Dibujar el logo original
-      tempCtx.drawImage(logoImage, 0, 0, logoSize, logoSize);
+        // Dibujar el logo original
+        tempCtx.drawImage(logoImage, 0, 0, logoSize, logoSize);
 
-      // Obtener los datos de la imagen
-      const imageData = tempCtx.getImageData(0, 0, logoSize, logoSize);
-      const data = imageData.data;
+        // Obtener los datos de la imagen
+        const imageData = tempCtx.getImageData(0, 0, logoSize, logoSize);
+        const data = imageData.data;
 
-      // Cambiar el color del logo
-      const targetColor = hexToRgb(config.logoColor);
-      if (targetColor) {
-        for (let i = 0; i < data.length; i += 4) {
-          // Si el píxel no es transparente (alpha > 0)
-          if (data[i + 3] > 0) {
-            data[i] = targetColor.r;     // Red
-            data[i + 1] = targetColor.g; // Green
-            data[i + 2] = targetColor.b; // Blue
-            // Mantener el alpha original
+        // Cambiar el color del logo
+        const targetColor = hexToRgb(config.logoColor);
+        if (targetColor) {
+          for (let i = 0; i < data.length; i += 4) {
+            // Si el píxel no es transparente (alpha > 0)
+            if (data[i + 3] > 0) {
+              data[i] = targetColor.r;     // Red
+              data[i + 1] = targetColor.g; // Green
+              data[i + 2] = targetColor.b; // Blue
+              // Mantener el alpha original
+            }
           }
+          tempCtx.putImageData(imageData, 0, 0);
         }
-        tempCtx.putImageData(imageData, 0, 0);
-      }
 
-      // Dibujar el logo con el color cambiado en el canvas principal
-      ctx.drawImage(tempCanvas, logoX, logoY);
+        // Dibujar el logo con el color cambiado en el canvas principal
+        ctx.drawImage(tempCanvas, logoX, logoY);
+      }
     }
 
     ctx.restore();
@@ -443,9 +646,38 @@ const MedalFrontsGenerator: React.FC = () => {
 
   // Función auxiliar para generar canvas de medalla con border radius
   const generateMedalCanvas = async (batchConfig: MedalFrontConfig): Promise<string> => {
-    if (!logoImage) {
+    // Para esta función, necesitamos cargar la imagen de fondo si se está usando
+    let batchBackgroundImage: HTMLImageElement | null = null;
+    
+    if (batchConfig.useBackgroundImage && batchConfig.backgroundImage) {
+      // Cargar la imagen de fondo para este batch específico
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          batchBackgroundImage = img;
+          generateCanvasWithImage(batchConfig, batchBackgroundImage, resolve, reject);
+        };
+        img.onerror = () => {
+          reject(new Error('Error cargando imagen de fondo para el batch'));
+        };
+        img.src = batchConfig.backgroundImage!;
+      });
+    } else if (!logoImage) {
       throw new Error('Logo no cargado');
+    } else {
+      // Para el caso del logo, crear una promesa que resuelva directamente
+      return new Promise((resolve, reject) => {
+        generateCanvasWithImage(batchConfig, null, resolve, reject);
+      });
     }
+  };
+
+  const generateCanvasWithImage = (
+    batchConfig: MedalFrontConfig, 
+    batchBackgroundImage: HTMLImageElement | null,
+    resolve: (value: string) => void,
+    reject: (reason: any) => void
+  ) => {
 
     // Crear canvas temporal
     const tempCanvas = document.createElement('canvas');
@@ -492,48 +724,58 @@ const MedalFrontsGenerator: React.FC = () => {
       ctx.clip();
     }
 
-    // Dibujar el logo de PeludosClick
-    const logoSize = batchConfig.logoSize * scale;
-    const logoX = (displayWidth / 2 - logoSize / 2) + (batchConfig.logoX * scale);
-    const logoY = (displayHeight / 2 - logoSize / 2) + (batchConfig.logoY * scale);
+    // Dibujar el logo de PeludosClick o la imagen de fondo
+    if (batchConfig.useBackgroundImage && batchBackgroundImage) {
+      // Dibujar imagen de fondo
+      const imageSize = batchConfig.backgroundImageSize * scale;
+      const imageX = (displayWidth / 2 - imageSize / 2) + (batchConfig.backgroundImageX * scale);
+      const imageY = (displayHeight / 2 - imageSize / 2) + (batchConfig.backgroundImageY * scale);
+      
+      ctx.drawImage(batchBackgroundImage, imageX, imageY, imageSize, imageSize);
+    } else if (logoImage) {
+      // Dibujar el logo de PeludosClick
+      const logoSize = batchConfig.logoSize * scale;
+      const logoX = (displayWidth / 2 - logoSize / 2) + (batchConfig.logoX * scale);
+      const logoY = (displayHeight / 2 - logoSize / 2) + (batchConfig.logoY * scale);
 
-    // Crear un canvas temporal para cambiar el color del logo
-    const logoCanvas = document.createElement('canvas');
-    const logoCtx = logoCanvas.getContext('2d');
-    if (logoCtx) {
-      logoCanvas.width = logoSize;
-      logoCanvas.height = logoSize;
+      // Crear un canvas temporal para cambiar el color del logo
+      const logoCanvas = document.createElement('canvas');
+      const logoCtx = logoCanvas.getContext('2d');
+      if (logoCtx) {
+        logoCanvas.width = logoSize;
+        logoCanvas.height = logoSize;
 
-      // Dibujar el logo original
-      logoCtx.drawImage(logoImage, 0, 0, logoSize, logoSize);
+        // Dibujar el logo original
+        logoCtx.drawImage(logoImage, 0, 0, logoSize, logoSize);
 
-      // Obtener los datos de la imagen
-      const imageData = logoCtx.getImageData(0, 0, logoSize, logoSize);
-      const data = imageData.data;
+        // Obtener los datos de la imagen
+        const imageData = logoCtx.getImageData(0, 0, logoSize, logoSize);
+        const data = imageData.data;
 
-      // Cambiar el color del logo
-      const targetColor = hexToRgb(batchConfig.logoColor);
-      if (targetColor) {
-        for (let i = 0; i < data.length; i += 4) {
-          // Si el píxel no es transparente (alpha > 0)
-          if (data[i + 3] > 0) {
-            data[i] = targetColor.r;     // Red
-            data[i + 1] = targetColor.g; // Green
-            data[i + 2] = targetColor.b; // Blue
-            // Mantener el alpha original
+        // Cambiar el color del logo
+        const targetColor = hexToRgb(batchConfig.logoColor);
+        if (targetColor) {
+          for (let i = 0; i < data.length; i += 4) {
+            // Si el píxel no es transparente (alpha > 0)
+            if (data[i + 3] > 0) {
+              data[i] = targetColor.r;     // Red
+              data[i + 1] = targetColor.g; // Green
+              data[i + 2] = targetColor.b; // Blue
+              // Mantener el alpha original
+            }
           }
+          logoCtx.putImageData(imageData, 0, 0);
         }
-        logoCtx.putImageData(imageData, 0, 0);
-      }
 
-      // Dibujar el logo con el color cambiado en el canvas principal
-      ctx.drawImage(logoCanvas, logoX, logoY);
+        // Dibujar el logo con el color cambiado en el canvas principal
+        ctx.drawImage(logoCanvas, logoX, logoY);
+      }
     }
 
     ctx.restore();
 
     // Retornar los datos del canvas como data URL
-    return tempCanvas.toDataURL('image/png');
+    resolve(tempCanvas.toDataURL('image/png'));
   };
 
   const hexToRgb = (hex: string) => {
@@ -558,12 +800,49 @@ const MedalFrontsGenerator: React.FC = () => {
     img.src = peludosLogo;
   }, []);
 
-  // Redibujar cuando cambie la configuración o se cargue el logo
+  // Cargar la imagen de fondo cuando se seleccione
   useEffect(() => {
-    if (logoLoaded && logoImage) {
+    if (config.useBackgroundImage && config.backgroundImage) {
+      const img = new Image();
+      img.onload = () => {
+        setBackgroundImageElement(img);
+        setBackgroundImageLoaded(true);
+      };
+      img.onerror = () => {
+        console.error('Error loading background image');
+        setBackgroundImageLoaded(false);
+      };
+      img.src = config.backgroundImage;
+    } else {
+      setBackgroundImageLoaded(false);
+      setBackgroundImageElement(null);
+    }
+  }, [config.useBackgroundImage, config.backgroundImage]);
+
+  // Redibujar cuando cambie la configuración o se cargue el logo/imagen de fondo
+  useEffect(() => {
+    if ((logoLoaded && logoImage) || (config.useBackgroundImage && backgroundImageLoaded && backgroundImageElement)) {
       drawMedalFront();
     }
-  }, [config, logoLoaded, logoImage]);
+  }, [config, logoLoaded, logoImage, backgroundImageLoaded, backgroundImageElement]);
+
+  // Cargar lotes desde localStorage al montar el componente
+  useEffect(() => {
+    loadBatchesFromLocalStorage();
+  }, []);
+
+  // Función para cargar lotes desde localStorage
+  const loadBatchesFromLocalStorage = () => {
+    try {
+      const savedBatches = localStorage.getItem('medalBatches');
+      if (savedBatches) {
+        const parsedBatches = JSON.parse(savedBatches);
+        setBatches(parsedBatches);
+      }
+    } catch (error) {
+      console.error('Error cargando lotes desde localStorage:', error);
+    }
+  };
 
   const getColorName = (colorValue: string) => {
     const color = availableColors.find(c => c.value === colorValue);
@@ -854,13 +1133,83 @@ const MedalFrontsGenerator: React.FC = () => {
                 />
               </div>
 
+              {/* Toggle para usar imagen de fondo */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Usar Imagen de Fondo
+                  </label>
+                  <button
+                    onClick={handleToggleBackgroundImage}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      config.useBackgroundImage ? 'bg-blue-600' : 'bg-gray-200'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        config.useBackgroundImage ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {config.useBackgroundImage ? 'Activado: Usar imagen de fondo' : 'Desactivado: Usar logo'}
+                </p>
+              </div>
+
+              {/* Selector de Imagen de Fondo */}
+              {config.useBackgroundImage && (
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Seleccionar Imagen de Fondo
+                  </label>
+                  <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto">
+                    {availableImages.map((image) => (
+                      <button
+                        key={image.value}
+                        onClick={() => handleBackgroundImageChange(image.value)}
+                        className={`w-16 h-16 rounded-lg border-2 transition-all overflow-hidden ${
+                          config.backgroundImage === image.value
+                            ? 'border-blue-500 scale-110'
+                            : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                        title={image.name}
+                      >
+                        <img
+                          src={image.value}
+                          alt={image.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tamaño de la Imagen de Fondo */}
+              {config.useBackgroundImage && config.backgroundImage && (
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tamaño de la Imagen: {config.backgroundImageSize}%
+                  </label>
+                  <input
+                    type="range"
+                    min="10"
+                    max="200"
+                    value={config.backgroundImageSize}
+                    onChange={(e) => setConfig(prev => ({ ...prev, backgroundImageSize: parseInt(e.target.value) }))}
+                    className="w-full"
+                  />
+                </div>
+              )}
+
               {/* Botones de Lotes */}
               <div className="space-y-2">
                 <button
                   onClick={() => setShowBatchModal(true)}
-                  disabled={!logoLoaded}
+                  disabled={!logoLoaded && !(config.useBackgroundImage && backgroundImageLoaded)}
                   className={`w-full font-medium py-3 px-4 rounded-lg transition-colors ${
-                    logoLoaded 
+                    (logoLoaded || (config.useBackgroundImage && backgroundImageLoaded))
                       ? 'bg-purple-600 hover:bg-purple-700 text-white' 
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
@@ -892,9 +1241,31 @@ const MedalFrontsGenerator: React.FC = () => {
                 <li>• <strong>Medalla Redonda:</strong> 35mm de diámetro</li>
                 <li>• <strong>Medalla Cuadrada:</strong> 22mm de lado</li>
                 <li>• Los colores están basados en la paleta oficial de PeludosClick</li>
-                <li>• El logo es el oficial de PeludosClick</li>
+                <li>• Puedes usar el logo oficial o imágenes de fondo personalizadas</li>
+                <li>• Las imágenes de fondo se pueden escalar y mover libremente</li>
                 <li>• Guarda tus diseños como lotes para generar PDFs combinados</li>
+                <li>• <strong>Nuevo:</strong> Los lotes se guardan en el servidor</li>
+                <li>• Los lotes persisten entre recargas y dispositivos</li>
+                <li>• Puedes descargar los frentes como archivos PNG cuando los necesites</li>
               </ul>
+            </div>
+
+            {/* Estado de Autenticación */}
+            <div className={`border rounded-lg p-4 ${isAuthenticated ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
+              <div className="flex items-center">
+                <div className={`w-3 h-3 rounded-full mr-3 ${isAuthenticated ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+                <div>
+                  <h4 className={`font-semibold ${isAuthenticated ? 'text-green-900' : 'text-yellow-900'}`}>
+                    {isAuthenticated ? '✅ Conectado al Servidor' : '⚠️ Modo Local'}
+                  </h4>
+                  <p className={`text-sm ${isAuthenticated ? 'text-green-800' : 'text-yellow-800'}`}>
+                    {isAuthenticated 
+                      ? 'Los lotes se guardan en el servidor y persisten entre dispositivos.'
+                      : 'Los lotes se guardan localmente. Inicia sesión para guardar en el servidor.'
+                    }
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -906,7 +1277,7 @@ const MedalFrontsGenerator: React.FC = () => {
               </h3>
               
               <div className="flex flex-col items-center min-h-96 bg-gray-100 rounded-lg p-4">
-                {logoLoaded ? (
+                {(logoLoaded || (config.useBackgroundImage && backgroundImageLoaded)) ? (
                   <div className="flex flex-col items-center">
                     <div className="relative mb-4">
                       <canvas
@@ -1024,6 +1395,107 @@ const MedalFrontsGenerator: React.FC = () => {
                         Posición: X: {config.logoX}, Y: {config.logoY}
                       </div>
                     </div>
+
+                    {/* Controles de Imagen de Fondo */}
+                    {config.useBackgroundImage && config.backgroundImage && (
+                      <div className="mt-6 space-y-3">
+                        <div className="text-center">
+                          <h4 className="text-sm font-medium text-gray-700 mb-2">Controles de la Imagen de Fondo</h4>
+                        </div>
+                        
+                        {/* Tamaño de la Imagen de Fondo */}
+                        <div className="flex justify-center items-center space-x-2">
+                          <button
+                            onClick={handleBackgroundImageSizeDecrease}
+                            disabled={config.backgroundImageSize <= 10}
+                            className={`p-2 rounded-lg border transition-colors ${
+                              config.backgroundImageSize <= 10
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-300'
+                            }`}
+                            title="Reducir tamaño de la imagen"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                            </svg>
+                          </button>
+                          
+                          <span className="px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-medium">
+                            {config.backgroundImageSize}%
+                          </span>
+                          
+                          <button
+                            onClick={handleBackgroundImageSizeIncrease}
+                            className="p-2 rounded-lg bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 transition-colors"
+                            title="Aumentar tamaño de la imagen"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                          </button>
+                        </div>
+
+                        {/* Posición de la Imagen de Fondo */}
+                        <div className="grid grid-cols-3 gap-2">
+                          <div></div>
+                          <button
+                            onClick={handleBackgroundImageMoveUp}
+                            className="p-2 rounded-lg bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 transition-colors"
+                            title="Mover imagen hacia arriba"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                            </svg>
+                          </button>
+                          <div></div>
+                          
+                          <button
+                            onClick={handleBackgroundImageMoveLeft}
+                            className="p-2 rounded-lg bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 transition-colors"
+                            title="Mover imagen hacia la izquierda"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                          </button>
+                          
+                          <button
+                            onClick={handleBackgroundImageReset}
+                            className="p-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors text-xs font-medium"
+                            title="Resetear posición y tamaño de la imagen"
+                          >
+                            Reset
+                          </button>
+                          
+                          <button
+                            onClick={handleBackgroundImageMoveRight}
+                            className="p-2 rounded-lg bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 transition-colors"
+                            title="Mover imagen hacia la derecha"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+                          
+                          <div></div>
+                          <button
+                            onClick={handleBackgroundImageMoveDown}
+                            className="p-2 rounded-lg bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 transition-colors"
+                            title="Mover imagen hacia abajo"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                          <div></div>
+                        </div>
+
+                        {/* Información de posición de la imagen */}
+                        <div className="text-center text-xs text-gray-500">
+                          Posición Imagen: X: {config.backgroundImageX}, Y: {config.backgroundImageY}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="text-center text-gray-500">
@@ -1056,24 +1528,65 @@ const MedalFrontsGenerator: React.FC = () => {
                   </div>
                 </div>
                 <div className="bg-gray-50 p-3 rounded">
-                  <div className="font-medium text-gray-900">Color del Logo</div>
+                  <div className="font-medium text-gray-900">
+                    {config.useBackgroundImage ? 'Imagen de Fondo' : 'Color del Logo'}
+                  </div>
                   <div className="flex items-center">
-                    <div 
-                      className="w-4 h-4 rounded mr-2 border border-gray-300"
-                      style={{ backgroundColor: config.logoColor }}
-                    ></div>
-                    <span className="text-gray-600">{getColorName(config.logoColor)}</span>
+                    {config.useBackgroundImage ? (
+                      <span className="text-gray-600">
+                        {config.backgroundImage ? 'Seleccionada' : 'No seleccionada'}
+                      </span>
+                    ) : (
+                      <>
+                        <div 
+                          className="w-4 h-4 rounded mr-2 border border-gray-300"
+                          style={{ backgroundColor: config.logoColor }}
+                        ></div>
+                        <span className="text-gray-600">{getColorName(config.logoColor)}</span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Lotes Guardados */}
-            {batches.length > 0 && (
+            {loadingBatches ? (
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Lotes Guardados ({batches.length})
-                </h3>
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  <span className="ml-3 text-gray-600">Cargando lotes guardados...</span>
+                </div>
+              </div>
+            ) : batches.length > 0 ? (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Lotes Guardados ({batches.length})
+                  </h3>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={downloadAllBatchImages}
+                      className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-1"
+                      title="Descargar todos los frentes"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <span>Descargar Todos</span>
+                    </button>
+                    <button
+                      onClick={clearAllBatches}
+                      className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-1"
+                      title="Eliminar todos los lotes"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      <span>Limpiar Todo</span>
+                    </button>
+                  </div>
+                </div>
                 
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {batches.map((batch) => (
@@ -1094,24 +1607,48 @@ const MedalFrontsGenerator: React.FC = () => {
                               batch.config.type === 'round' 
                                 ? `${batch.config.size}mm` 
                                 : `${batch.config.width}×${batch.config.height}mm`
-                            }
+                            } • {batch.config.useBackgroundImage ? 'Imagen' : 'Logo'}
                           </div>
                         </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteBatch(batch.id);
-                          }}
-                          className="text-red-500 hover:text-red-700 p-1"
-                          title="Eliminar lote"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
+                        <div className="flex space-x-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              downloadBatchImage(batch);
+                            }}
+                            className="text-blue-500 hover:text-blue-700 p-1"
+                            title="Descargar imagen del frente"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteBatch(batch.id);
+                            }}
+                            className="text-red-500 hover:text-red-700 p-1"
+                            title="Eliminar lote"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+                <div className="text-center py-8 text-gray-500">
+                  <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  <p className="text-lg font-medium">No hay lotes guardados</p>
+                  <p className="text-sm">Crea y guarda tu primer diseño como lote para verlo aquí</p>
                 </div>
               </div>
             )}
@@ -1147,9 +1684,19 @@ const MedalFrontsGenerator: React.FC = () => {
                 <ul className="text-sm text-gray-600 space-y-1">
                   <li>• Tipo: {config.type} ({config.type === 'round' ? `${config.size}mm` : `${config.width}×${config.height}mm`})</li>
                   <li>• Color de fondo: {getColorName(config.backgroundColor)}</li>
-                  <li>• Color del logo: {getColorName(config.logoColor)}</li>
-                  <li>• Tamaño del logo: {config.logoSize}px</li>
-                  <li>• Posición: X: {config.logoX}, Y: {config.logoY}</li>
+                  {config.useBackgroundImage ? (
+                    <>
+                      <li>• Imagen de fondo: {config.backgroundImage ? 'Seleccionada' : 'No seleccionada'}</li>
+                      <li>• Tamaño de imagen: {config.backgroundImageSize}%</li>
+                      <li>• Posición imagen: X: {config.backgroundImageX}, Y: {config.backgroundImageY}</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>• Color del logo: {getColorName(config.logoColor)}</li>
+                      <li>• Tamaño del logo: {config.logoSize}px</li>
+                      <li>• Posición logo: X: {config.logoX}, Y: {config.logoY}</li>
+                    </>
+                  )}
                   <li>• Cantidad: {combinedPdfConfig.batchQuantities[selectedBatchId || ''] || 0} unidades</li>
                 </ul>
               </div>
