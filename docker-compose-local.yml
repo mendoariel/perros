@@ -9,11 +9,13 @@ services:
     command: npm run start-ssr
     ports:
       - '4100:4100'
+      - '9876:9876'
     environment:
       - NODE_ENV=development
       - PORT=4100
       - HOST=0.0.0.0
       - BACKEND_URL=http://localhost:3333
+      - CHROME_BIN=/usr/bin/chromium
     volumes:
       - ./frontend:/app
       - /app/node_modules

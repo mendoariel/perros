@@ -2,6 +2,7 @@ import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, Ht
 import { DashboardService } from './dashboard.service';
 import { DashboardAuthGuard } from './guards/dashboard-auth.guard';
 import { Public } from '../common/decorators';
+import { SaveMedalFrontDto } from './dto/save-medal-front.dto';
 
 @Controller('dashboard')
 @UseGuards(DashboardAuthGuard)
@@ -141,5 +142,56 @@ export class DashboardController {
       message: 'Test endpoint working',
       timestamp: new Date().toISOString()
     };
+  }
+
+  // ===== FRENTES DE MEDALLAS =====
+
+  // Obtener todos los frentes de medallas
+  @Public()
+  @Get('front-medals')
+  async getMedalFronts() {
+    try {
+      return await this.dashboardService.getMedalFronts();
+    } catch (error) {
+      throw new HttpException('Error al obtener frentes de medallas', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // Guardar un nuevo frente de medalla
+  @Public()
+  @Post('front-medals')
+  async saveMedalFront(@Body() dto: SaveMedalFrontDto) {
+    try {
+      if (!dto.name) {
+        throw new HttpException('Nombre es requerido', HttpStatus.BAD_REQUEST);
+      }
+      
+      return await this.dashboardService.saveMedalFront(dto);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException('Error al guardar frente de medalla', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // Eliminar un frente de medalla
+  @Public()
+  @Delete('front-medals/:id')
+  async deleteMedalFront(@Param('id') id: string) {
+    try {
+      return await this.dashboardService.deleteMedalFront(id);
+    } catch (error) {
+      throw new HttpException('Error al eliminar frente de medalla', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // Obtener un frente de medalla específico
+  @Public()
+  @Get('front-medals/:id')
+  async getMedalFront(@Param('id') id: string) {
+    try {
+      return await this.dashboardService.getMedalFront(id);
+    } catch (error) {
+      throw new HttpException('Error al obtener frente de medalla', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 } 
