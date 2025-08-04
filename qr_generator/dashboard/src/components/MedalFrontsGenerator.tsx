@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
+import axios from 'axios';
 import peludosLogo from '../assets/main/peludosclick-logo-mustard.svg';
 
 // Importar todas las imágenes de la carpeta colors_tag
@@ -30,6 +31,37 @@ import leaveGreen from '../assets/colors_tag/leave-green.png';
 import amarillo from '../assets/colors_tag/amarillo.png';
 import naranja from '../assets/colors_tag/naranja.png';
 import rojo from '../assets/colors_tag/rojo.png';
+
+// Importar imágenes adicionales con diferentes formatos
+import banderaDiversidad from '../assets/colors_tag/bandera-de-la-diversidad-150-cm-x-90-cm-001-243133915.jpg';
+import grupoAbstracto from '../assets/colors_tag/grupo-abstracto-de-logotipo-de-la-diversidad-de-las-hojas-92698458-569390954.jpg';
+import magicNeon from '../assets/colors_tag/pngtree-magic-neon-sign-mystic-devil-spiritual-photo-image_37697364-420262324.jpg';
+import simboloMistico from '../assets/colors_tag/8791703-vector-simbolo-mistico-espiritual-tatuagem-simbolo-ilustracao-de-simbolos-religiosos-espirituais-guerreiros-e-armas-setas-ou-dardos-bruxaria-oculto-alquimia-misterioso-vintage-vetor-827253756.jpg';
+import banderaBrasil from '../assets/colors_tag/bandera-de-brasil-actual-3675639151.jpg';
+import piramideDesierto from '../assets/colors_tag/ilustracion-concepto-piramide-desierto_114360-19375-3044162972.jpg';
+import piramideGiza from '../assets/colors_tag/majestuosidad-gran-piramide-giza-16-1800250375.webp';
+import piramideEgipcia from '../assets/colors_tag/piramide-egipcia-desierto-arena-creada-ia-generativa_514344-1822-3253713645.jpg';
+import simboloEgipcio from '../assets/colors_tag/simbolo-egipcio-ra-ilustracion-vectorial_505980-1936-2062277745.jpg';
+import fotosEgipcios from '../assets/colors_tag/Fotos-Descubra-o-Poder-dos-Simbolos-Egipcios-723522491.webp';
+import tatuajesEgipcios from '../assets/colors_tag/tatuajes-egipcios-qlv8zwhio8hchyng2ve03k8sfi99vf9kaxksa2w842-906396985.jpg';
+import simbolosEgipcios from '../assets/colors_tag/simbolos-egipcios-antiguos-eps_961038-70253-2984640012.jpg';
+import ojoHorus from '../assets/colors_tag/thr-eye-of-horus-1000x675-1-3084637528.jpg';
+import uroboros from '../assets/colors_tag/Úroboros-Símbolos-Egipcios-Antiguos-Egypt-Tours-Portal-3038958117.jpg';
+import simbologiaEgipcia from '../assets/colors_tag/Simbologia-Egipcia-3174087699.jpg';
+import simboloMaya from '../assets/colors_tag/imagen-maya-escritura-simbolos-586-2657172711.webp';
+import mapaMesoamerica from '../assets/colors_tag/detallado-mapa-antigua-mesoamerica-1-2953539650.webp';
+import selvaExuberante from '../assets/colors_tag/escena-selva-exuberante-poesia-2229317535.webp';
+import antillasPrecolombinas from '../assets/colors_tag/detalle-antillas-precolombinas-simbolos-534132865.webp';
+import banderaCorea from '../assets/colors_tag/ilustracao-de-coreia-sul-bandeira_53876-27132-3050846403.jpg';
+import dragonChino from '../assets/colors_tag/dragon-chino-2749210709.jpg';
+import murcielagoChino from '../assets/colors_tag/simbologia-murcielago-para-los-chinos-600x600-4277015975.jpg';
+import tigreChino from '../assets/colors_tag/tiger-euroresidentes-2128893900.jpg';
+import toriiJapones from '../assets/colors_tag/20090522152505-torii-shintoism-2502884425.jpg';
+import paisajeJapones from '../assets/colors_tag/caricatura-tradicional-paisajes-japoneses-colores-negro-rojo_257123-27496-1492655238.jpg';
+import mascaraJaponesa from '../assets/colors_tag/máscara-tradicional-japonesa-roja-blanca-dibujada-a-mano-sobre-fondo-rojo-4198976467.jpg';
+import florJaponesa from '../assets/colors_tag/flor-roja-estilo-japones-simbolo-decorativo-naturaleza-aislado-sobre-fondo-blanco_176411-7928-153968365.jpg';
+import kamon from '../assets/colors_tag/kamon-3255120827.jpg';
+import toriiMadera from '../assets/colors_tag/madera-roja-japonesa-tradicional-torii-gate-d-renderizado-puerta-de-sobre-fondo-blanco-representando-312419306-943680673.jpg';
 
 interface MedalFrontConfig {
   type: 'round' | 'square';
@@ -64,36 +96,91 @@ const MedalFrontsGenerator: React.FC = () => {
   const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
   const [backgroundImageLoaded, setBackgroundImageLoaded] = useState(false);
   const [backgroundImageElement, setBackgroundImageElement] = useState<HTMLImageElement | null>(null);
-
-  // Array de imágenes disponibles
+  // Array de imágenes disponibles organizadas por categorías
   const availableImages = [
-    { name: 'Stran Red', value: stranRed },
-    { name: 'Golden Yellow', value: goldenYellow },
-    { name: 'Safiro Blue', value: safiroBlue },
-    { name: 'Green Metal', value: greenMetal },
-    { name: 'Stranberrie Red', value: stranberrieRed },
-    { name: 'Earth Blue', value: earthBlue },
-    { name: 'Alien Green', value: alienGreen },
-    { name: 'Golden Nice', value: goldenNice },
-    { name: 'Readiactik Green', value: readiactikGreen },
-    { name: 'Pink Flamenco', value: pinkFlamenco },
-    { name: 'Green Tag', value: greenTag },
-    { name: 'ChatGPT Image', value: chatgptImage },
-    { name: 'Minimalista', value: minimalista },
-    { name: 'Verde 02', value: verde02 },
-    { name: 'Gris', value: gris },
-    { name: 'Blanco', value: blanco },
-    { name: 'Negro', value: negro },
-    { name: 'Marron', value: marron },
-    { name: 'Rosado', value: rosado },
-    { name: 'Morado', value: morado },
-    { name: 'Azul', value: azul },
-    { name: 'Verde', value: verde },
-    { name: 'Leave Green', value: leaveGreen },
-    { name: 'Amarillo', value: amarillo },
-    { name: 'Naranja', value: naranja },
-    { name: 'Rojo', value: rojo }
+    // Categoría: Colores Básicos (PNG)
+    { name: 'Stran Red', value: stranRed, category: 'Colores Básicos' },
+    { name: 'Golden Yellow', value: goldenYellow, category: 'Colores Básicos' },
+    { name: 'Safiro Blue', value: safiroBlue, category: 'Colores Básicos' },
+    { name: 'Green Metal', value: greenMetal, category: 'Colores Básicos' },
+    { name: 'Stranberrie Red', value: stranberrieRed, category: 'Colores Básicos' },
+    { name: 'Earth Blue', value: earthBlue, category: 'Colores Básicos' },
+    { name: 'Alien Green', value: alienGreen, category: 'Colores Básicos' },
+    { name: 'Golden Nice', value: goldenNice, category: 'Colores Básicos' },
+    { name: 'Readiactik Green', value: readiactikGreen, category: 'Colores Básicos' },
+    { name: 'Pink Flamenco', value: pinkFlamenco, category: 'Colores Básicos' },
+    { name: 'Green Tag', value: greenTag, category: 'Colores Básicos' },
+    { name: 'ChatGPT Image', value: chatgptImage, category: 'Colores Básicos' },
+    { name: 'Minimalista', value: minimalista, category: 'Colores Básicos' },
+    { name: 'Verde 02', value: verde02, category: 'Colores Básicos' },
+    { name: 'Gris', value: gris, category: 'Colores Básicos' },
+    { name: 'Blanco', value: blanco, category: 'Colores Básicos' },
+    { name: 'Negro', value: negro, category: 'Colores Básicos' },
+    { name: 'Marron', value: marron, category: 'Colores Básicos' },
+    { name: 'Rosado', value: rosado, category: 'Colores Básicos' },
+    { name: 'Morado', value: morado, category: 'Colores Básicos' },
+    { name: 'Azul', value: azul, category: 'Colores Básicos' },
+    { name: 'Verde', value: verde, category: 'Colores Básicos' },
+    { name: 'Leave Green', value: leaveGreen, category: 'Colores Básicos' },
+    { name: 'Amarillo', value: amarillo, category: 'Colores Básicos' },
+    { name: 'Naranja', value: naranja, category: 'Colores Básicos' },
+    { name: 'Rojo', value: rojo, category: 'Colores Básicos' },
+    
+    // Categoría: Diversidad e Inclusión
+    { name: 'Bandera Diversidad', value: banderaDiversidad, category: 'Diversidad' },
+    { name: 'Grupo Abstracto', value: grupoAbstracto, category: 'Diversidad' },
+    
+    // Categoría: Místico y Espiritual
+    { name: 'Magic Neon', value: magicNeon, category: 'Místico' },
+    { name: 'Símbolo Místico', value: simboloMistico, category: 'Místico' },
+    
+    // Categoría: Banderas Nacionales
+    { name: 'Bandera Brasil', value: banderaBrasil, category: 'Banderas' },
+    { name: 'Bandera Corea', value: banderaCorea, category: 'Banderas' },
+    
+    // Categoría: Egipto Antiguo
+    { name: 'Pirámide Desierto', value: piramideDesierto, category: 'Egipto' },
+    { name: 'Pirámide Giza', value: piramideGiza, category: 'Egipto' },
+    { name: 'Pirámide Egipcia', value: piramideEgipcia, category: 'Egipto' },
+    { name: 'Símbolo Egipcio', value: simboloEgipcio, category: 'Egipto' },
+    { name: 'Fotos Egipcios', value: fotosEgipcios, category: 'Egipto' },
+    { name: 'Tatuajes Egipcios', value: tatuajesEgipcios, category: 'Egipto' },
+    { name: 'Símbolos Egipcios', value: simbolosEgipcios, category: 'Egipto' },
+    { name: 'Ojo de Horus', value: ojoHorus, category: 'Egipto' },
+    { name: 'Uroboros', value: uroboros, category: 'Egipto' },
+    { name: 'Simbología Egipcia', value: simbologiaEgipcia, category: 'Egipto' },
+    
+    // Categoría: Culturas Precolombinas
+    { name: 'Símbolo Maya', value: simboloMaya, category: 'Precolombino' },
+    { name: 'Mapa Mesoamérica', value: mapaMesoamerica, category: 'Precolombino' },
+    { name: 'Selva Exuberante', value: selvaExuberante, category: 'Precolombino' },
+    { name: 'Antillas Precolombinas', value: antillasPrecolombinas, category: 'Precolombino' },
+    
+    // Categoría: Cultura China
+    { name: 'Dragón Chino', value: dragonChino, category: 'China' },
+    { name: 'Murciélago Chino', value: murcielagoChino, category: 'China' },
+    { name: 'Tigre Chino', value: tigreChino, category: 'China' },
+    
+    // Categoría: Cultura Japonesa
+    { name: 'Torii Japonés', value: toriiJapones, category: 'Japón' },
+    { name: 'Paisaje Japonés', value: paisajeJapones, category: 'Japón' },
+    { name: 'Máscara Japonesa', value: mascaraJaponesa, category: 'Japón' },
+    { name: 'Flor Japonesa', value: florJaponesa, category: 'Japón' },
+    { name: 'Kamon', value: kamon, category: 'Japón' },
+    { name: 'Torii Madera', value: toriiMadera, category: 'Japón' }
   ];
+
+  const [selectedCategory, setSelectedCategory] = useState<string>('Todas');
+  const [backgroundColorCollapsed, setBackgroundColorCollapsed] = useState(true);
+  const [logoColorCollapsed, setLogoColorCollapsed] = useState(true);
+
+  // Obtener categorías únicas
+  const categories = ['Todas', ...Array.from(new Set(availableImages.map(img => img.category)))];
+
+  // Filtrar imágenes por categoría seleccionada
+  const filteredImages = selectedCategory === 'Todas' 
+    ? availableImages 
+    : availableImages.filter(img => img.category === selectedCategory);
 
   const [config, setConfig] = useState<MedalFrontConfig>({
     type: 'round',
@@ -269,37 +356,75 @@ const MedalFrontsGenerator: React.FC = () => {
     setConfig(prev => ({ ...prev, useBackgroundImage: !prev.useBackgroundImage }));
   };
 
-  // Funciones para manejar lotes
-  const saveCurrentAsBatch = () => {
+  // Configuración de axios para el backend
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
+  
+  const getAuthHeaders = () => {
+    const username = 'admin';
+    const password = 'admin123';
+    const credentials = btoa(`${username}:${password}`);
+    return {
+      'Authorization': `Basic ${credentials}`,
+      'Content-Type': 'application/json',
+    };
+  };
+
+  // Funciones para manejar lotes con el backend
+  const saveCurrentAsBatch = async () => {
     if (!currentBatchName.trim()) {
       alert('Por favor ingresa un nombre para el lote');
       return;
     }
     
-    const canvas = canvasRef.current;
-    if (!canvas) {
-      alert('Error: No se pudo generar la imagen del lote');
-      return;
+    try {
+      const medalFrontData = {
+        name: currentBatchName.trim(),
+        description: '',
+        type: config.type,
+        size: config.size,
+        width: config.width,
+        height: config.height,
+        backgroundColor: config.backgroundColor,
+        logoColor: config.logoColor,
+        logoSize: config.logoSize,
+        logoX: config.logoX,
+        logoY: config.logoY,
+        borderRadius: config.borderRadius,
+        useBackgroundImage: config.useBackgroundImage,
+        backgroundImage: config.backgroundImage,
+        backgroundImageSize: config.backgroundImageSize,
+        backgroundImageX: config.backgroundImageX,
+        backgroundImageY: config.backgroundImageY
+      };
+
+      const response = await axios.post(
+        `${API_BASE_URL}/dashboard/front-medals`,
+        medalFrontData,
+        { headers: getAuthHeaders() }
+      );
+
+      if (response.data.success) {
+        // Agregar el nuevo lote a la lista local
+        const newBatch: MedalBatch = {
+          id: response.data.medalFront.id,
+          name: currentBatchName.trim(),
+          config: { ...config },
+          quantity: 1
+        };
+
+        setBatches(prev => [...prev, newBatch]);
+        setCurrentBatchName('');
+        setShowBatchModal(false);
+        alert(`Lote "${currentBatchName.trim()}" guardado exitosamente en el servidor.`);
+      }
+    } catch (error: any) {
+      console.error('Error guardando lote:', error);
+      if (error.response?.status === 400) {
+        alert('Error en los datos enviados: ' + (error.response.data?.message || 'Datos inválidos'));
+      } else {
+        alert('Error al guardar el lote en el servidor. Inténtalo de nuevo.');
+      }
     }
-
-    const canvasData = canvas.toDataURL('image/png');
-    const newBatch: MedalBatch = {
-      id: Date.now().toString(),
-      name: currentBatchName.trim(),
-      config: { ...config },
-      quantity: 1,
-      canvasData: canvasData
-    };
-
-    setBatches(prev => {
-      const newBatches = [...prev, newBatch];
-      // Guardar en localStorage
-      localStorage.setItem('medalBatches', JSON.stringify(newBatches));
-      return newBatches;
-    });
-    setCurrentBatchName('');
-    setShowBatchModal(false);
-    alert(`Lote "${currentBatchName.trim()}" guardado exitosamente.`);
   };
 
   const selectBatch = (batchId: string) => {
@@ -311,73 +436,95 @@ const MedalFrontsGenerator: React.FC = () => {
     }
   };
 
-  const deleteBatch = (batchId: string) => {
+  const deleteBatch = async (batchId: string) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este lote?')) {
-      setBatches(prev => {
-        const newBatches = prev.filter(b => b.id !== batchId);
-        // Guardar en localStorage
-        localStorage.setItem('medalBatches', JSON.stringify(newBatches));
-        return newBatches;
-      });
-      if (selectedBatchId === batchId) {
-        setSelectedBatchId(null);
+      try {
+        const response = await axios.delete(
+          `${API_BASE_URL}/dashboard/front-medals/${batchId}`,
+          { headers: getAuthHeaders() }
+        );
+
+        if (response.data.success) {
+          setBatches(prev => prev.filter(b => b.id !== batchId));
+          if (selectedBatchId === batchId) {
+            setSelectedBatchId(null);
+          }
+          alert('Lote eliminado exitosamente del servidor.');
+        }
+      } catch (error: any) {
+        console.error('Error eliminando lote:', error);
+        alert('Error al eliminar el lote del servidor. Inténtalo de nuevo.');
       }
     }
   };
 
-  const clearAllBatches = () => {
+  const clearAllBatches = async () => {
     if (batches.length === 0) {
       alert('No hay lotes para eliminar');
       return;
     }
     
     if (window.confirm(`¿Estás seguro de que quieres eliminar todos los ${batches.length} lotes guardados? Esta acción no se puede deshacer.`)) {
-      setBatches([]);
-      setSelectedBatchId(null);
-      // Limpiar localStorage
-      localStorage.removeItem('medalBatches');
+      try {
+        // Eliminar todos los lotes uno por uno
+        const deletePromises = batches.map(batch => 
+          axios.delete(`${API_BASE_URL}/dashboard/front-medals/${batch.id}`, { headers: getAuthHeaders() })
+        );
+        
+        await Promise.all(deletePromises);
+        
+        setBatches([]);
+        setSelectedBatchId(null);
+        alert('Todos los lotes han sido eliminados exitosamente del servidor.');
+      } catch (error: any) {
+        console.error('Error eliminando lotes:', error);
+        alert('Error al eliminar algunos lotes del servidor. Inténtalo de nuevo.');
+      }
     }
   };
 
-  const downloadBatchImage = (batch: MedalBatch) => {
-    if (!batch.canvasData) {
-      alert('Error: No hay datos de imagen para este lote');
-      return;
+  const downloadBatchImage = async (batch: MedalBatch) => {
+    try {
+      // Generar la imagen usando la configuración del lote
+      const canvasData = await generateMedalCanvas(batch.config);
+      
+      const link = document.createElement('a');
+      const fileName = `medal-front-${batch.name.toLowerCase().replace(/\s+/g, '-')}.png`;
+      link.download = fileName;
+      link.href = canvasData;
+      link.click();
+      
+      alert(`Archivo "${fileName}" descargado exitosamente.`);
+    } catch (error) {
+      console.error('Error generando imagen del lote:', error);
+      alert('Error al generar la imagen del lote. Inténtalo de nuevo.');
     }
-
-    const link = document.createElement('a');
-    const fileName = `medal-front-${batch.name.toLowerCase().replace(/\s+/g, '-')}.png`;
-    link.download = fileName;
-    link.href = batch.canvasData;
-    link.click();
-    
-    alert(`Archivo "${fileName}" descargado exitosamente.`);
   };
 
-  const downloadAllBatchImages = () => {
+  const downloadAllBatchImages = async () => {
     if (batches.length === 0) {
       alert('No hay lotes guardados para descargar');
       return;
     }
 
-    const validBatches = batches.filter(batch => batch.canvasData);
-    if (validBatches.length === 0) {
-      alert('No hay lotes con imágenes válidas para descargar');
-      return;
+    try {
+      // Descargar cada imagen con un pequeño delay para evitar problemas del navegador
+      for (let i = 0; i < batches.length; i++) {
+        const batch = batches[i];
+        setTimeout(async () => {
+          try {
+            await downloadBatchImage(batch);
+          } catch (error) {
+            console.error(`Error descargando lote ${batch.name}:`, error);
+          }
+        }, i * 500); // 500ms entre cada descarga
+      }
+
+      alert(`${batches.length} archivos se están descargando. Por favor espera un momento.`);
+    } catch (error) {
+      console.error('Error iniciando descargas:', error);
+      alert('Error al iniciar las descargas. Inténtalo de nuevo.');
     }
-
-    // Descargar cada imagen con un pequeño delay para evitar problemas del navegador
-    validBatches.forEach((batch, index) => {
-      setTimeout(() => {
-        const link = document.createElement('a');
-        const fileName = `medal-front-${batch.name.toLowerCase().replace(/\s+/g, '-')}.png`;
-        link.download = fileName;
-        link.href = batch.canvasData!;
-        link.click();
-      }, index * 500); // 500ms de delay entre descargas
-    });
-
-    alert(`${validBatches.length} archivos se están descargando. Por favor espera un momento.`);
   };
 
   const generateCombinedPDF = async () => {
@@ -828,10 +975,51 @@ const MedalFrontsGenerator: React.FC = () => {
 
   // Cargar lotes desde localStorage al montar el componente
   useEffect(() => {
-    loadBatchesFromLocalStorage();
+    loadBatchesFromBackend();
   }, []);
 
-  // Función para cargar lotes desde localStorage
+  // Función para cargar lotes desde el backend
+  const loadBatchesFromBackend = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/dashboard/front-medals`,
+        { headers: getAuthHeaders() }
+      );
+
+      if (response.data.success) {
+        const backendBatches = response.data.medalFronts.map((medalFront: any) => ({
+          id: medalFront.id,
+          name: medalFront.name,
+          config: {
+            type: medalFront.type,
+            size: medalFront.size,
+            width: medalFront.width,
+            height: medalFront.height,
+            backgroundColor: medalFront.backgroundColor,
+            logoColor: medalFront.logoColor,
+            logoSize: medalFront.logoSize,
+            logoX: medalFront.logoX,
+            logoY: medalFront.logoY,
+            borderRadius: medalFront.borderRadius,
+            useBackgroundImage: medalFront.useBackgroundImage,
+            backgroundImage: medalFront.backgroundImage,
+            backgroundImageSize: medalFront.backgroundImageSize,
+            backgroundImageX: medalFront.backgroundImageX,
+            backgroundImageY: medalFront.backgroundImageY
+          },
+          quantity: 1
+        }));
+        
+        setBatches(backendBatches);
+      }
+    } catch (error: any) {
+      console.error('Error cargando lotes desde el backend:', error);
+      // Si falla, intentar cargar desde localStorage como fallback
+      loadBatchesFromLocalStorage();
+    }
+  };
+
+  // Función para cargar lotes desde localStorage (fallback)
   const loadBatchesFromLocalStorage = () => {
     try {
       const savedBatches = localStorage.getItem('medalBatches');
@@ -1076,46 +1264,104 @@ const MedalFrontsGenerator: React.FC = () => {
 
               {/* Color de Fondo */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Color de Fondo: {getColorName(config.backgroundColor)}
-                </label>
-                <div className="grid grid-cols-4 gap-2">
-                  {availableColors.map((color) => (
-                    <button
-                      key={color.value}
-                      onClick={() => setConfig(prev => ({ ...prev, backgroundColor: color.value }))}
-                      className={`w-12 h-12 rounded-lg border-2 transition-all ${
-                        config.backgroundColor === color.value
-                          ? 'border-blue-500 scale-110'
-                          : 'border-gray-300 hover:border-gray-400'
-                      }`}
-                      style={{ backgroundColor: color.value }}
-                      title={color.name}
-                    />
-                  ))}
-                </div>
+                <button
+                  onClick={() => setBackgroundColorCollapsed(!backgroundColorCollapsed)}
+                  className="flex items-center justify-between w-full text-left p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+                >
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">
+                      Color de Fondo: {getColorName(config.backgroundColor)}
+                    </span>
+                    <div className="flex items-center mt-1">
+                      <div 
+                        className="w-4 h-4 rounded border border-gray-300 mr-2"
+                        style={{ backgroundColor: config.backgroundColor }}
+                      />
+                      <span className="text-xs text-gray-500">{config.backgroundColor}</span>
+                    </div>
+                  </div>
+                  <svg
+                    className={`w-5 h-5 text-gray-500 transition-transform ${
+                      backgroundColorCollapsed ? 'rotate-0' : 'rotate-180'
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {!backgroundColorCollapsed && (
+                  <div className="mt-3 p-3 bg-white border border-gray-200 rounded-lg">
+                    <div className="grid grid-cols-4 gap-2">
+                      {availableColors.map((color) => (
+                        <button
+                          key={color.value}
+                          onClick={() => setConfig(prev => ({ ...prev, backgroundColor: color.value }))}
+                          className={`w-12 h-12 rounded-lg border-2 transition-all ${
+                            config.backgroundColor === color.value
+                              ? 'border-blue-500 scale-110'
+                              : 'border-gray-300 hover:border-gray-400'
+                          }`}
+                          style={{ backgroundColor: color.value }}
+                          title={color.name}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Color del Logo */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Color del Logo: {getColorName(config.logoColor)}
-                </label>
-                <div className="grid grid-cols-4 gap-2">
-                  {availableColors.map((color) => (
-                    <button
-                      key={color.value}
-                      onClick={() => setConfig(prev => ({ ...prev, logoColor: color.value }))}
-                      className={`w-12 h-12 rounded-lg border-2 transition-all ${
-                        config.logoColor === color.value
-                          ? 'border-blue-500 scale-110'
-                          : 'border-gray-300 hover:border-gray-400'
-                      }`}
-                      style={{ backgroundColor: color.value }}
-                      title={color.name}
-                    />
-                  ))}
-                </div>
+                <button
+                  onClick={() => setLogoColorCollapsed(!logoColorCollapsed)}
+                  className="flex items-center justify-between w-full text-left p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+                >
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">
+                      Color del Logo: {getColorName(config.logoColor)}
+                    </span>
+                    <div className="flex items-center mt-1">
+                      <div 
+                        className="w-4 h-4 rounded border border-gray-300 mr-2"
+                        style={{ backgroundColor: config.logoColor }}
+                      />
+                      <span className="text-xs text-gray-500">{config.logoColor}</span>
+                    </div>
+                  </div>
+                  <svg
+                    className={`w-5 h-5 text-gray-500 transition-transform ${
+                      logoColorCollapsed ? 'rotate-0' : 'rotate-180'
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {!logoColorCollapsed && (
+                  <div className="mt-3 p-3 bg-white border border-gray-200 rounded-lg">
+                    <div className="grid grid-cols-4 gap-2">
+                      {availableColors.map((color) => (
+                        <button
+                          key={color.value}
+                          onClick={() => setConfig(prev => ({ ...prev, logoColor: color.value }))}
+                          className={`w-12 h-12 rounded-lg border-2 transition-all ${
+                            config.logoColor === color.value
+                              ? 'border-blue-500 scale-110'
+                              : 'border-gray-300 hover:border-gray-400'
+                          }`}
+                          style={{ backgroundColor: color.value }}
+                          title={color.name}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Tamaño del Logo */}
@@ -1163,8 +1409,25 @@ const MedalFrontsGenerator: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Seleccionar Imagen de Fondo
                   </label>
+                  
+                  {/* Selector de Categorías */}
+                  <div className="mb-3">
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {categories.map((category) => (
+                        <option key={category} value={category}>
+                          {category} ({category === 'Todas' ? availableImages.length : availableImages.filter(img => img.category === category).length})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  {/* Grid de Imágenes */}
                   <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto">
-                    {availableImages.map((image) => (
+                    {filteredImages.map((image) => (
                       <button
                         key={image.value}
                         onClick={() => handleBackgroundImageChange(image.value)}
@@ -1173,7 +1436,7 @@ const MedalFrontsGenerator: React.FC = () => {
                             ? 'border-blue-500 scale-110'
                             : 'border-gray-300 hover:border-gray-400'
                         }`}
-                        title={image.name}
+                        title={`${image.name} (${image.category})`}
                       >
                         <img
                           src={image.value}
@@ -1183,6 +1446,11 @@ const MedalFrontsGenerator: React.FC = () => {
                       </button>
                     ))}
                   </div>
+                  
+                  {/* Información de formatos soportados */}
+                  <p className="text-xs text-gray-500 mt-2">
+                    Formatos soportados: PNG, JPG, JPEG, WEBP, GIF
+                  </p>
                 </div>
               )}
 
@@ -1242,10 +1510,11 @@ const MedalFrontsGenerator: React.FC = () => {
                 <li>• <strong>Medalla Cuadrada:</strong> 22mm de lado</li>
                 <li>• Los colores están basados en la paleta oficial de PeludosClick</li>
                 <li>• Puedes usar el logo oficial o imágenes de fondo personalizadas</li>
+                <li>• <strong>Nuevo:</strong> Soporte para múltiples formatos: PNG, JPG, WEBP, GIF</li>
+                <li>• <strong>Nuevo:</strong> Imágenes organizadas por categorías culturales</li>
                 <li>• Las imágenes de fondo se pueden escalar y mover libremente</li>
                 <li>• Guarda tus diseños como lotes para generar PDFs combinados</li>
-                <li>• <strong>Nuevo:</strong> Los lotes se guardan en el servidor</li>
-                <li>• Los lotes persisten entre recargas y dispositivos</li>
+                <li>• Los lotes se guardan en el servidor y persisten entre recargas</li>
                 <li>• Puedes descargar los frentes como archivos PNG cuando los necesites</li>
               </ul>
             </div>
