@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { randomBytes } from 'crypto';
-import { SaveMedalFrontDto } from './dto/save-medal-front.dto';
+import { SaveMedalFrontDto } from './dto';
 
 @Injectable()
 export class DashboardService {

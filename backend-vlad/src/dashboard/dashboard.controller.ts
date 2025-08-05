@@ -2,7 +2,7 @@ import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, Ht
 import { DashboardService } from './dashboard.service';
 import { DashboardAuthGuard } from './guards/dashboard-auth.guard';
 import { Public } from '../common/decorators';
-import { SaveMedalFrontDto } from './dto/save-medal-front.dto';
+import { SaveMedalFrontDto } from './dto';
 
 @Controller('dashboard')
 @UseGuards(DashboardAuthGuard)
