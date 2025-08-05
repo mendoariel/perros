@@ -1,0 +1,1 @@
+export * from './save-medal-front.dto'; 
