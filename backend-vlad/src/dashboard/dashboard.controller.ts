@@ -1,18 +1,17 @@
 import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
-import { DashboardAuthGuard } from './guards/dashboard-auth.guard';
+import { AtGuard } from '../common/guards/at.guard';
 import { Public } from '../common/decorators';
 import { SaveMedalFrontDto } from './dto';
 
 @Controller('dashboard')
-@UseGuards(DashboardAuthGuard)
+@UseGuards(AtGuard)
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {
     console.log('DashboardController initialized');
   }
 
   // Obtener todas las medallas virgin
-  @Public()
   @Get('virgin-medals')
   async getVirginMedals() {
     try {
@@ -23,7 +22,6 @@ export class DashboardController {
   }
 
   // Obtener estadísticas
-  @Public()
   @Get('stats')
   async getStats() {
     try {
@@ -34,7 +32,6 @@ export class DashboardController {
   }
 
   // Crear nuevas medallas virgin
-  @Public()
   @Post('virgin-medals/create')
   async createVirginMedals(@Body() body: { quantity: number; registerHash: string }) {
     try {
@@ -54,7 +51,6 @@ export class DashboardController {
   }
 
   // Actualizar estado de una medalla
-  @Public()
   @Patch('virgin-medals/:id/status')
   async updateMedalStatus(@Param('id') id: string, @Body() body: { status: string }) {
     try {
@@ -71,7 +67,6 @@ export class DashboardController {
   }
 
   // Eliminar medalla
-  @Public()
   @Delete('virgin-medals/:id')
   async deleteMedal(@Param('id') id: string) {
     try {
@@ -82,7 +77,6 @@ export class DashboardController {
   }
 
   // Obtener medallas específicas para generar QR
-  @Public()
   @Post('virgin-medals/get-for-qr')
   async getMedalsForQR(@Body() body: { medalIds: number[] }) {
     try {
@@ -104,7 +98,6 @@ export class DashboardController {
   }
 
   // Obtener medallas virgin por cantidad para generar QR
-  @Public()
   @Post('virgin-medals/get-virgin-for-qr')
   async getVirginMedalsForQR(@Body() body: { quantity: number }) {
     try {
@@ -122,7 +115,6 @@ export class DashboardController {
   }
 
   // Health check para el dashboard
-  @Public()
   @Get('health')
   async healthCheck() {
     console.log('Health check endpoint called');
@@ -134,7 +126,6 @@ export class DashboardController {
   }
 
   // Test endpoint sin autenticación
-  @Public()
   @Get('test')
   async testEndpoint() {
     console.log('Test endpoint called');
@@ -147,7 +138,6 @@ export class DashboardController {
   // ===== FRENTES DE MEDALLAS =====
 
   // Obtener todos los frentes de medallas
-  @Public()
   @Get('front-medals')
   async getMedalFronts() {
     try {
@@ -158,7 +148,6 @@ export class DashboardController {
   }
 
   // Guardar un nuevo frente de medalla
-  @Public()
   @Post('front-medals')
   async saveMedalFront(@Body() dto: SaveMedalFrontDto) {
     try {
@@ -174,7 +163,6 @@ export class DashboardController {
   }
 
   // Eliminar un frente de medalla
-  @Public()
   @Delete('front-medals/:id')
   async deleteMedalFront(@Param('id') id: string) {
     try {
@@ -185,7 +173,6 @@ export class DashboardController {
   }
 
   // Obtener un frente de medalla específico
-  @Public()
   @Get('front-medals/:id')
   async getMedalFront(@Param('id') id: string) {
     try {
