@@ -11,6 +11,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 import { PeludosclickFooterComponent } from 'src/app/shared/components/peludosclick-footer/peludosclick-footer.component';
 import { PetsGridComponent } from 'src/app/shared/components/pets-grid/pets-grid.component';
+import { HomePartnerListComponent } from 'src/app/shared/components/home-partner-list/home-partner-list.component';
 
 @Component({
   selector: 'app-wellcome',
@@ -20,7 +21,8 @@ import { PetsGridComponent } from 'src/app/shared/components/pets-grid/pets-grid
     MaterialModule,
     FirstNavbarComponent,
     PeludosclickFooterComponent,
-    PetsGridComponent
+    PetsGridComponent,
+    HomePartnerListComponent
   ],
   templateUrl: './wellcome.component.html',
   styleUrls: ['./wellcome.component.scss']

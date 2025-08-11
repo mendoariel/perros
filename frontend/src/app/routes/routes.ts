@@ -16,6 +16,8 @@ import { PetFormComponent } from "../pages/pet-form/pet-form.component";
 import { ConfirmMedalComponent } from "../pages/confirm-medal/confirm-medal.component";
 import { PetFromHomeComponent } from "../pages/pet-from-home/pet-from-home.component";
 import { HomeComponent } from "../pages/home/home.component";
+import { PartnersComponent } from "../pages/partners/partners.component";
+import { PartnerDetailComponent } from "../pages/partner-detail/partner-detail.component";
 
 export const routes: Route[] = [
     {
@@ -75,6 +77,14 @@ export const routes: Route[] = [
         path: 'mascota-publica/:medalString',
         component: PetFromHomeComponent
         
+    },
+    {
+        path: 'partners',
+        component: PartnersComponent
+    },
+    {
+        path: 'partner/:id',
+        component: PartnerDetailComponent
     },
     {
         path: 'login',

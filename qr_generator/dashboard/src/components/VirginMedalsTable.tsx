@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { VirginMedal } from '../types/medal';
+import { Medal } from '../types/dashboard';
 
 interface VirginMedalsTableProps {
-  medals: VirginMedal[];
-  onPrintQR: (medals: VirginMedal[]) => void;
-  onPreviewQR: (medals: VirginMedal[]) => void;
+  medals: Medal[];
+  onPrintQR: (medals: Medal[]) => void;
+  onPreviewQR: (medals: Medal[]) => void;
   onRefresh: () => void;
 }
 
@@ -17,7 +17,7 @@ const VirginMedalsTable: React.FC<VirginMedalsTableProps> = ({
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(25);
-  const [sortField, setSortField] = useState<keyof VirginMedal>('createdAt');
+  const [sortField, setSortField] = useState<keyof Medal>('createdAt');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const getStatusColor = (status: string) => {
@@ -34,7 +34,7 @@ const VirginMedalsTable: React.FC<VirginMedalsTableProps> = ({
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const handleSort = (field: keyof VirginMedal) => {
+  const handleSort = (field: keyof Medal) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -95,7 +95,7 @@ const VirginMedalsTable: React.FC<VirginMedalsTableProps> = ({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentPageMedals = sortedMedals.slice(startIndex, startIndex + itemsPerPage);
 
-  const SortIcon = ({ field }: { field: keyof VirginMedal }) => {
+  const SortIcon = ({ field }: { field: keyof Medal }) => {
     if (sortField !== field) {
       return <span className="text-gray-400">↕</span>;
     }
