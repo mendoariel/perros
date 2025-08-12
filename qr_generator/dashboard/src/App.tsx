@@ -5,6 +5,7 @@ import GenericDashboard from './components/GenericDashboard';
 import PartnersManagement from './components/PartnersManagement';
 import MedalFrontsGenerator from './components/MedalFrontsGenerator';
 import QRGenerator from './components/QRGenerator';
+import MedallasPredefinidas from './components/MedallasPredefinidas';
 import { NavigationItem } from './types/dashboard';
 import './index.css';
 
@@ -43,6 +44,14 @@ const navigationItems: NavigationItem[] = [
     color: 'bg-purple-500'
   },
   {
+    id: 'medallas-predefinidas',
+    title: 'Medallas Predefinidas',
+    path: '/medallas-predefinidas',
+    icon: 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z',
+    description: 'Combinaciones de colores predefinidas',
+    color: 'bg-pink-500'
+  },
+  {
     id: 'qr-generator',
     title: 'Generador de QR',
     path: '/creacion-de-codigos-qr',
@@ -64,6 +73,7 @@ function App() {
             <Route path="/medallas" element={<GenericDashboard />} />
             <Route path="/partners" element={<PartnersManagement />} />
             <Route path="/creacion-de-frentes-de-medallas" element={<MedalFrontsGenerator />} />
+            <Route path="/medallas-predefinidas" element={<MedallasPredefinidas />} />
             <Route path="/creacion-de-codigos-qr" element={<QRGenerator />} />
           </Routes>
         </div>
