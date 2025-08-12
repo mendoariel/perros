@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import axios from 'axios';
 import peludosLogo from '../assets/main/peludosclick-logo-mustard.svg';
+import { authService } from '../services/authService';
+import { MEDAL_COLOR_PRESETS, MedalColorPreset } from '../config/medal-color-presets';
 
 // Importar todas las imágenes de la carpeta colors_tag
 import stranRed from '../assets/colors_tag/stran-red.png';
@@ -184,14 +186,14 @@ const MedalFrontsGenerator: React.FC = () => {
 
   const [config, setConfig] = useState<MedalFrontConfig>({
     type: 'round',
-    size: 35,
-    width: 35, // Para rectángulos
-    height: 35, // Para rectángulos
+    size: 29,
+    width: 29, // Para rectángulos
+    height: 29, // Para rectángulos
     backgroundColor: '#006455',
     logoColor: '#FFD700',
-    logoSize: 20,
+    logoSize: 46,
     logoX: 0, // Posición X del logo (centrado)
-    logoY: 0, // Posición Y del logo (centrado)
+    logoY: 5, // Posición Y del logo
     borderRadius: 5, // Valor por defecto para border radius
     useBackgroundImage: false, // Valor por defecto
     backgroundImage: null, // Valor por defecto
@@ -250,9 +252,9 @@ const MedalFrontsGenerator: React.FC = () => {
     setConfig(prev => ({
       ...prev,
       type,
-      size: type === 'round' ? 35 : 22,
-      width: type === 'round' ? 35 : 22,
-      height: type === 'round' ? 35 : 22
+      size: type === 'round' ? 29 : 22,
+      width: type === 'round' ? 29 : 22,
+      height: type === 'round' ? 29 : 22
     }));
   };
 
@@ -308,9 +310,9 @@ const MedalFrontsGenerator: React.FC = () => {
     const handleLogoReset = () => {
     setConfig(prev => ({
       ...prev,
-      logoSize: 20,
+      logoSize: 46,
       logoX: 0,
-      logoY: 0
+      logoY: 5
     }));
   };
 
@@ -358,16 +360,6 @@ const MedalFrontsGenerator: React.FC = () => {
 
   // Configuración de axios para el backend
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
-  
-  const getAuthHeaders = () => {
-    const username = 'admin';
-    const password = 'admin123';
-    const credentials = btoa(`${username}:${password}`);
-    return {
-      'Authorization': `Basic ${credentials}`,
-      'Content-Type': 'application/json',
-    };
-  };
 
   // Funciones para manejar lotes con el backend
   const saveCurrentAsBatch = async () => {
@@ -400,7 +392,7 @@ const MedalFrontsGenerator: React.FC = () => {
       const response = await axios.post(
         `${API_BASE_URL}/dashboard/front-medals`,
         medalFrontData,
-        { headers: getAuthHeaders() }
+        { headers: authService.getAuthHeaders() }
       );
 
       if (response.data.success) {
@@ -441,7 +433,7 @@ const MedalFrontsGenerator: React.FC = () => {
       try {
         const response = await axios.delete(
           `${API_BASE_URL}/dashboard/front-medals/${batchId}`,
-          { headers: getAuthHeaders() }
+          { headers: authService.getAuthHeaders() }
         );
 
         if (response.data.success) {
@@ -468,7 +460,7 @@ const MedalFrontsGenerator: React.FC = () => {
       try {
         // Eliminar todos los lotes uno por uno
         const deletePromises = batches.map(batch => 
-          axios.delete(`${API_BASE_URL}/dashboard/front-medals/${batch.id}`, { headers: getAuthHeaders() })
+          axios.delete(`${API_BASE_URL}/dashboard/front-medals/${batch.id}`, { headers: authService.getAuthHeaders() })
         );
         
         await Promise.all(deletePromises);
@@ -975,7 +967,17 @@ const MedalFrontsGenerator: React.FC = () => {
 
   // Cargar lotes desde localStorage al montar el componente
   useEffect(() => {
-    loadBatchesFromBackend();
+    const initializeAuth = async () => {
+      try {
+        await authService.initialize();
+        await loadBatchesFromBackend();
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        loadBatchesFromLocalStorage();
+      }
+    };
+    
+    initializeAuth();
   }, []);
 
   // Función para cargar lotes desde el backend
@@ -983,7 +985,7 @@ const MedalFrontsGenerator: React.FC = () => {
     try {
       const response = await axios.get(
         `${API_BASE_URL}/dashboard/front-medals`,
-        { headers: getAuthHeaders() }
+        { headers: authService.getAuthHeaders() }
       );
 
       if (response.data.success) {
@@ -1010,7 +1012,35 @@ const MedalFrontsGenerator: React.FC = () => {
           quantity: 1
         }));
         
-        setBatches(backendBatches);
+        // Si no hay batches en el backend, agregar los presets predefinidos
+        if (backendBatches.length === 0) {
+          const defaultBatches = MEDAL_COLOR_PRESETS.map((preset: MedalColorPreset) => ({
+            id: `preset-${preset.id}`,
+            name: preset.name,
+            config: {
+              type: 'round' as const,
+              size: 29,
+              width: 29,
+              height: 29,
+              backgroundColor: preset.exteriorHex,
+              logoColor: preset.interiorHex,
+              logoSize: 46,
+              logoX: 0,
+              logoY: 5,
+              borderRadius: 5,
+              useBackgroundImage: false,
+              backgroundImage: null,
+              backgroundImageSize: 100,
+              backgroundImageX: 0,
+              backgroundImageY: 0
+            },
+            quantity: 1
+          }));
+          
+          setBatches(defaultBatches);
+        } else {
+          setBatches(backendBatches);
+        }
       }
     } catch (error: any) {
       console.error('Error cargando lotes desde el backend:', error);
@@ -1026,10 +1056,122 @@ const MedalFrontsGenerator: React.FC = () => {
       if (savedBatches) {
         const parsedBatches = JSON.parse(savedBatches);
         setBatches(parsedBatches);
+      } else {
+        // Si no hay batches guardados, crear los presets predefinidos
+        createDefaultBatches();
       }
     } catch (error) {
       console.error('Error cargando lotes desde localStorage:', error);
+      // Si hay error, crear los presets predefinidos
+      createDefaultBatches();
     }
+  };
+
+  // Función para crear los batches predefinidos con las combinaciones de colores
+  const createDefaultBatches = () => {
+    const defaultBatches = MEDAL_COLOR_PRESETS.map((preset: MedalColorPreset) => ({
+      id: `preset-${preset.id}`,
+      name: preset.name,
+      config: {
+        type: 'round' as const,
+        size: 29,
+        width: 29,
+        height: 29,
+        backgroundColor: preset.exteriorHex,
+        logoColor: preset.interiorHex,
+        logoSize: 46,
+        logoX: 0,
+        logoY: 5,
+        borderRadius: 5,
+        useBackgroundImage: false,
+        backgroundImage: null,
+        backgroundImageSize: 100,
+        backgroundImageX: 0,
+        backgroundImageY: 0
+      },
+      quantity: 1
+    }));
+    
+    setBatches(defaultBatches);
+    // Guardar en localStorage para futuras sesiones
+    localStorage.setItem('medalBatches', JSON.stringify(defaultBatches));
+  };
+
+  // Función para crear un batch desde un preset de color
+  const createBatchFromPreset = (preset: MedalColorPreset) => {
+    const newBatch: MedalBatch = {
+      id: `preset-${preset.id}-${Date.now()}`, // ID único
+      name: preset.name,
+      config: {
+        type: 'round',
+        size: 29,
+        width: 29,
+        height: 29,
+        backgroundColor: preset.exteriorHex,
+        logoColor: preset.interiorHex,
+        logoSize: 46,
+        logoX: 0,
+        logoY: 5,
+        borderRadius: 5,
+        useBackgroundImage: false,
+        backgroundImage: null,
+        backgroundImageSize: 100,
+        backgroundImageX: 0,
+        backgroundImageY: 0
+      },
+      quantity: 1
+    };
+
+    // Agregar a la lista de batches
+    setBatches(prev => [...prev, newBatch]);
+    
+    // Guardar en localStorage
+    const updatedBatches = [...batches, newBatch];
+    localStorage.setItem('medalBatches', JSON.stringify(updatedBatches));
+    
+    // Seleccionar el nuevo batch
+    setSelectedBatchId(newBatch.id);
+    setConfig(newBatch.config);
+    
+    alert(`Lote "${preset.name}" creado exitosamente.`);
+  };
+
+
+
+  // Función para obtener todos los lotes incluyendo presets
+  const getAllBatchesWithPresets = () => {
+    const presetBatches = MEDAL_COLOR_PRESETS.map((preset: MedalColorPreset) => ({
+      id: `preset-${preset.id}`,
+      name: preset.name,
+      config: {
+        type: 'round' as const,
+        size: 29,
+        width: 29,
+        height: 29,
+        backgroundColor: preset.exteriorHex,
+        logoColor: preset.interiorHex,
+        logoSize: 46,
+        logoX: 0,
+        logoY: 5,
+        borderRadius: 5,
+        useBackgroundImage: false,
+        backgroundImage: null,
+        backgroundImageSize: 100,
+        backgroundImageX: 0,
+        backgroundImageY: 0
+      },
+      quantity: 1,
+      isPreset: true,
+      preset: preset
+    }));
+
+    const existingBatches = batches.map(batch => ({
+      ...batch,
+      isPreset: false,
+      preset: null
+    }));
+
+    return [...presetBatches, ...existingBatches];
   };
 
   const getColorName = (colorValue: string) => {
@@ -1294,6 +1436,58 @@ const MedalFrontsGenerator: React.FC = () => {
                 
                 {!backgroundColorCollapsed && (
                   <div className="mt-3 p-3 bg-white border border-gray-200 rounded-lg">
+                    {/* Campo de entrada de texto para color personalizado */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Color Personalizado (Hex)
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="text"
+                          value={config.backgroundColor}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            setConfig(prev => ({ ...prev, backgroundColor: value }));
+                          }}
+                          onBlur={(e) => {
+                            const value = e.target.value;
+                            if (!value || value === '') {
+                              setConfig(prev => ({ ...prev, backgroundColor: '#000000' }));
+                              return;
+                            }
+                            if (!value.match(/^#[0-9A-Fa-f]{6}$/)) {
+                              // Si no es un hex válido, intentar arreglarlo
+                              let fixedValue = value;
+                              if (!value.startsWith('#')) {
+                                fixedValue = '#' + value;
+                              }
+                              if (fixedValue.length < 7) {
+                                fixedValue = fixedValue + '0'.repeat(7 - fixedValue.length);
+                              }
+                              if (fixedValue.length > 7) {
+                                fixedValue = fixedValue.substring(0, 7);
+                              }
+                              setConfig(prev => ({ ...prev, backgroundColor: fixedValue }));
+                            }
+                          }}
+                          placeholder="#000000"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <input
+                          type="color"
+                          value={config.backgroundColor || '#000000'}
+                          onChange={(e) => setConfig(prev => ({ ...prev, backgroundColor: e.target.value }))}
+                          className="w-12 h-12 border border-gray-300 rounded-lg cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Colores predefinidos */}
+                    <div className="mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Colores Predefinidos
+                      </label>
+                    </div>
                     <div className="grid grid-cols-4 gap-2">
                       {availableColors.map((color) => (
                         <button
@@ -1345,6 +1539,58 @@ const MedalFrontsGenerator: React.FC = () => {
                 
                 {!logoColorCollapsed && (
                   <div className="mt-3 p-3 bg-white border border-gray-200 rounded-lg">
+                    {/* Campo de entrada de texto para color personalizado */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Color Personalizado (Hex)
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="text"
+                          value={config.logoColor}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            setConfig(prev => ({ ...prev, logoColor: value }));
+                          }}
+                          onBlur={(e) => {
+                            const value = e.target.value;
+                            if (!value || value === '') {
+                              setConfig(prev => ({ ...prev, logoColor: '#000000' }));
+                              return;
+                            }
+                            if (!value.match(/^#[0-9A-Fa-f]{6}$/)) {
+                              // Si no es un hex válido, intentar arreglarlo
+                              let fixedValue = value;
+                              if (!value.startsWith('#')) {
+                                fixedValue = '#' + value;
+                              }
+                              if (fixedValue.length < 7) {
+                                fixedValue = fixedValue + '0'.repeat(7 - fixedValue.length);
+                              }
+                              if (fixedValue.length > 7) {
+                                fixedValue = fixedValue.substring(0, 7);
+                              }
+                              setConfig(prev => ({ ...prev, logoColor: fixedValue }));
+                            }
+                          }}
+                          placeholder="#000000"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <input
+                          type="color"
+                          value={config.logoColor || '#000000'}
+                          onChange={(e) => setConfig(prev => ({ ...prev, logoColor: e.target.value }))}
+                          className="w-12 h-12 border border-gray-300 rounded-lg cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Colores predefinidos */}
+                    <div className="mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Colores Predefinidos
+                      </label>
+                    </div>
                     <div className="grid grid-cols-4 gap-2">
                       {availableColors.map((color) => (
                         <button
@@ -1819,19 +2065,21 @@ const MedalFrontsGenerator: React.FC = () => {
               </div>
             </div>
 
-            {/* Lotes Guardados */}
+
+
+            {/* Lotes Disponibles */}
             {loadingBatches ? (
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                  <span className="ml-3 text-gray-600">Cargando lotes guardados...</span>
+                  <span className="ml-3 text-gray-600">Cargando lotes...</span>
                 </div>
               </div>
-            ) : batches.length > 0 ? (
+            ) : (
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">
-                    Lotes Guardados ({batches.length})
+                    Lotes Disponibles ({getAllBatchesWithPresets().length})
                   </h3>
                   <div className="flex space-x-2">
                     <button
@@ -1847,77 +2095,121 @@ const MedalFrontsGenerator: React.FC = () => {
                     <button
                       onClick={clearAllBatches}
                       className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-1"
-                      title="Eliminar todos los lotes"
+                      title="Eliminar todos los lotes personalizados"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
-                      <span>Limpiar Todo</span>
+                      <span>Limpiar Personalizados</span>
                     </button>
                   </div>
                 </div>
                 
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {batches.map((batch) => (
-                    <div
-                      key={batch.id}
-                      className={`p-3 rounded-lg border-2 transition-colors cursor-pointer ${
-                        selectedBatchId === batch.id
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      onClick={() => selectBatch(batch.id)}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <div className="font-medium text-gray-900">{batch.name}</div>
-                          <div className="text-sm text-gray-600">
-                            {batch.quantity} unidades • {batch.config.type} • {
-                              batch.config.type === 'round' 
-                                ? `${batch.config.size}mm` 
-                                : `${batch.config.width}×${batch.config.height}mm`
-                            } • {batch.config.useBackgroundImage ? 'Imagen' : 'Logo'}
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {getAllBatchesWithPresets().map((batch) => {
+                    
+                    return (
+                      <div
+                        key={batch.id}
+                                                 className={`p-4 rounded-lg border-2 cursor-pointer ${
+                           selectedBatchId === batch.id
+                             ? 'border-blue-500 bg-blue-50'
+                             : 'border-gray-200 hover:border-gray-300'
+                         }`}
+                        onClick={() => batch.isPreset ? createBatchFromPreset(batch.preset!) : selectBatch(batch.id)}
+                      >
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center space-x-3 flex-1">
+                                                         {/* Previsualización para presets */}
+                             {batch.isPreset && (
+                               <div className="flex-shrink-0">
+                                 <div className="w-24 h-24 rounded-full border-2 border-gray-300 shadow-lg relative overflow-hidden">
+                                   <div 
+                                     className="absolute inset-0 rounded-full"
+                                     style={{ backgroundColor: batch.preset!.exteriorHex }}
+                                   />
+                                   <div 
+                                     className="absolute inset-0 rounded-full"
+                                     style={{ 
+                                       backgroundColor: batch.preset!.interiorHex,
+                                       width: '50%',
+                                       height: '50%',
+                                       top: '25%',
+                                       left: '25%'
+                                     }}
+                                   />
+                                 </div>
+                               </div>
+                             )}
+                            
+                            <div className="flex-1">
+                              <div className="font-medium text-gray-900">
+                                {batch.name}
+                                {batch.isPreset && (
+                                  <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded-full">
+                                    Predefinida
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                {batch.config.type === 'round' ? `${batch.config.size}mm` : `${batch.config.width}×${batch.config.height}mm`} • {
+                                  batch.isPreset 
+                                    ? `${batch.preset!.exteriorColor} + ${batch.preset!.interiorColor}`
+                                    : batch.config.useBackgroundImage ? 'Imagen' : 'Logo'
+                                }
+                              </div>
+                              {batch.isPreset && batch.preset!.description && (
+                                <div className="text-xs text-gray-500">
+                                  {batch.preset!.description}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className="flex space-x-1">
+                            {!batch.isPreset && (
+                              <>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    downloadBatchImage(batch);
+                                  }}
+                                  className="text-blue-500 hover:text-blue-700 p-1"
+                                  title="Descargar imagen del frente"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteBatch(batch.id);
+                                  }}
+                                  className="text-red-500 hover:text-red-700 p-1"
+                                  title="Eliminar lote"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                </button>
+                              </>
+                            )}
+                            {batch.isPreset && (
+                              <button
+                                className="text-green-600 hover:text-green-800 p-1"
+                                title="Crear lote con esta combinación"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                              </button>
+                            )}
                           </div>
                         </div>
-                        <div className="flex space-x-1">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              downloadBatchImage(batch);
-                            }}
-                            className="text-blue-500 hover:text-blue-700 p-1"
-                            title="Descargar imagen del frente"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteBatch(batch.id);
-                            }}
-                            className="text-red-500 hover:text-red-700 p-1"
-                            title="Eliminar lote"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
-                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
-                <div className="text-center py-8 text-gray-500">
-                  <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                  </svg>
-                  <p className="text-lg font-medium">No hay lotes guardados</p>
-                  <p className="text-sm">Crea y guarda tu primer diseño como lote para verlo aquí</p>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -2008,29 +2300,73 @@ const MedalFrontsGenerator: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Cantidad por lote
                 </label>
-                <div className="space-y-3 max-h-48 overflow-y-auto">
-                  {batches.map((batch) => (
-                    <div key={batch.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-900">{batch.name}</div>
-                        <div className="text-sm text-gray-600">
-                          {batch.config.type === 'round' ? `${batch.config.size}mm` : `${batch.config.width}×${batch.config.height}mm`} - {getColorName(batch.config.backgroundColor)}
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {getAllBatchesWithPresets().map((batch) => {
+                    
+                    return (
+                      <div key={batch.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-3 flex-1">
+                                                     {/* Previsualización de la medalla */}
+                           {batch.isPreset && (
+                             <div className="flex-shrink-0">
+                                                                <div className="w-28 h-28 rounded-full border-2 border-gray-300 shadow-lg relative overflow-hidden">
+                                   <div 
+                                     className="absolute inset-0 rounded-full"
+                                     style={{ backgroundColor: batch.preset!.exteriorHex }}
+                                   />
+                                   <div 
+                                     className="absolute inset-0 rounded-full"
+                                     style={{ 
+                                       backgroundColor: batch.preset!.interiorHex,
+                                       width: '50%',
+                                       height: '50%',
+                                       top: '25%',
+                                       left: '25%'
+                                     }}
+                                   />
+                                 </div>
+                             </div>
+                           )}
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-gray-900 text-sm truncate">
+                              {batch.name}
+                              {batch.isPreset && (
+                                <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                  Predefinida
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {batch.config.type === 'round' ? `${batch.config.size}mm` : `${batch.config.width}×${batch.config.height}mm`} - {
+                                batch.isPreset 
+                                  ? `${batch.preset!.exteriorColor} + ${batch.preset!.interiorColor}`
+                                  : getColorName(batch.config.backgroundColor)
+                              }
+                            </div>
+                            {batch.isPreset && batch.preset!.description && (
+                              <div className="text-xs text-gray-500 truncate">
+                                {batch.preset!.description}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="number"
+                            min="0"
+                            max="10000"
+                            value={combinedPdfConfig.batchQuantities[batch.id] || 0}
+                            onChange={(e) => updateBatchQuantity(batch.id, Math.max(0, parseInt(e.target.value) || 0))}
+                            className="w-20 px-2 py-1 border border-gray-300 rounded text-sm text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="0"
+                          />
+                          <span className="text-xs text-gray-500">unidades</span>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="number"
-                          min="0"
-                          max="10000"
-                          value={combinedPdfConfig.batchQuantities[batch.id] || 0}
-                          onChange={(e) => updateBatchQuantity(batch.id, Math.max(0, parseInt(e.target.value) || 0))}
-                          className="w-20 px-2 py-1 border border-gray-300 rounded text-sm text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="0"
-                        />
-                        <span className="text-xs text-gray-500">unidades</span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div className="text-xs text-gray-500 mt-2">
                   Total: {Object.values(combinedPdfConfig.batchQuantities).reduce((sum, qty) => sum + qty, 0)} medallas
