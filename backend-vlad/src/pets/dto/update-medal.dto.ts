@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString, IsOptional } from "class-validator";
 
 export class UpdateMedalDto {
     @IsString()
@@ -13,4 +13,7 @@ export class UpdateMedalDto {
     @IsNotEmpty()
     medalString: string;
 
+    @IsString()
+    @IsOptional()
+    email?: string;
 }

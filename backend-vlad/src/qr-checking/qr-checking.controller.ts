@@ -52,6 +52,39 @@ export class QRCheckingController {
         return this.qrService.sendEmailConfirmAccount(email, hash, medal);
     }
 
+    @Public()
+    @Get('test-password-recovery/:email')
+    @HttpCode(HttpStatus.OK)
+    testPasswordRecovery(@Param('email') email: string) {
+        return this.qrService.testPasswordRecovery(email);
+    }
+
+    @Public()
+    @Get('test-medal-confirmation/:email/:medal')
+    @HttpCode(HttpStatus.OK)
+    testMedalConfirmation(
+        @Param('email') email: string,
+        @Param('medal') medal: string
+    ) {
+        return this.qrService.testMedalConfirmation(email, medal);
+    }
+
+    @Public()
+    @Get('resend-confirmation/:email')
+    @HttpCode(HttpStatus.OK)
+    resendConfirmationEmail(@Param('email') email: string) {
+        return this.qrService.resendConfirmationEmail(email);
+    }
+
+    @Public()
+    @Get('user-status/:email')
+    @HttpCode(HttpStatus.OK)
+    getUserStatus(@Param('email') email: string) {
+        return this.qrService.getUserStatus(email);
+    }
+
+
+
     // @Public()
     // @Post('creator')
     // qrCreator() {

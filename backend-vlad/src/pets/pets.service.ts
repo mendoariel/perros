@@ -108,37 +108,48 @@ export class PetsServicie {
     }
 
     async updateMedal(email: string, medalUpdate: UpdateMedalDto) {
-        const user = await this.prisma.user.update({
-            where: { email },
-            data: {
-                phonenumber: medalUpdate.phoneNumber
-            }
+        const result = await this.prisma.$transaction(async (tx) => {
+            // Actualizar usuario
+            const user = await tx.user.update({
+                where: { email },
+                data: {
+                    phonenumber: medalUpdate.phoneNumber
+                }
+            });
+            if(!user) throw new NotFoundException('User not found');
+
+            // Actualizar medalla
+            const medal = await tx.medal.update({
+                where: { medalString: medalUpdate.medalString },
+                data: {
+                    description: medalUpdate.description,
+                    status: MedalState.ENABLED
+                }
+            });
+            if(!medal) throw new NotFoundException('Medal not found');
+
+            // Actualizar virgin medal
+            await tx.virginMedal.update({
+                where: {
+                    medalString: medalUpdate.medalString
+                },
+                data: {
+                    status: MedalState.ENABLED
+                }
+            });
+
+            return { user, medal };
         });
-        if(!user) throw new NotFoundException('User not found');
 
-        const medal = await this.prisma.medal.update({
-            where: { medalString: medalUpdate.medalString },
-            data: {
-                description: medalUpdate.description,
-                status: MedalState.ENABLED
-            }
-        });
-        if(!medal) throw new NotFoundException('Medal not found');
+        // Enviar email fuera de la transacción
+        try {
+            await this.sendMedalUpdateNotification(email, result.user, result.medal);
+        } catch (error) {
+            console.error('Error sending notification email:', error);
+            // No lanzamos error para no afectar la transacción
+        }
 
-        const virgin = await this.prisma.virginMedal.update({
-            where: {
-                medalString: medalUpdate.medalString
-            },
-            data: {
-                status: MedalState.ENABLED
-            }
-        });
-        if(!virgin) throw new NotFoundException('Virgin Medal not found');
-
-        // Send notification email
-        await this.sendMedalUpdateNotification(email, user, medal);
-
-        return medal;
+        return result.medal;
     }
 
     private async sendMedalUpdateNotification(email: string, user: any, medal: any) {

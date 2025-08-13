@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0 --poll 2000 --port 4100 --disable-host-check",
     "start-ssr": "ng run frontend:serve-ssr --port 4100",
+    "start-ssr:staging": "ng run frontend:serve-ssr:staging --port 4101",
     "build": "ng build",
     "build-local": "ng build --configuration development",
     "build-local-deploy": "ng build --configuration local-deploy",

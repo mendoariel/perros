@@ -1,2 +1,5 @@
 /local-backups
 /qr_generator/medals_qr_images
+/backups/production_data/
+/backups/*.sql
+/backups/postgres/
