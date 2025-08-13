@@ -1,0 +1,143 @@
+version: "3.8"
+services:
+  # Frontend de la aplicación principal
+  frontend-perros-staging:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.staging
+      target: development
+    container_name: mi-perro-qr-frontend-perros-staging
+    command: ng run frontend:serve-ssr:local-deploy --port 4101
+    ports:
+      - '4101:4101'  # Puerto externo e interno igual para SSR
+      - '9877:9876'
+    environment:
+      - NODE_ENV=staging
+      - PORT=4100
+      - HOST=0.0.0.0
+      - BACKEND_URL=http://localhost:3334  # Puerto del backend de staging
+      - CHROME_BIN=/usr/bin/chromium
+      - NG_CLI_ANALYTICS=false
+      - NG_CONFIGURATION=staging
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend-perros-staging
+    networks:
+      - staging-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Backend de la aplicación principal
+  backend-perros-staging:
+    build: 
+      context: ./backend-vlad
+      dockerfile: Dockerfile
+    container_name: backend-perros-staging
+    volumes:
+      - ./backend-vlad:/alberto/backend/src/app
+      - /alberto/backend/src/app/node_modules/
+      - ./backend-vlad/prisma:/alberto/backend/src/app/prisma/
+    command: >
+      sh -c "npm run start:dev"
+    ports:
+      - '3334:3333'  # Puerto diferente para no conflictuar con local
+      - '5556:5555'
+      - '9230:9229'
+    depends_on: 
+      postgres-staging:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=staging
+      - DATABASE_URL=postgres://staging_user:staging_password@postgres-staging:5432/peludosclick_staging?schema=public
+      - FRONTEND_URL=http://localhost:4101
+      - BACKPORT=3333
+      - MODULE_MAIL_USER=info@peludosclick.com
+      - MODULE_MAIL_PASS=Yamaha600
+      - ENVIRONMET=staging
+      - DASHBOARD_USERNAME=staging_admin
+      - DASHBOARD_PASSWORD=staging_password_123
+      - LOG_LEVEL=debug
+      - CORS_ORIGIN=http://localhost:4101,http://localhost:3701
+      - RATE_LIMIT_WINDOW=15m
+      - RATE_LIMIT_MAX=1000
+    networks:
+      - staging-network
+
+  # Base de datos PostgreSQL para staging
+  postgres-staging:
+    image: postgres:15
+    container_name: postgres-staging
+    environment:
+      POSTGRES_DB: peludosclick_staging
+      POSTGRES_USER: staging_user
+      POSTGRES_PASSWORD: staging_password
+    ports:
+      - '5433:5432'  # Puerto diferente para no conflictuar con local
+    volumes:
+      - postgres_staging_data:/var/lib/postgresql/data
+      - ./backend-vlad/scripts/init-staging-db.sql:/docker-entrypoint-initdb.d/init-staging-db.sql
+      - ./backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U staging_user -d peludosclick_staging"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - staging-network
+
+  # Admin de PostgreSQL para staging
+  postgres_admin-staging:
+    image: dpage/pgadmin4:6.21
+    container_name: postgres-admin-staging
+    depends_on: 
+       - postgres-staging
+    environment:
+      PGADMIN_DEFAULT_EMAIL: staging@admin.com
+      PGADMIN_DEFAULT_PASSWORD: staging_password
+    ports:
+      - 5051:80  # Puerto diferente para no conflictuar con local
+    volumes:
+      - pgadmin_staging_data:/var/lib/pgadmin
+    networks:
+      - staging-network
+
+  # Dashboard QR Generator
+  qr_dashboard-staging:
+    build: 
+      context: ./qr_generator
+      dockerfile: Dockerfile
+    container_name: qr-dashboard-staging
+    ports:
+      - '3701:3700'  # Puerto diferente para no conflictuar con local
+    environment:
+      - PG_HOST=postgres-staging
+      - PG_PORT=5432
+      - PG_USER=staging_user
+      - PG_PASSWORD=staging_password
+      - PG_DATABASE=peludosclick_staging
+      # API URL para el frontend del dashboard (staging)
+      - REACT_APP_API_URL=http://localhost:3334
+      # Credenciales del dashboard (staging)
+      - REACT_APP_DASHBOARD_USERNAME=staging_admin
+      - REACT_APP_DASHBOARD_PASSWORD=staging_password_123
+    depends_on: 
+      postgres-staging:
+        condition: service_healthy
+    volumes:
+      - ./qr_generator:/app
+      - /app/node_modules
+      - /app/dashboard/node_modules
+    networks:
+      - staging-network
+
+volumes:
+  postgres_staging_data:
+    name: postgres_staging_data
+  pgadmin_staging_data:
+    name: pgadmin_staging_data
+
+networks:
+  staging-network:
+    driver: bridge

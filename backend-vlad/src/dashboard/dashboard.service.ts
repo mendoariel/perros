@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { randomBytes } from 'crypto';
+import { SaveMedalFrontDto } from './dto';
 
 @Injectable()
 export class DashboardService {
@@ -213,6 +214,103 @@ export class DashboardService {
       };
     } catch (error) {
       throw new Error(`Error al obtener medallas virgin: ${error.message}`);
+    }
+  }
+
+  // ===== FRENTES DE MEDALLAS =====
+
+  // Obtener todos los frentes de medallas
+  async getMedalFronts() {
+    try {
+      const medalFronts = await this.prisma.medalFront.findMany({
+        orderBy: {
+          createdAt: 'desc'
+        }
+      });
+
+      return {
+        success: true,
+        medalFronts: medalFronts
+      };
+    } catch (error) {
+      console.error('Error getting medal fronts:', error);
+      throw new Error('Error al obtener frentes de medallas');
+    }
+  }
+
+  // Guardar un nuevo frente de medalla
+  async saveMedalFront(dto: SaveMedalFrontDto) {
+    try {
+      const medalFront = await this.prisma.medalFront.create({
+        data: {
+          name: dto.name,
+          description: dto.description || '',
+          type: dto.type,
+          size: dto.size,
+          width: dto.width,
+          height: dto.height,
+          backgroundColor: dto.backgroundColor,
+          logoColor: dto.logoColor,
+          logoSize: dto.logoSize,
+          logoX: dto.logoX,
+          logoY: dto.logoY,
+          borderRadius: dto.borderRadius,
+          useBackgroundImage: dto.useBackgroundImage,
+          backgroundImage: dto.backgroundImage,
+          backgroundImageSize: dto.backgroundImageSize,
+          backgroundImageX: dto.backgroundImageX,
+          backgroundImageY: dto.backgroundImageY,
+          fileName: '', // Campo requerido pero no usado
+          userId: 1 // Usuario por defecto del dashboard
+        }
+      });
+
+      return {
+        success: true,
+        message: 'Frente de medalla guardado exitosamente',
+        medalFront: medalFront
+      };
+    } catch (error) {
+      console.error('Error saving medal front:', error);
+      throw new Error('Error al guardar frente de medalla');
+    }
+  }
+
+  // Eliminar un frente de medalla
+  async deleteMedalFront(id: string) {
+    try {
+      await this.prisma.medalFront.delete({
+        where: { id }
+      });
+
+      return {
+        success: true,
+        message: 'Frente de medalla eliminado exitosamente'
+      };
+    } catch (error) {
+      console.error('Error deleting medal front:', error);
+      throw new Error('Error al eliminar frente de medalla');
+    }
+  }
+
+  // Obtener un frente de medalla específico
+  async getMedalFront(id: string) {
+    try {
+      const medalFront = await this.prisma.medalFront.findUnique({
+        where: { id }
+      });
+
+      if (!medalFront) {
+        throw new Error('Frente de medalla no encontrado');
+      }
+
+      return {
+        success: true,
+        medalFront: medalFront
+      };
+    } catch (error) {
+      console.error('Error getting medal front:', error);
+      throw new Error('Error al obtener frente de medalla');
     }
   }
 } 

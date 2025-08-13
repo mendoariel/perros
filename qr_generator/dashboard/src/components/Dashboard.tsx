@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import VirginMedalsTable from './VirginMedalsTable';
 import CreateMedalsDialog from './CreateMedalsDialog';
-import { VirginMedal, MedalStats } from '../types/medal';
+import { Medal, MedalStats } from '../types/dashboard';
 import { medalService } from '../services/medalService';
 import QRPrintDialog from './QRPrintDialog';
 import QRPreviewDialog from './QRPreviewDialog';
@@ -10,9 +10,12 @@ import QRStudio from './QRStudio';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [medals, setMedals] = useState<VirginMedal[]>([]);
+  const [medals, setMedals] = useState<Medal[]>([]);
   const [stats, setStats] = useState<MedalStats>({
     total: 0,
+    active: 0,
+    inactive: 0,
+    pending: 0,
     virgin: 0,
     enabled: 0,
     disabled: 0,
@@ -28,7 +31,7 @@ const Dashboard: React.FC = () => {
   const [printDialogOpen, setPrintDialogOpen] = useState(false);
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
   const [qrStudioOpen, setQrStudioOpen] = useState(false);
-  const [selectedMedals, setSelectedMedals] = useState<VirginMedal[]>([]);
+  const [selectedMedals, setSelectedMedals] = useState<Medal[]>([]);
 
   const loadData = async () => {
     try {
@@ -61,12 +64,12 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handlePrintQR = (medals: VirginMedal[]) => {
+  const handlePrintQR = (medals: Medal[]) => {
     setSelectedMedals(medals);
     setPrintDialogOpen(true);
   };
 
-  const handlePreviewQR = (medals: VirginMedal[]) => {
+  const handlePreviewQR = (medals: Medal[]) => {
     setSelectedMedals(medals);
     setPreviewDialogOpen(true);
   };

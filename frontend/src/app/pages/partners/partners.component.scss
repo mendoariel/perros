@@ -1,0 +1,90 @@
+// Estilos específicos para la página de partners
+
+// Animaciones personalizadas
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// Hover effects para las tarjetas de partners
+.partner-card {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+// Efectos hover para los botones de acción
+.action-button {
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .partner-card {
+    margin-bottom: 1rem;
+  }
+  
+  .action-buttons {
+    justify-content: center;
+  }
+  
+  .filters-section {
+    flex-direction: column;
+  }
+}
+
+// Estilos para los filtros
+.filter-input {
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(0, 100, 85, 0.1);
+  }
+}
+
+// Estilos para las estadísticas
+.stats-card {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Estilos para el hero section
+.hero-section {
+  background: linear-gradient(135deg, #006455 0%, #008066 100%);
+}
+
+// Estilos para los badges de estado
+.status-badge {
+  &.active {
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+  
+  &.inactive {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+  
+  &.pending {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+} 

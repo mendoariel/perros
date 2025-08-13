@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
-import { VirginMedal } from '../types/medal';
+import { Medal } from '../types/dashboard';
 import { medalService } from '../services/medalService';
 import { QR_PREVIEW_CONFIGS } from '../config/qr-preview-configs';
 
 interface QRPreviewDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  medals: VirginMedal[];
+  medals: Medal[];
 }
 
 interface PreviewQR {

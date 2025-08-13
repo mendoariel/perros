@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { VirginMedal } from '../types/medal';
+import { Medal } from '../types/dashboard';
 import { medalService } from '../services/medalService';
 import { QR_CONFIG } from '../config/qr-config';
 
 interface QRPrintDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  medals: VirginMedal[];
+  medals: Medal[];
 }
 
 const QRPrintDialog: React.FC<QRPrintDialogProps> = ({
