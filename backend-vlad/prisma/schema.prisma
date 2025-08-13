@@ -10,19 +10,20 @@ datasource db {
 }
 
 model User {
-  id                   Int        @id @default(autoincrement())
-  email                String     @unique
+  id                   Int          @id @default(autoincrement())
+  email                String       @unique
   hash                 String
   username             String?
   role                 Role
-  hashToRegister       String     @map("hash_to_register")
+  hashToRegister       String       @map("hash_to_register")
   phonenumber          String?
-  createdAt            DateTime   @map("created_at") @default(now())
-  hashPasswordRecovery String?    @map("hash_password_recovery")
-  hashedRt             String?    @map("hashed_rt")
-  updatedAt            DateTime   @map("updated_at") @default(now())
-  userStatus           UserStatus @map("user_status")
+  createdAt            DateTime     @default(now()) @map("created_at")
+  hashPasswordRecovery String?      @map("hash_password_recovery")
+  hashedRt             String?      @map("hashed_rt")
+  updatedAt            DateTime     @default(now()) @map("updated_at")
+  userStatus           UserStatus   @map("user_status")
   medals               Medal[]
+  medalFronts          MedalFront[]
 
   @@map("users")
 }
@@ -35,9 +36,9 @@ model Medal {
   medalString  String     @unique @map("medal_string")
   petName      String     @map("pet_name")
   registerHash String     @map("register_hash")
-  createAt    DateTime   @map("created_at") @default(now())
+  createAt     DateTime   @default(now()) @map("created_at")
   ownerId      Int        @map("owner_id")
-  updateAt    DateTime   @map("updated_at")  @default(now())
+  updateAt     DateTime   @default(now()) @map("updated_at")
   owner        User       @relation(fields: [ownerId], references: [id])
 
   @@map("medals")
@@ -48,8 +49,8 @@ model VirginMedal {
   status       MedalState
   medalString  String     @unique @map("medal_string")
   registerHash String     @map("register_hash")
-  createdAt    DateTime   @map("created_at") @default(now())
-  updatedAt    DateTime? @map("updated_at") 
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime?  @map("updated_at")
 
   @@map("virgin_medals")
 }
@@ -75,4 +76,141 @@ enum UserStatus {
   ACTIVE
   PENDING
   DISABLED
+}
+
+enum PartnerType {
+  VETERINARY
+  PET_SHOP
+  MINIMARKET
+  CAFETERIA
+}
+
+model Partner {
+  id          Int           @id @default(autoincrement())
+  name        String
+  address     String
+  whatsapp    String?
+  phone       String?
+  description String?
+  website     String?
+  partnerType PartnerType   @map("partner_type")
+  status      PartnerStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @default(now()) @map("updated_at")
+
+  // Relations
+  articles Article[]
+  services Service[]
+  offers   Offer[]
+  comments Comment[]
+  catalog  Catalog?
+
+  @@map("partners")
+}
+
+model Article {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  image       String?
+  partnerId   Int      @map("partner_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@map("articles")
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float?
+  partnerId   Int      @map("partner_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@map("services")
+}
+
+model Offer {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  discount    Float
+  startDate   DateTime @map("start_date")
+  endDate     DateTime @map("end_date")
+  partnerId   Int      @map("partner_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@map("offers")
+}
+
+model Comment {
+  id          Int      @id @default(autoincrement())
+  content     String
+  rating      Int?
+  authorName  String   @map("author_name")
+  authorEmail String?  @map("author_email")
+  partnerId   Int      @map("partner_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+model Catalog {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  partnerId   Int      @unique @map("partner_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@map("catalogs")
+}
+
+enum PartnerStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+model MedalFront {
+  id                  String   @id @default(cuid())
+  name                String
+  description         String   @default("")
+  fileName            String   @map("file_name")
+  type                String // 'round' or 'square'
+  size                Float
+  width               Float?
+  height              Float?
+  backgroundColor     String   @map("background_color")
+  logoColor           String   @map("logo_color")
+  logoSize            Float    @map("logo_size")
+  logoX               Float    @map("logo_x")
+  logoY               Float    @map("logo_y")
+  borderRadius        Float    @map("border_radius")
+  useBackgroundImage  Boolean  @map("use_background_image")
+  backgroundImage     String?  @map("background_image")
+  backgroundImageSize Float    @map("background_image_size")
+  backgroundImageX    Float    @map("background_image_x")
+  backgroundImageY    Float    @map("background_image_y")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @default(now()) @map("updated_at")
+  userId              Int      @map("user_id")
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("medal_fronts")
 }

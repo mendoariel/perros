@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import QRCode from 'qrcode';
 import jsPDF from 'jspdf';
-import { VirginMedal } from '../types/medal';
+import { Medal } from '../types/dashboard';
 import { medalService } from '../services/medalService';
 
 interface QRConfig {
@@ -23,18 +23,18 @@ interface QRBatch {
   id: string;
   name: string;
   config: QRConfig;
-  medals: VirginMedal[];
+  medals: Medal[];
   canvasData?: string;
 }
 
 const QRGenerator: React.FC = () => {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [medals, setMedals] = useState<VirginMedal[]>([]);
+  const [medals, setMedals] = useState<Medal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedRegisterHash, setSelectedRegisterHash] = useState<string>('');
-  const [selectedMedals, setSelectedMedals] = useState<VirginMedal[]>([]);
+  const [selectedMedals, setSelectedMedals] = useState<Medal[]>([]);
   const [showBatchModal, setShowBatchModal] = useState(false);
   const [currentBatchName, setCurrentBatchName] = useState('');
   const [batches, setBatches] = useState<QRBatch[]>([]);
@@ -268,7 +268,7 @@ const QRGenerator: React.FC = () => {
     };
 
     // Crear lista de QR a procesar - TODOS los QR de todos los lotes
-    const allQRs: Array<{batch: QRBatch, medal: VirginMedal, qrSize: number}> = [];
+            const allQRs: Array<{batch: QRBatch, medal: Medal, qrSize: number}> = [];
     
     for (const batch of batches) {
       console.log(`📦 Lote "${batch.name}": ${batch.medals.length} QR de ${batch.config.containerSize}mm`);

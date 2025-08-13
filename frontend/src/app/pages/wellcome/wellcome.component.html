@@ -113,75 +113,8 @@
       <p class="text-lg text-[#36454F]">Encuentra dónde obtener tu medalla PeludosClick</p>
     </div>
     
-    <!-- Tarjetas de Puntos de Venta -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Veterinaria Hakuna Matata -->
-      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
-        <div class="flex items-center mb-6">
-          <div class="w-16 h-16 bg-gradient-to-br from-[#006455]/20 to-[#006455]/30 rounded-full flex items-center justify-center mr-4">
-            <mat-icon class="text-[#006455] text-2xl">store</mat-icon>
-          </div>
-          <div>
-            <h3 class="text-xl font-bold text-[#006455]">Hakuna Matata</h3>
-            <p class="text-[#36454F]">Veterinaria y Pet Shop</p>
-          </div>
-        </div>
-        <p class="text-[#36454F] mb-4">
-          Especialistas en el cuidado de mascotas con años de experiencia en la comunidad.
-        </p>
-        <div class="space-y-2 text-[#36454F]">
-          <p><strong>Dirección:</strong> Beltrán 1910, M5501 Godoy Cruz, Mendoza</p>
-          <p><strong>Horarios:</strong> Lunes a Sábado 9:00 - 13:30 y 17:00 - 20:00</p>
-          <p><strong>Teléfono:</strong> (0261) 338-2462</p>
-        </div>
-        <div class="flex gap-4 mt-6">
-          <a href="https://facebook.com" target="_blank" class="text-[#006455] hover:text-[#FFD700] transition-colors" title="Facebook de Hakuna Matata">
-            <mat-icon>facebook</mat-icon>
-          </a>
-          <a href="#" class="text-[#006455] hover:text-[#FFD700] transition-colors">
-            <mat-icon>instagram</mat-icon>
-          </a>
-          <a href="https://www.google.com.ar/maps/place/HAKUNA+MATATA+Pet+Shop/@-32.904599,-68.8544801,789m/data=!3m2!1e3!4b1!4m6!3m5!1s0x1b1f2a3d75b0dc5:0xc6bcfba6fa0370f2!8m2!3d-32.904599!4d-68.8519052!16s%2Fg%2F11b7hj84bk?entry=ttu" 
-             target="_blank" 
-             class="text-[#006455] hover:text-[#FFD700] transition-colors"
-             title="Ver en Google Maps">
-            <mat-icon>location_on</mat-icon>
-          </a>
-        </div>
-      </div>
-
-      <!-- Tienda El Escaparate -->
-      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
-        <div class="flex items-center mb-6">
-          <div class="w-16 h-16 bg-gradient-to-br from-[#FFD700]/20 to-[#FFD700]/30 rounded-full flex items-center justify-center mr-4">
-            <mat-icon class="text-[#FFD700] text-2xl">storefront</mat-icon>
-          </div>
-          <div>
-            <h3 class="text-xl font-bold text-[#006455]">El Escaparate</h3>
-            <p class="text-[#36454F]">Tienda de Mascotas</p>
-          </div>
-        </div>
-        <p class="text-[#36454F] mb-4">
-          Tu tienda de confianza para todo lo que tu mascota necesita, con productos de calidad.
-        </p>
-        <div class="space-y-2 text-[#36454F]">
-          <p><strong>Dirección:</strong> Calle Comercial 456, Buenos Aires</p>
-          <p><strong>Horarios:</strong> Lunes a Domingo 10:00 - 22:00</p>
-          <p><strong>Teléfono:</strong> (011) 9876-5432</p>
-        </div>
-        <div class="flex gap-4 mt-6">
-          <a href="#" class="text-[#006455] hover:text-[#FFD700] transition-colors">
-            <mat-icon>facebook</mat-icon>
-          </a>
-          <a href="#" class="text-[#006455] hover:text-[#FFD700] transition-colors">
-            <mat-icon>instagram</mat-icon>
-          </a>
-          <a href="#" class="text-[#006455] hover:text-[#FFD700] transition-colors">
-            <mat-icon>language</mat-icon>
-          </a>
-        </div>
-      </div>
-    </div>
+    <!-- Componente dinámico de Partners -->
+    <app-home-partner-list></app-home-partner-list>
     
     <!-- Llamada a la Acción - Puntos de Venta -->
     <div class="text-center mt-8">
