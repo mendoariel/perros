@@ -34,6 +34,7 @@ export class QrService {
     }
 
     async postMedal(dto: PostMedalDto): Promise<{ text: string; code: string }> {
+        // Verificar que la medalla virgin existe y está disponible
         const virginMedal = await this.prisma.virginMedal.findFirst({
             where: {
                 medalString: dto.medalString 
@@ -43,16 +44,8 @@ export class QrService {
         if (!virginMedal) throw new NotFoundException('No se encontro la medalla');
         if (virginMedal.status !== MedalState.VIRGIN) throw new NotFoundException('Esta medalla ya no esta disponible para registrar');
         
-        const medalsJson: Prisma.MedalCreateInput = {
-            status: MedalState.REGISTER_PROCESS,
-            registerHash: virginMedal.registerHash,
-            medalString: virginMedal.medalString,
-            petName: dto.petName,
-            owner: { connect: { id: 0 } } // This will be updated below
-        };
-
-        // check if the user already exists
-        const user = await this.prisma.user.findFirst({
+        // Verificar si el usuario ya existe
+        const existingUser = await this.prisma.user.findFirst({
             where: {
                 email: dto.ownerEmail.toLowerCase()
             },
@@ -61,8 +54,24 @@ export class QrService {
             }
         });
 
-        if(user) {
-            const medalCreated = await this.prisma.medal.create({
+        // Si el usuario existe, procesar la medalla para usuario existente
+        if (existingUser) {
+            return await this.processMedalForExistingUser(dto, virginMedal, existingUser);
+        }
+
+        // Si el usuario no existe, crear nuevo usuario con transacción
+        return await this.processMedalForNewUser(dto, virginMedal);
+    }
+
+    private async processMedalForExistingUser(
+        dto: PostMedalDto, 
+        virginMedal: any, 
+        user: any
+    ): Promise<{ text: string; code: string }> {
+        // Usar transacción para asegurar consistencia
+        return await this.prisma.$transaction(async (tx) => {
+            // Crear la medalla
+            const medalCreated = await tx.medal.create({
                 data: {
                     status: MedalState.REGISTER_PROCESS,
                     registerHash: virginMedal.registerHash,
@@ -75,55 +84,82 @@ export class QrService {
                     }
                 }
             });
-            if(!medalCreated) throw new NotFoundException('can not create medal');
+
+            if (!medalCreated) throw new NotFoundException('No se pudo crear la medalla');
             
-            const sendEmailConfirmMedal = await this.sendEmailConfirmMedal(user.email, virginMedal.medalString);
-            if(!sendEmailConfirmMedal) throw new NotFoundException('can not send email confirm medal');
-            
-            await this.putVirginMedalRegisterProcess(virginMedal.medalString);
+            // Actualizar estado de virgin medal
+            await tx.virginMedal.update({
+                where: { medalString: virginMedal.medalString },
+                data: { status: MedalState.REGISTER_PROCESS }
+            });
+
+            // Intentar enviar email (si falla, no afecta la transacción)
+            try {
+                await this.sendEmailConfirmMedal(user.email, virginMedal.medalString);
+            } catch (error) {
+                console.error('Error enviando email de confirmación de medalla:', error);
+                // No lanzamos error aquí para no revertir la transacción
+            }
             
             return { 
-                text: 'Le hemos enviado un email, siga las intrucciones para la activar su medalla.',
+                text: 'Le hemos enviado un email, siga las intrucciones para activar su medalla.',
                 code: 'medalcreated'
             };
-        }
-
-        // Create new user if they don't exist
-        const hash = await this.hashData(dto.password);
-        const unicHash = await this.createHashNotUsedToUser();
-        
-        const userCreated = await this.prisma.user.create({
-            data: {
-                email: dto.ownerEmail.toLowerCase(),
-                hash,
-                userStatus: UserStatus.PENDING,
-                role: Role.VISITOR,
-                hashToRegister: unicHash,
-                medals: {
-                    create: [{
-                        status: MedalState.REGISTER_PROCESS,
-                        registerHash: virginMedal.registerHash,
-                        medalString: virginMedal.medalString,
-                        petName: dto.petName
-                    }]
-                }
-            },
-            include: {
-                medals: true
-            }
         });
+    }
 
-        if(!userCreated) throw new NotFoundException('Can not create user');
-        
-        const sendEmail = await this.sendEmailConfirmAccount(userCreated.email, userCreated.hashToRegister, virginMedal.medalString);
-        if(!sendEmail) throw new NotFoundException('Can not send email account');
-        
-        await this.putVirginMedalRegisterProcess(virginMedal.medalString);
-        
-        return { 
-            text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta su cuenta.',
-            code: 'usercreated'
-        };
+    private async processMedalForNewUser(
+        dto: PostMedalDto, 
+        virginMedal: any
+    ): Promise<{ text: string; code: string }> {
+        // Usar transacción para asegurar consistencia
+        return await this.prisma.$transaction(async (tx) => {
+            const hash = await this.hashData(dto.password);
+            const unicHash = await this.createHashNotUsedToUser();
+            
+            // Crear usuario y medalla en una sola transacción
+            const userCreated = await tx.user.create({
+                data: {
+                    email: dto.ownerEmail.toLowerCase(),
+                    hash,
+                    userStatus: UserStatus.PENDING,
+                    role: Role.VISITOR,
+                    hashToRegister: unicHash,
+                    medals: {
+                        create: [{
+                            status: MedalState.REGISTER_PROCESS,
+                            registerHash: virginMedal.registerHash,
+                            medalString: virginMedal.medalString,
+                            petName: dto.petName
+                        }]
+                    }
+                },
+                include: {
+                    medals: true
+                }
+            });
+
+            if (!userCreated) throw new NotFoundException('No se pudo crear el usuario');
+            
+            // Actualizar estado de virgin medal
+            await tx.virginMedal.update({
+                where: { medalString: virginMedal.medalString },
+                data: { status: MedalState.REGISTER_PROCESS }
+            });
+
+            // Intentar enviar email (si falla, no afecta la transacción)
+            try {
+                await this.sendEmailConfirmAccount(userCreated.email, userCreated.hashToRegister, virginMedal.medalString);
+            } catch (error) {
+                console.error('Error enviando email de confirmación de cuenta:', error);
+                // No lanzamos error aquí para no revertir la transacción
+            }
+            
+            return { 
+                text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta.',
+                code: 'usercreated'
+            };
+        });
     }
 
     async putVirginMedalRegisterProcess(medalString: string): Promise<VirginMedal> {
@@ -225,5 +261,103 @@ export class QrService {
 
         if(!hashUsed) return hash;
         return this.createHashNotUsedToUser();
+    }
+
+    // Métodos de prueba para el servicio de email
+    async testPasswordRecovery(email: string): Promise<boolean> {
+        const url = `${process.env.FRONTEND_URL}/recuperar-password?hash=testhash123`;
+        try {
+            await this.mailService.sendPasswordRecovery(email, url);
+            return true;
+        } catch (error) {
+            console.error('Error en testPasswordRecovery:', error);
+            throw new ServiceUnavailableException('No pudimos procesar la información');
+        }
+    }
+
+    async testMedalConfirmation(email: string, medalString: string): Promise<boolean> {
+        const url = `${process.env.FRONTEND_URL}/confirmar-medalla?email=${email}&medalString=${medalString}`;
+        try {
+            await this.mailService.sendConfirmMedal(email, url);
+            return true;
+        } catch (error) {
+            console.error('Error en testMedalConfirmation:', error);
+            throw new ServiceUnavailableException('No pudimos procesar la información');
+        }
+    }
+
+    // Método para reenviar email de confirmación a usuarios PENDING
+    async resendConfirmationEmail(email: string): Promise<{ text: string; code: string }> {
+        const user = await this.prisma.user.findFirst({
+            where: {
+                email: email.toLowerCase(),
+                userStatus: UserStatus.PENDING
+            },
+            include: {
+                medals: {
+                    where: {
+                        status: MedalState.REGISTER_PROCESS
+                    }
+                }
+            }
+        });
+
+        if (!user) {
+            throw new NotFoundException('Usuario no encontrado o ya confirmado');
+        }
+
+        if (user.medals.length === 0) {
+            throw new NotFoundException('No hay medallas pendientes de confirmación');
+        }
+
+        // Reenviar email de confirmación
+        try {
+            await this.sendEmailConfirmAccount(user.email, user.hashToRegister, user.medals[0].medalString);
+            return {
+                text: 'Se ha reenviado el email de confirmación. Revise su bandeja de entrada.',
+                code: 'email_resent'
+            };
+        } catch (error) {
+            console.error('Error reenviando email de confirmación:', error);
+            throw new ServiceUnavailableException('No se pudo reenviar el email de confirmación');
+        }
+    }
+
+    // Método para verificar el estado de un usuario y sus medallas
+    async getUserStatus(email: string): Promise<{
+        userStatus: UserStatus;
+        medals: Array<{
+            medalString: string;
+            status: MedalState;
+            petName: string;
+        }>;
+        needsConfirmation: boolean;
+    }> {
+        const user = await this.prisma.user.findFirst({
+            where: {
+                email: email.toLowerCase()
+            },
+            include: {
+                medals: true
+            }
+        });
+
+        if (!user) {
+            throw new NotFoundException('Usuario no encontrado');
+        }
+
+        const pendingMedals = user.medals.filter(medal => 
+            medal.status === MedalState.REGISTER_PROCESS
+        );
+
+        return {
+            userStatus: user.userStatus,
+            medals: user.medals.map(medal => ({
+                medalString: medal.medalString,
+                status: medal.status,
+                petName: medal.petName
+            })),
+            needsConfirmation: user.userStatus === UserStatus.PENDING && pendingMedals.length > 0
+        };
     }
 }

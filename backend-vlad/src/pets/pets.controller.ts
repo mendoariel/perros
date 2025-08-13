@@ -72,5 +72,14 @@ export class PetsController {
         return this.petService.updateMedal(user.email, dto)
     }
 
+    @Public()
+    @Put('test-update-medal')
+    testUpdateMedal(
+        @Body() dto: UpdateMedalDto
+    ) {
+        Logger.log('test dto from controller', dto);
+        return this.petService.updateMedal(dto.email, dto)
+    }
+
 
 }

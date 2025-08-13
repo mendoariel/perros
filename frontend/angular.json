@@ -112,6 +112,20 @@
                   "with": "src/environments/environment.local-deploy.ts"
                 }
               ]
+            },
+            "staging": {
+              "buildOptimizer": true,
+              "optimization": true,
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                }
+              ],
+              "sourceMap": false,
+              "extractLicenses": true,
+              "vendorChunk": false
             }
           },
           "defaultConfiguration": "production"
@@ -205,6 +219,34 @@
               "sourceMap": false,
               "extractLicenses": true,
               "vendorChunk": false
+            },
+            "staging": {
+              "buildOptimizer": true,
+              "optimization": true,
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                }
+              ],
+              "sourceMap": false,
+              "extractLicenses": true,
+              "vendorChunk": false
+            },
+            "staging": {
+              "buildOptimizer": true,
+              "optimization": true,
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                }
+              ],
+              "sourceMap": false,
+              "extractLicenses": true,
+              "vendorChunk": false
             }
           },
           "defaultConfiguration": "development"
@@ -225,6 +267,12 @@
             "local-deploy": {
               "browserTarget": "frontend:build:local-deploy",
               "serverTarget": "frontend:server:local-deploy"
+            },
+            "staging": {
+              "browserTarget": "frontend:build:staging",
+              "serverTarget": "frontend:server:staging",
+              "port": 4101,
+              "host": "0.0.0.0"
             }
           },
           "defaultConfiguration": "development"

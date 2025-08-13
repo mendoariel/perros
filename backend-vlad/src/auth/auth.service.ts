@@ -83,83 +83,84 @@ export class AuthService {
     }
 
     async confirmAccount(dto: ConfirmAccountDto) {
-        const user = await this.prisma.user.findFirst({
-            where: {
-                email: dto.email.toLocaleLowerCase()
-            },
-            include: {
-                medals: true
-            }
+        return await this.prisma.$transaction(async (tx) => {
+            // Verificar usuario y hash
+            const user = await tx.user.findFirst({
+                where: {
+                    email: dto.email.toLocaleLowerCase()
+                },
+                include: {
+                    medals: true
+                }
+            });
+
+            if(!user) throw new NotFoundException('sin registro');
+            if(user.hashToRegister !== dto.userRegisterHash) throw new NotFoundException('fail key');
+
+            // Actualizar usuario
+            await tx.user.update({
+                where: {
+                    email: user.email
+                },
+                data: {
+                    userStatus: UserStatus.ACTIVE
+                }
+            });
+
+            // Actualizar medalla
+            await tx.medal.update({
+                where: {
+                    medalString: dto.medalString
+                },
+                data: {
+                    status: MedalState.INCOMPLETE
+                }
+            });
+
+            // Actualizar virgin medal
+            await tx.virginMedal.update({
+                where: {
+                    medalString: dto.medalString
+                },
+                data: {
+                    status: MedalState.REGISTERED
+                }
+            });
+
+            return {
+                message: "user registered, medal incomplete",
+                code: 5001
+            };
         });
-
-        if(!user) throw new NotFoundException('sin registro');
-        if(user.hashToRegister !== dto.userRegisterHash) throw new NotFoundException('fail key');
-
-        // update user status of the user
-        const userUpdated = await this.prisma.user.update({
-            where: {
-                email: user.email
-            },
-            data: {
-                userStatus: UserStatus.ACTIVE
-            }
-        });
-
-        // update medal status
-        const medalUpdate = await this.prisma.medal.update({
-            where: {
-                medalString: dto.medalString
-            },
-            data: {
-                status: MedalState.INCOMPLETE
-            }
-        });
-
-        // update virgin medal status
-        const virginMedalUpdate = await this.prisma.virginMedal.update({
-            where: {
-                medalString: dto.medalString
-            },
-            data: {
-                status: MedalState.REGISTERED
-            }
-        });
-
-        return {
-            message: "user registered, medal incomplete",
-            code: 5001
-        };
     }
 
     async confirmMedal(dto: ConfirmMedalto) {
+        return await this.prisma.$transaction(async (tx) => {
+            // Actualizar medalla
+            await tx.medal.update({
+                where: {
+                    medalString: dto.medalString
+                },
+                data: {
+                    status: MedalState.ENABLED
+                }
+            });
 
-        // udpate medal status
-        const medalUpdate: any = await this.prisma.medal.update({
-            where: {
-                medalString: dto.medalString
-            },
-            data: {
-                status: MedalState.INCOMPLETE
-            }
+            // Actualizar virgin medal
+            await tx.virginMedal.update({
+                where: {
+                    medalString: dto.medalString
+                },
+                data: {
+                    status: MedalState.ENABLED
+                }
+            });
+
+            return {
+                message: "Medal registered",
+                code: 5010
+            };
         });
-
-        // udpate medal status
-        const virginMedalUpdate: any = await this.prisma.virginMedal.update({
-            where: {
-                medalString: dto.medalString
-            },
-            data: {
-                status: MedalState.REGISTERED
-            }
-        });
-        if(!virginMedalUpdate) throw new NotFoundException('Medalla sin registro')
-
-        const response = {
-            message: "Medal registered",
-            code: 5010
-        }
-
-        return response;
     }
 
     async refreshTokens(userId: number, rt: string ) {

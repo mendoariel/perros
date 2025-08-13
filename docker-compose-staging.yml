@@ -7,9 +7,9 @@ services:
       dockerfile: Dockerfile.staging
       target: development
     container_name: mi-perro-qr-frontend-perros-staging
-    command: ng run frontend:serve-ssr:staging --port 4100
+    command: ng run frontend:serve-ssr:local-deploy --port 4101
     ports:
-      - '4101:4100'  # Puerto diferente para no conflictuar con local
+      - '4101:4101'  # Puerto externo e interno igual para SSR
       - '9877:9876'
     environment:
       - NODE_ENV=staging
@@ -33,7 +33,7 @@ services:
   backend-perros-staging:
     build: 
       context: ./backend-vlad
-      dockerfile: staging.Dockerfile
+      dockerfile: Dockerfile
     container_name: backend-perros-staging
     volumes:
       - ./backend-vlad:/alberto/backend/src/app
@@ -53,8 +53,8 @@ services:
       - DATABASE_URL=postgres://staging_user:staging_password@postgres-staging:5432/peludosclick_staging?schema=public
       - FRONTEND_URL=http://localhost:4101
       - BACKPORT=3333
-      - MODULE_MAIL_USER=staging@peludosclick.com
-      - MODULE_MAIL_PASS=staging_password
+      - MODULE_MAIL_USER=info@peludosclick.com
+      - MODULE_MAIL_PASS=Yamaha600
       - ENVIRONMET=staging
       - DASHBOARD_USERNAME=staging_admin
       - DASHBOARD_PASSWORD=staging_password_123
@@ -89,7 +89,7 @@ services:
 
   # Admin de PostgreSQL para staging
   postgres_admin-staging:
-    image: dpage/pgadmin4:4.28
+    image: dpage/pgadmin4:6.21
     container_name: postgres-admin-staging
     depends_on: 
        - postgres-staging
@@ -98,6 +98,8 @@ services:
       PGADMIN_DEFAULT_PASSWORD: staging_password
     ports:
       - 5051:80  # Puerto diferente para no conflictuar con local
+    volumes:
+      - pgadmin_staging_data:/var/lib/pgadmin
     networks:
       - staging-network
 
@@ -133,6 +135,8 @@ services:
 volumes:
   postgres_staging_data:
     name: postgres_staging_data
+  pgadmin_staging_data:
+    name: pgadmin_staging_data
 
 networks:
   staging-network:
