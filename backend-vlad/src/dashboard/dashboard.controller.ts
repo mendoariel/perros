@@ -181,4 +181,138 @@ export class DashboardController {
       throw new HttpException('Error al obtener frente de medalla', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  // Obtener usuarios con problemas de medallas
+  @Get('users-with-problems')
+  @Public()
+  async getUsersWithProblems() {
+    return await this.dashboardService.getUsersWithMedalProblems();
+  }
+
+  // Obtener estadísticas de problemas
+  @Get('medal-problem-stats')
+  @Public()
+  async getMedalProblemStats() {
+    return await this.dashboardService.getMedalProblemStats();
+  }
+
+  // Restaurar medalla específica
+  @Patch('restore-medal/:userId/:medalString')
+  async restoreMedal(
+    @Param('userId') userId: string,
+    @Param('medalString') medalString: string
+  ) {
+    return await this.dashboardService.restoreProblematicMedal(
+      parseInt(userId),
+      medalString
+    );
+  }
+
+  // Restaurar todas las medallas de un usuario
+  @Patch('restore-user-medals/:userId')
+  async restoreUserMedals(@Param('userId') userId: string) {
+    return await this.dashboardService.restoreAllUserMedals(parseInt(userId));
+  }
+
+  // Restaurar todas las medallas problemáticas del sistema
+  @Post('restore-all-problematic-medals')
+  async restoreAllProblematicMedals() {
+    const usersWithProblems = await this.dashboardService.getUsersWithMedalProblems();
+    const results = [];
+
+    for (const user of usersWithProblems) {
+      try {
+        const result = await this.dashboardService.restoreAllUserMedals(user.id);
+        results.push({
+          userId: user.id,
+          email: user.email,
+          success: true,
+          result
+        });
+      } catch (error) {
+        results.push({
+          userId: user.id,
+          email: user.email,
+          success: false,
+          error: error.message
+        });
+      }
+    }
+
+    return {
+      message: `Proceso completado. ${results.filter(r => r.success).length} usuarios restaurados exitosamente.`,
+      results
+    };
+  }
+
+  // Eliminar usuario problemático específico
+  @Delete('delete-problematic-user/:userId')
+  async deleteProblematicUser(@Param('userId') userId: string) {
+    return await this.dashboardService.deleteProblematicUser(parseInt(userId));
+  }
+
+  // Eliminar todos los usuarios problemáticos
+  @Delete('delete-all-problematic-users')
+  async deleteAllProblematicUsers() {
+    return await this.dashboardService.deleteAllProblematicUsers();
+  }
+
+  // Enviar emails de reset a usuarios eliminados
+  @Post('send-reset-emails')
+  async sendResetEmails() {
+    const usersToNotify = [
+      {
+        email: 'albertdesarrolloweb@gmail.com',
+        petName: 'Sofia',
+        medalString: '5uewbvnpaumkzkjfwg5kyh9cc6j8klla8mqe'
+      },
+      {
+        email: 'ara.frazetto@gmail.com',
+        petName: 'Pumita',
+        medalString: 'hprhrun603h6aqfv6mqn8h5y8wmy5aga0gpc'
+      },
+      {
+        email: 'renzogreslebin@gmail.com',
+        petName: 'Pantuflo',
+        medalString: 'yqcvw6b4iq465cnu6t3ryazctg8xelc8l13w'
+      },
+      {
+        email: 'roodrii.rb@gmail.com',
+        petName: 'Lola',
+        medalString: '5xcdhecp0s63j14nsompg2yyleyupfbh5e2o'
+      },
+      {
+        email: 'vivirromano@gmail.com',
+        petName: 'NIna',
+        medalString: 'fmz4khq2wpmzbp46uj7zw1e9fow3tqrfh1b1'
+      }
+    ];
+
+    const results = [];
+
+    for (const user of usersToNotify) {
+      try {
+        await this.dashboardService.mailService.sendMedalResetNotification(
+          user.email,
+          user.petName,
+          user.medalString
+        );
+        results.push({
+          email: user.email,
+          success: true
+        });
+      } catch (error) {
+        results.push({
+          email: user.email,
+          success: false,
+          error: error.message
+        });
+      }
+    }
+
+    return {
+      message: `Emails enviados. ${results.filter(r => r.success).length} exitosos.`,
+      results
+    };
+  }
 } 

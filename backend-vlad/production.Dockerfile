@@ -11,7 +11,7 @@ COPY tsconfig.build.json ./
 COPY tsconfig.json ./
 COPY . .
 
-RUN npm ci
+RUN npm install
 RUN npx prisma generate
 RUN npm run build
 

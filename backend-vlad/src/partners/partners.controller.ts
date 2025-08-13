@@ -22,7 +22,7 @@ import {
   CreateCommentDto 
 } from './dto';
 import { AtGuard } from '../common/guards/at.guard';
-import { PartnerType, PartnerStatus } from '@prisma/client';
+import { PartnerType, PartnerStatus } from './types/partner.types';
 import { Public } from '../common/decorators';
 
 @Controller('partners')

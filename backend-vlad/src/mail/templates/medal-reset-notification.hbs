@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .header h1 {
+            color: #28a745;
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .medal-info {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .action-button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .step {
+            background-color: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .step-number {
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Tu Medalla Está Lista Para Ser Registrada</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hola <strong>{{userEmail}}</strong>,</p>
+            
+            <p>Hemos solucionado los problemas técnicos que tenías con tu medalla. Ahora puedes volver a intentar registrarla escaneando el código QR como si fuera la primera vez.</p>
+            
+            <div class="warning">
+                <strong>⚠️ Importante:</strong> Tu medalla ha sido reseteada y está lista para un nuevo registro completo.
+            </div>
+            
+            <h2>Detalles de tu Medalla</h2>
+            <div class="medal-info">
+                <p><strong>Nombre de tu mascota:</strong> {{petName}}</p>
+                <p><strong>Código de medalla:</strong> <code>{{medalString}}</code></p>
+                <p><strong>Estado actual:</strong> <span style="color: #28a745;">Lista para registro</span></p>
+            </div>
+            
+            <h2>¿Cómo proceder?</h2>
+            
+            <div class="step">
+                <span class="step-number">1.</span> Escanea el código QR de tu medalla con la aplicación
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2.</span> Completa el formulario de registro con los datos de tu mascota
+            </div>
+            
+            <div class="step">
+                <span class="step-number">3.</span> Confirma tu cuenta de email
+            </div>
+            
+            <div class="step">
+                <span class="step-number">4.</span> ¡Listo! Tu medalla estará completamente registrada
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{{frontendUrl}}/mascota-checking" class="action-button">
+                    Ir a PeludosClick
+                </a>
+            </div>
+            
+            <p><strong>Nota:</strong> Si tienes algún problema durante el proceso, no dudes en contactarnos respondiendo a este email.</p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 PeludosClick - Todos los derechos reservados</p>
+            <p>Gracias por tu paciencia y por confiar en nosotros</p>
+        </div>
+    </div>
+</body>
+</html>

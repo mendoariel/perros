@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsEnum, IsNotEmpty } from 'class-validator';
-import { PartnerType } from '@prisma/client';
+import { PartnerType } from '../types/partner.types';
 
 export class CreatePartnerDto {
   @IsString()

@@ -8,7 +8,7 @@ import {
   CreateOfferDto, 
   CreateCommentDto 
 } from './dto';
-import { PartnerType, PartnerStatus } from '@prisma/client';
+import { PartnerType, PartnerStatus } from './types/partner.types';
 
 @Injectable()
 export class PartnersService {

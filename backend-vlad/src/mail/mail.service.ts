@@ -43,4 +43,36 @@ export class MailService {
             }
         });
     }
+
+    async sendMedalRestoredNotification(email: string, petName: string, medalString: string) {
+        Logger.log('Sending medal restored notification email')
+        await this.mailerService.sendMail({
+            to: email,
+            from: '"PeludosClick" <info@peludosclick.com>',
+            subject: 'Tu medalla ha sido restaurada - PeludosClick',
+            template: './medal-restored',
+            context: {
+                userEmail: email,
+                petName: petName,
+                medalString: medalString,
+                frontendUrl: process.env.FRONTEND_URL || 'https://peludosclick.com'
+            }
+        });
+    }
+
+    async sendMedalResetNotification(email: string, petName: string, medalString: string) {
+        Logger.log('Sending medal reset notification email')
+        await this.mailerService.sendMail({
+            to: email,
+            from: '"PeludosClick" <info@peludosclick.com>',
+            subject: 'Tu medalla está lista para ser registrada - PeludosClick',
+            template: './medal-reset-notification',
+            context: {
+                userEmail: email,
+                petName: petName,
+                medalString: medalString,
+                frontendUrl: process.env.FRONTEND_URL || 'https://peludosclick.com'
+            }
+        });
+    }
 }

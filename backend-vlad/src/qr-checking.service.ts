@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
-import { PostMedalDto, QRCheckingDto } from './dto/qr-checking.dto';
+import { PostMedalDto, QRCheckingDto } from './qr-checking/dto/qr-checking.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, Role, MedalState, UserStatus, User, Medal, VirginMedal } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';

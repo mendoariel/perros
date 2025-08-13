@@ -1,16 +1,16 @@
 import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AuthDto } from './dto';
-import { Message, Tokens } from './types';
+import { AuthDto } from './auth/dto';
+import { Message, Tokens } from './auth/types';
 import { JwtService } from '@nestjs/jwt';
-import { PasswordRecoveryDto } from './dto/password-recovery.dto';
+import { PasswordRecoveryDto } from './auth/dto/password-recovery.dto';
 import { MailService } from 'src/mail/mail.service';
 import { UtilService } from 'src/services/util.service';
-import { NewPasswordDto } from './dto/new-password.dto';
-import { ConfirmAccountDto } from './dto/confirm-account.dto';
+import { NewPasswordDto } from './auth/dto/new-password.dto';
+import { ConfirmAccountDto } from './auth/dto/confirm-account.dto';
 import { Prisma, UserStatus, MedalState, Role } from '@prisma/client';
-import { ConfirmMedalto } from './dto/confirm-medal.dto';
-import { AuthSignInDto } from './dto/auth-signin.dto';
+import { ConfirmMedalto } from './auth/dto/confirm-medal.dto';
+import { AuthSignInDto } from './auth/dto/auth-signin.dto';
 
 var bcrypt = require('bcryptjs');
 @Injectable()

@@ -1,8 +1,8 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from "@nestjs/common";
 import { QrService } from "./qr-checking.service";
 import { Public } from "src/common/decorators";
-import { PostMedalDto, QRCheckingDto } from "./dto";
-import { MedalStatus } from "./types";
+import { PostMedalDto, QRCheckingDto } from "./qr-checking/dto";
+import { MedalStatus } from "./qr-checking/types";
 import { of } from "rxjs";
 import { PrismaPromise } from "@prisma/client";
 
