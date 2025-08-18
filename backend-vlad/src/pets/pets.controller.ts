@@ -5,8 +5,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { FILE_UPLOAD_DIR } from "src/constans";
 import { fileNameEditor, imageFileFilter } from "src/file.util";
-import { CreateFileDto } from "./dto/create-file.dto";
-import { UpdateMedalDto } from "./dto/update-medal.dto";
+import { CreateFileDto, UpdateMedalDto } from "./dto";
 
 @Controller('pets')
 export class PetsController {

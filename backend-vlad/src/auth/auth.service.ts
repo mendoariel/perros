@@ -3,14 +3,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './dto';
 import { Message, Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
-import { PasswordRecoveryDto } from './dto/password-recovery.dto';
+import { PasswordRecoveryDto, NewPasswordDto, ConfirmAccountDto, ConfirmMedalto, AuthSignInDto } from './dto';
 import { MailService } from 'src/mail/mail.service';
 import { UtilService } from 'src/services/util.service';
-import { NewPasswordDto } from './dto/new-password.dto';
-import { ConfirmAccountDto } from './dto/confirm-account.dto';
 import { Prisma, UserStatus, MedalState, Role } from '@prisma/client';
-import { ConfirmMedalto } from './dto/confirm-medal.dto';
-import { AuthSignInDto } from './dto/auth-signin.dto';
 
 var bcrypt = require('bcryptjs');
 @Injectable()

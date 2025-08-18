@@ -3,7 +3,7 @@ import { Prisma, MedalState } from "@prisma/client";
 import { Response } from "express";
 import { join } from "path";
 import { PrismaService } from "src/prisma/prisma.service";
-import { UpdateMedalDto } from "./dto/update-medal.dto";
+import { UpdateMedalDto } from "./dto";
 import { FILE_UPLOAD_DIR } from "src/constans";
 import { MailService } from "src/mail/mail.service";
 import * as fs from 'fs';

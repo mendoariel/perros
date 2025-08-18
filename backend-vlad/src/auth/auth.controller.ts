@@ -6,11 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { AtGuard, RtGuard } from 'src/common/guards';
 import { GetCurrentUser, GetCurrentUserId, Public } from 'src/common/decorators';
-import { PasswordRecoveryDto } from './dto/password-recovery.dto';
-import { NewPasswordDto } from './dto/new-password.dto';
-import { AuthSignInDto } from './dto/auth-signin.dto';
-import { ConfirmAccountDto } from './dto/confirm-account.dto';
-import { ConfirmMedalto } from './dto/confirm-medal.dto';
+import { PasswordRecoveryDto, NewPasswordDto, AuthSignInDto, ConfirmAccountDto, ConfirmMedalto } from './dto';
 
 @Controller('auth')
 export class AuthController {

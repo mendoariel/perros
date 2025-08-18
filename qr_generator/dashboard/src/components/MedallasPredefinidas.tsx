@@ -48,6 +48,7 @@ const MedallasPredefinidas: React.FC = () => {
   const [selectedPreview, setSelectedPreview] = useState<MedalColorPreset | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [renderKey, setRenderKey] = useState(0); // Para forzar re-renderizado
 
   // Verificar si hay medallas con QR seleccionadas
   const hasQRMedsSelected = selectedBatches.some(batch => batch.includeQR === true);
@@ -61,21 +62,28 @@ const MedallasPredefinidas: React.FC = () => {
   
   // Función para dibujar en un canvas específico
   const drawMedalPreview = (canvas: HTMLCanvasElement, preset: MedalColorPreset, isGrid: boolean = false) => {
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
+    
+    // Configurar calidad de renderizado
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     
     // Verificar que tengamos el logo cargado
     if (!logoLoaded || !logoImage) return;
 
     // Configurar canvas con tamaño predefinido
-    const scale = 2; // Para mejor calidad
+    const scale = 4; // Aumentado para mejor calidad
     const size = 29; // Tamaño predefinido: 29mm
     const displaySize = size * scale;
     canvas.width = displaySize;
     canvas.height = displaySize;
 
-    // Limpiar canvas
+    // Limpiar canvas completamente
     ctx.clearRect(0, 0, displaySize, displaySize);
+    
+    // Asegurar que el fondo sea transparente inicialmente
+    ctx.globalCompositeOperation = 'source-over';
 
     // Dibujar fondo
     ctx.fillStyle = preset.exteriorHex;
@@ -96,10 +104,16 @@ const MedallasPredefinidas: React.FC = () => {
 
     // Crear un canvas temporal para cambiar el color del logo
     const tempCanvas = document.createElement('canvas');
-    const tempCtx = tempCanvas.getContext('2d');
+    const tempCtx = tempCanvas.getContext('2d', { alpha: true });
     if (tempCtx) {
+      // Configurar calidad de renderizado
+      tempCtx.imageSmoothingEnabled = true;
+      tempCtx.imageSmoothingQuality = 'high';
       tempCanvas.width = logoSize;
       tempCanvas.height = logoSize;
+
+      // Limpiar el canvas con transparencia
+      tempCtx.clearRect(0, 0, logoSize, logoSize);
 
       // Dibujar el logo original
       tempCtx.drawImage(logoImage, 0, 0, logoSize, logoSize);
@@ -145,22 +159,49 @@ const MedallasPredefinidas: React.FC = () => {
 
   // Cargar el logo al montar el componente
   useEffect(() => {
+    console.log('🔄 Iniciando carga del logo...');
+    console.log('📁 Ruta del logo:', peludosLogo);
+    
     const img = new Image();
     img.crossOrigin = 'anonymous'; // Permitir CORS
     img.onload = () => {
+      console.log('✅ Logo cargado exitosamente');
       setLogoImage(img);
       setLogoLoaded(true);
     };
     img.onerror = (error) => {
-      console.error('Error loading logo image:', error);
+      console.error('❌ Error loading logo image:', error);
       // Intentar sin crossOrigin
       const fallbackImg = new Image();
       fallbackImg.onload = () => {
+        console.log('✅ Logo cargado con fallback');
         setLogoImage(fallbackImg);
         setLogoLoaded(true);
       };
       fallbackImg.onerror = (fallbackError) => {
-        console.error('Error loading logo with fallback:', fallbackError);
+        console.error('❌ Error loading logo with fallback:', fallbackError);
+        // Crear un logo de fallback simple
+        console.log('🔄 Creando logo de fallback...');
+        const fallbackCanvas = document.createElement('canvas');
+        fallbackCanvas.width = 100;
+        fallbackCanvas.height = 100;
+        const fallbackCtx = fallbackCanvas.getContext('2d');
+        if (fallbackCtx) {
+          fallbackCtx.fillStyle = '#FFD700';
+          fallbackCtx.fillRect(0, 0, 100, 100);
+          fallbackCtx.fillStyle = '#000';
+          fallbackCtx.font = 'bold 20px Arial';
+          fallbackCtx.textAlign = 'center';
+          fallbackCtx.fillText('PC', 50, 55);
+          
+          const fallbackImg = new Image();
+          fallbackImg.onload = () => {
+            console.log('✅ Logo de fallback creado');
+            setLogoImage(fallbackImg);
+            setLogoLoaded(true);
+          };
+          fallbackImg.src = fallbackCanvas.toDataURL();
+        }
       };
       fallbackImg.src = peludosLogo;
     };
@@ -195,9 +236,14 @@ const MedallasPredefinidas: React.FC = () => {
     }
   }, [logoLoaded, logoImage]);
 
-
-
-
+  // Forzar re-renderizado cuando cambie el renderKey o se cargue el logo
+  useEffect(() => {
+    if (logoLoaded && logoImage && selectedBatches.length > 0) {
+      console.log(`🔄 Re-renderizando previsualizaciones (renderKey: ${renderKey})`);
+      // Forzar re-renderizado cuando el logo se cargue
+      setRenderKey(prev => prev + 1);
+    }
+  }, [logoLoaded, logoImage, selectedBatches]);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -222,13 +268,23 @@ const MedallasPredefinidas: React.FC = () => {
     }
 
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) throw new Error('No se pudo crear el contexto del canvas');
+    
+    // Configurar calidad de renderizado
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
-    const scale = 4; // Para mejor calidad
+    const scale = 6; // Aumentado para mejor calidad
     const displaySize = config.size * scale;
     canvas.width = displaySize;
     canvas.height = displaySize;
+
+    // Limpiar canvas completamente
+    ctx.clearRect(0, 0, displaySize, displaySize);
+    
+    // Asegurar que el fondo sea transparente inicialmente
+    ctx.globalCompositeOperation = 'source-over';
 
     // Dibujar fondo
     ctx.fillStyle = config.backgroundColor;
@@ -265,10 +321,16 @@ const MedallasPredefinidas: React.FC = () => {
 
     // Crear un canvas temporal para cambiar el color del logo
     const tempCanvas = document.createElement('canvas');
-    const tempCtx = tempCanvas.getContext('2d');
+    const tempCtx = tempCanvas.getContext('2d', { alpha: true });
     if (tempCtx) {
+      // Configurar calidad de renderizado
+      tempCtx.imageSmoothingEnabled = true;
+      tempCtx.imageSmoothingQuality = 'high';
       tempCanvas.width = logoSize;
       tempCanvas.height = logoSize;
+
+      // Limpiar el canvas con transparencia
+      tempCtx.clearRect(0, 0, logoSize, logoSize);
 
       // Dibujar el logo original
       tempCtx.drawImage(logoImage, 0, 0, logoSize, logoSize);
@@ -298,7 +360,7 @@ const MedallasPredefinidas: React.FC = () => {
 
     ctx.restore();
 
-    return canvas.toDataURL('image/png');
+    return canvas.toDataURL('image/png', 1.0);
   };
 
   // Función para crear batch desde preset
@@ -339,6 +401,9 @@ const MedallasPredefinidas: React.FC = () => {
 
     // Mostrar previsualización de la medalla seleccionada
     setSelectedPreview(preset);
+    
+    // Forzar re-renderizado
+    setRenderKey(prev => prev + 1);
   };
 
   // Función para actualizar cantidad
@@ -364,6 +429,8 @@ const MedallasPredefinidas: React.FC = () => {
       delete newQuantities[batchId];
       return newQuantities;
     });
+    // Forzar re-renderizado
+    setRenderKey(prev => prev + 1);
   };
 
   // Función para abrir modal de configuración PDF
@@ -753,15 +820,25 @@ const MedallasPredefinidas: React.FC = () => {
         
         // Crear canvas temporal para el QR con contenedor
         const qrCanvas = document.createElement('canvas');
-        const qrCtx = qrCanvas.getContext('2d');
+        const qrCtx = qrCanvas.getContext('2d', { alpha: true });
         if (!qrCtx) {
           throw new Error('No se pudo crear el contexto del canvas QR');
         }
 
-        const scale = 4;
+        // Configurar calidad de renderizado
+        qrCtx.imageSmoothingEnabled = true;
+        qrCtx.imageSmoothingQuality = 'high';
+
+        const scale = 6; // Aumentado para mejor calidad
         const qrDisplaySize = item.qrSize * scale;
         qrCanvas.width = qrDisplaySize;
         qrCanvas.height = qrDisplaySize;
+
+        // Limpiar canvas completamente
+        qrCtx.clearRect(0, 0, qrDisplaySize, qrDisplaySize);
+        
+        // Asegurar que el fondo sea transparente inicialmente
+        qrCtx.globalCompositeOperation = 'source-over';
 
         // Dibujar contenedor QR con los colores del frente de la medalla
         qrCtx.fillStyle = item.batch.config.backgroundColor; // Color exterior
@@ -815,7 +892,7 @@ const MedallasPredefinidas: React.FC = () => {
         }
         
         // 3. AGREGAR AL PDF: MEDALLA + QR AL LADO
-        const qrCanvasData = qrCanvas.toDataURL('image/png');
+        const qrCanvasData = qrCanvas.toDataURL('image/png', 1.0);
         
         // Agregar medalla
         pdf.addImage(medalCanvasData, 'PNG', currentX, currentY, item.medalSize, item.medalSize);
@@ -971,7 +1048,7 @@ const MedallasPredefinidas: React.FC = () => {
                              }
                            }
                          }}
-                       className="w-20 h-20 rounded-full border-2 border-gray-300 shadow-sm mx-auto"
+                       className="w-24 h-24 rounded-full border-2 border-gray-300 shadow-sm mx-auto"
                        title={`Previsualización: ${preset.name}`}
                      />
                    </div>
@@ -1009,72 +1086,13 @@ const MedallasPredefinidas: React.FC = () => {
                        {/* Previsualización */}
                        <div className="flex-shrink-0">
                          <canvas 
-                           key={`config-${batch.id}`}
+                           key={`config-${batch.id}-${renderKey}`}
                            ref={(canvas) => {
                              if (canvas && batch.preset) {
-                               const ctx = canvas.getContext('2d');
-                               if (ctx) {
-                                 // Configurar canvas
-                                 const scale = 2;
-                                 canvas.width = 29 * scale;
-                                 canvas.height = 29 * scale;
-                                 ctx.scale(scale, scale);
-
-                                 // Dibujar círculo exterior
-                                 ctx.beginPath();
-                                 ctx.arc(29/2, 29/2, 29/2, 0, 2 * Math.PI);
-                                 ctx.fillStyle = batch.preset.exteriorHex;
-                                 ctx.fill();
-
-                                 // Si el logo está cargado, dibujarlo
-                                 if (logoLoaded && logoImage) {
-                                   // Crear máscara para el logo
-                                   ctx.save();
-                                   ctx.beginPath();
-                                   ctx.arc(29/2, 29/2, 29/2, 0, 2 * Math.PI);
-                                   ctx.clip();
-
-                                   // Dibujar el logo con valores predefinidos
-                                   const logoSize = 46; // Tamaño predefinido: 46px
-                                   const logoX = (29 - logoSize) / 2 + 0; // logoX = 0 (predefinido)
-                                   const logoY = (29 - logoSize) / 2 + 5; // logoY = 5 (predefinido)
-
-                                   // Crear canvas temporal para cambiar color
-                                   const tempCanvas = document.createElement('canvas');
-                                   const tempCtx = tempCanvas.getContext('2d');
-                                   if (tempCtx) {
-                                     tempCanvas.width = logoSize * scale;
-                                     tempCanvas.height = logoSize * scale;
-
-                                     tempCtx.drawImage(logoImage, 0, 0, logoSize * scale, logoSize * scale);
-
-                                     const imageData = tempCtx.getImageData(0, 0, logoSize * scale, logoSize * scale);
-                                     const data = imageData.data;
-
-                                     const targetColor = hexToRgb(batch.preset.interiorHex);
-                                     if (targetColor) {
-                                       for (let i = 0; i < data.length; i += 4) {
-                                         if (data[i + 3] > 0) {
-                                           data[i] = targetColor.r;
-                                           data[i + 1] = targetColor.g;
-                                           data[i + 2] = targetColor.b;
-                                         }
-                                       }
-                                       tempCtx.putImageData(imageData, 0, 0);
-                                     }
-
-                                     ctx.drawImage(tempCanvas, logoX * scale, logoY * scale);
-                                   }
-                                   ctx.restore();
-                                 } else {
-                                   // Fallback: círculo interior
-                                   const innerRadius = 29 * 0.35;
-                                   ctx.beginPath();
-                                   ctx.arc(29/2, 29/2, innerRadius, 0, 2 * Math.PI);
-                                   ctx.fillStyle = batch.preset.interiorHex;
-                                   ctx.fill();
-                                 }
-                               }
+                               console.log(`🎨 Renderizando previsualización para: ${batch.name}`);
+                               // Usar la misma función que funciona en la grilla
+                               drawMedalPreview(canvas, batch.preset);
+                               console.log(`✅ Previsualización completada para: ${batch.name}`);
                              }
                            }}
                            className="w-12 h-12 rounded-full border border-gray-300 shadow-sm"
