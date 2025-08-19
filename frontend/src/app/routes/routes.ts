@@ -18,6 +18,8 @@ import { PetFromHomeComponent } from "../pages/pet-from-home/pet-from-home.compo
 import { HomeComponent } from "../pages/home/home.component";
 import { PartnersComponent } from "../pages/partners/partners.component";
 import { PartnerDetailComponent } from "../pages/partner-detail/partner-detail.component";
+import { PrivacyPolicyComponent } from "../pages/privacy-policy/privacy-policy.component";
+import { TermsOfServiceComponent } from "../pages/terms-of-service/terms-of-service.component";
 
 export const routes: Route[] = [
     {
@@ -101,6 +103,14 @@ export const routes: Route[] = [
     {
         path: 'crear-nueva-clave',
         component: NewPasswordComponent
+    },
+    {
+        path: 'privacy-policy',
+        component: PrivacyPolicyComponent
+    },
+    {
+        path: 'terms-of-service',
+        component: TermsOfServiceComponent
     },
     {
         path: 'pagina-no-encontrada',

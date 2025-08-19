@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Subscription, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { PartnersService, Partner } from '../../services/partners.service';
-import { PeludosclickFooterComponent } from '../../shared/components/peludosclick-footer/peludosclick-footer.component';
+import { FooterComponent } from '../../shared/components/footer/footer.component';
 
 @Component({
   selector: 'app-partners',
@@ -15,7 +15,7 @@ import { PeludosclickFooterComponent } from '../../shared/components/peludosclic
     CommonModule,
     HttpClientModule,
     FormsModule,
-    PeludosclickFooterComponent
+    FooterComponent
   ],
   templateUrl: './partners.component.html',
   styleUrls: ['./partners.component.scss']

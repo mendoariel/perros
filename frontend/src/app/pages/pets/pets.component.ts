@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 import { Observable, map, of, catchError, Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { NavigationService } from 'src/app/core/services/navigation.service';
-import { PeludosclickFooterComponent } from 'src/app/shared/components/peludosclick-footer/peludosclick-footer.component';
+import { FooterComponent } from 'src/app/shared/components/footer/footer.component';
 
 interface Pet {
   petName: string;
@@ -27,7 +27,7 @@ interface Pet {
     CommonModule,
     MaterialModule,
     HttpClientModule,
-    PeludosclickFooterComponent
+    FooterComponent
   ],
   templateUrl: './pets.component.html',
   styleUrls: ['./pets.component.scss']

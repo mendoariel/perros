@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 import { Observable, map, of, catchError, Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { NavigationService } from 'src/app/core/services/navigation.service';
-import { PeludosclickFooterComponent } from 'src/app/shared/components/peludosclick-footer/peludosclick-footer.component';
+import { FooterComponent } from 'src/app/shared/components/footer/footer.component';
 import { PetsGridComponent } from 'src/app/shared/components/pets-grid/pets-grid.component';
 import { HomePartnerListComponent } from 'src/app/shared/components/home-partner-list/home-partner-list.component';
 
@@ -20,7 +20,7 @@ import { HomePartnerListComponent } from 'src/app/shared/components/home-partner
     CommonModule,
     MaterialModule,
     FirstNavbarComponent,
-    PeludosclickFooterComponent,
+    FooterComponent,
     PetsGridComponent,
     HomePartnerListComponent
   ],
