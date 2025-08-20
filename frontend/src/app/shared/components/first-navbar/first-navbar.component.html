@@ -1,83 +1,114 @@
-<nav class="bg-gradient-to-r from-[#006455] to-[#005a4a] shadow-xl border-b-2 border-[#004d3d] backdrop-blur-sm">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-20">
+<nav class="navbar-container">
+  <div class="navbar-background">
+    <div class="navbar-pattern"></div>
+  </div>
+  
+  <div class="navbar-content">
+    <div class="navbar-wrapper">
       
       <!-- Logo Section -->
-      <div class="flex items-center space-x-4 cursor-pointer hover:bg-white/10 rounded-xl px-4 py-2 transition-all duration-300 logo-container" (click)="goHome()">
-        <img 
-          src="assets/main/peludosclick-logo-mustard.svg"  
-          alt="PeludosClick Logo"
-          class="w-12 h-12 logo-image"
-          (load)="onImageLoad($event)"
-          (error)="onImageError($event)"
-        >
-        <!-- Fallback icon if image fails -->
-        <mat-icon *ngIf="!logoLoaded" class="text-[#FFD700] text-2xl">pets</mat-icon>
-        <div class="hidden sm:block logo-text">
-          <div class="text-2xl font-bold">
-            <span class="text-[#FFD700]">Peludos</span>
-            <span class="text-white">Click</span>
+      <div class="logo-section" (click)="goHome()">
+        <div class="logo-container">
+          <div class="logo-icon">
+            <img 
+              src="assets/main/peludosclick-logo-mustard.svg"  
+              alt="PeludosClick Logo"
+              class="logo-image"
+              (load)="onImageLoad($event)"
+              (error)="onImageError($event)"
+            >
+            <!-- Fallback icon if image fails -->
+            <svg *ngIf="!logoLoaded" class="logo-fallback" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+          </div>
+          <div class="logo-text">
+            <span class="logo-brand">Peludos</span>
+            <span class="logo-brand-secondary">Click</span>
           </div>
         </div>
       </div>
 
       <!-- Navigation Section -->
-      <div class="flex items-center space-x-4">
+      <div class="nav-section">
         
         <!-- Unauthenticated State -->
-        <div *ngIf="!authenticated" class="flex items-center space-x-3">
+        <div *ngIf="!authenticated" class="auth-buttons">
           <button 
             (click)="login()" 
-            class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-6 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 border-2 border-[#006455] nav-button"
+            class="login-button"
           >
-            Ingresar
+            <svg class="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+            </svg>
+            <span class="button-text">Ingresar</span>
           </button>
         </div>
 
         <!-- Authenticated State -->
-        <div *ngIf="authenticated" class="flex items-center space-x-3">
+        <div *ngIf="authenticated" class="user-menu">
           <button 
             [matMenuTriggerFor]="menu"
-            class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-6 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2 border-2 border-[#006455] nav-button"
+            class="menu-button"
           >
-            <mat-icon class="text-xl">menu</mat-icon>
-            <span class="hidden sm:block">Menú</span>
+            <svg class="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            <span class="button-text">Menú</span>
+            <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
           </button>
           
-          <mat-menu #menu="matMenu" class="min-w-56">
-            <div class="p-3">
-              <div class="mb-3 pb-2 border-b border-[#008080]/20">
-                <div class="text-sm text-[#36454F] font-medium">PeludosClick</div>
-                <div class="text-xs text-[#36454F]/70">Tu mascota protegida</div>
+          <mat-menu #menu="matMenu" class="modern-menu">
+            <div class="menu-header">
+              <div class="menu-brand">
+                <svg class="menu-brand-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+                <div class="menu-brand-text">
+                  <div class="menu-brand-title">PeludosClick</div>
+                  <div class="menu-brand-subtitle">Tu mascota protegida</div>
+                </div>
               </div>
-              
+            </div>
+            
+            <div class="menu-items">
               <button 
                 mat-menu-item 
                 (click)="goTo('mis-mascotas')"
-                class="flex items-center space-x-3 w-full px-4 py-3 text-left hover:bg-[#008080]/5 rounded-lg transition-colors duration-200 menu-item"
+                class="menu-item"
               >
-                <mat-icon class="text-[#008080]">pets</mat-icon>
-                <span class="font-medium text-[#36454F]">Mis mascotas</span>
+                <svg class="menu-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+                <span class="menu-item-text">Mis mascotas</span>
               </button>
               
               <button 
                 mat-menu-item 
                 (click)="goTo('mascotas')"
-                class="flex items-center space-x-3 w-full px-4 py-3 text-left hover:bg-[#008080]/5 rounded-lg transition-colors duration-200 menu-item"
+                class="menu-item"
               >
-                <mat-icon class="text-[#008080]">view_list</mat-icon>
-                <span class="font-medium text-[#36454F]">Todas las mascotas</span>
+                <svg class="menu-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <span class="menu-item-text">Todas las mascotas</span>
               </button>
-              
-              <div class="border-t border-[#008080]/20 my-3"></div>
-              
+            </div>
+            
+            <div class="menu-divider"></div>
+            
+            <div class="menu-items">
               <button 
                 mat-menu-item 
                 (click)="logout()"
-                class="flex items-center space-x-3 w-full px-4 py-3 text-left hover:bg-red-50 rounded-lg transition-colors duration-200 menu-item"
+                class="menu-item logout-item"
               >
-                <mat-icon class="text-red-500">exit_to_app</mat-icon>
-                <span class="font-medium text-red-600">Cerrar sesión</span>
+                <svg class="menu-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                <span class="menu-item-text">Cerrar sesión</span>
               </button>
             </div>
           </mat-menu>

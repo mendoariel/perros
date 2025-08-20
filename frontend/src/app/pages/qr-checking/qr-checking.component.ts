@@ -1,7 +1,6 @@
-import { Component, OnDestroy, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID, afterRender } from '@angular/core';
-import { CommonModule, isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
-import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { QrChekingService } from 'src/app/services/qr-checking.service';
@@ -13,8 +12,7 @@ import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/me
   standalone: true,
   imports: [
     CommonModule,
-    MaterialModule,
-    FirstNavbarComponent
+    MaterialModule
   ],
   templateUrl: './qr-checking.component.html',
   styleUrls: ['./qr-checking.component.scss']
@@ -23,6 +21,11 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
   spinner = false;
   checkingSubscriber: Subscription | undefined;
   message = '';
+  isProcessing = false;
+  isSuccess = false;
+  hasFoundMedal = false;
+  isRequestCompleted = false;
+  showError = false; // Nueva bandera para controlar la visualización del error
   private hash: string | null = null;
 
   constructor(
@@ -31,96 +34,162 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
     private qrService: QrChekingService,
     private _snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    // Usar afterRender para diferir las llamadas HTTP hasta después del renderizado
-    afterRender(() => {
-      if (isPlatformBrowser(this.platformId) && this.hash) {
-        this.processHash();
-      }
-    });
-  }
+    private ngZone: NgZone
+  ) {}
 
   ngOnInit(): void {
-    // Solo extraer el hash en ngOnInit, sin hacer llamadas HTTP
     this.route.queryParams.subscribe(params => {
       this.hash = params['medalString'] ? params['medalString'] : params['medalstring'];
       
       if (!this.hash) {
-        this.message = 'No se encontró el código de la medalla';
-        this.spinner = false;
-        this.cdr.detectChanges();
+        this.ngZone.run(() => {
+          this.message = 'No se encontró el código de la medalla';
+          this.spinner = false;
+          this.isProcessing = false;
+          this.isSuccess = false;
+          this.hasFoundMedal = false;
+          this.isRequestCompleted = true;
+          this.showError = true;
+        });
         return;
       }
 
-      // Si estamos en el servidor, mostrar spinner y esperar al cliente
-      if (isPlatformServer(this.platformId)) {
-        this.spinner = true;
-        this.cdr.detectChanges();
-      } else {
-        // Si estamos en el navegador, procesar inmediatamente
-        this.processHash();
-      }
+      // Procesar el hash inmediatamente
+      this.processHash();
     });
   }
 
   private processHash(): void {
     if (!this.hash) {
-      this.message = 'Código de medalla inválido';
-      this.spinner = false;
-      this.cdr.detectChanges();
+      this.ngZone.run(() => {
+        this.message = 'Código de medalla inválido';
+        this.spinner = false;
+        this.isProcessing = false;
+        this.isSuccess = false;
+        this.hasFoundMedal = false;
+        this.isRequestCompleted = true;
+        this.showError = true;
+      });
       return;
     }
 
-    this.spinner = true;
+    this.ngZone.run(() => {
+      this.spinner = true;
+      this.message = '';
+      this.isProcessing = false;
+      this.isSuccess = false;
+      this.hasFoundMedal = false;
+      this.isRequestCompleted = false;
+      this.showError = false; // Ocultar error durante la búsqueda
+    });
+    
     this.callCheckingService(this.hash);
   }
 
   callCheckingService(hash: string) {
     if (!hash) {
-      this.message = 'Código de medalla inválido';
-      this.spinner = false;
-      this.cdr.detectChanges();
+      this.ngZone.run(() => {
+        this.message = 'Código de medalla inválido';
+        this.spinner = false;
+        this.isProcessing = false;
+        this.isSuccess = false;
+        this.hasFoundMedal = false;
+        this.isRequestCompleted = true;
+        this.showError = true;
+      });
       return;
+    }
+
+    // Cancelar suscripción anterior si existe
+    if (this.checkingSubscriber) {
+      this.checkingSubscriber.unsubscribe();
     }
 
     this.checkingSubscriber = this.qrService.checkingQr(hash).subscribe({
       next: (res: any) => {
-        this.spinner = false;
-        if(res.status === 'VIRGIN') {
-          this.goToAddPed(res.medalString);
-        }
-        if(res.status === 'REGISTER_PROCESS') {
-          this.openSnackBar('Esta medalla esta en proceso de registro.');
-          this.goHome();
-        }
-        if(res.status === 'ENABLED') this.goPet(res.medalString);
-        this.cdr.detectChanges();
+        // Marcar que la petición se completó exitosamente
+        this.isRequestCompleted = true;
+        this.hasFoundMedal = true;
+        
+        this.ngZone.run(() => {
+          // Mostrar éxito inmediatamente
+          this.isSuccess = true;
+          this.spinner = false;
+          this.message = '';
+          this.showError = false; // Asegurar que el error no se muestre
+          
+          // Procesar según el estado después de un delay
+          setTimeout(() => {
+            if (res.status === 'VIRGIN') {
+              this.isProcessing = true;
+              setTimeout(() => {
+                this.goToAddPet(res.medalString);
+              }, 1500);
+            } else if (res.status === 'REGISTER_PROCESS') {
+              this.isProcessing = true;
+              setTimeout(() => {
+                this.openSnackBar('Esta medalla está en proceso de registro.');
+                this.goHome();
+              }, 1500);
+            } else if (res.status === 'ENABLED') {
+              this.isProcessing = true;
+              setTimeout(() => {
+                this.goPet(res.medalString);
+              }, 1500);
+            }
+          }, 1000); // Delay aumentado para asegurar que el éxito se muestre
+        });
       },
       error: (error: any) => {
-        this.message = 'Medalla sin registro';
-        this.spinner = false;
-        this.cdr.detectChanges();
+        // Solo mostrar error si la petición no se completó exitosamente
+        if (!this.isRequestCompleted && !this.hasFoundMedal) {
+          // Agregar un delay antes de mostrar el error para evitar flash
+          setTimeout(() => {
+            this.ngZone.run(() => {
+              this.message = 'Medalla sin registro';
+              this.spinner = false;
+              this.isProcessing = false;
+              this.isSuccess = false;
+              this.isRequestCompleted = true;
+              this.showError = true; // Solo mostrar error después del delay
+            });
+          }, 500); // Delay para evitar flash
+        }
       }
     });
   }
 
-  goToAddPed(medalString: string) {
-    if (isPlatformBrowser(this.platformId)) {
-      // Usar window.location.href para navegación en SSR
-      window.location.href = `/agregar-mascota/${medalString}`;
-    }
+  goToAddPet(medalString: string) {
+    this.ngZone.run(() => {
+      this.router.navigate([`/agregar-mascota/${medalString}`]);
+    });
   }
 
   goPet(medalString: string) {
-    if (isPlatformBrowser(this.platformId)) {
-      window.location.href = `/mascota/${medalString}`;
-    }
+    this.ngZone.run(() => {
+      this.router.navigate([`/mascota/${medalString}`]);
+    });
   }
 
   goHome() {
-    if (isPlatformBrowser(this.platformId)) {
-      window.location.href = '/';
+    this.ngZone.run(() => {
+      this.router.navigate(['/']);
+    });
+  }
+
+  retryChecking() {
+    if (this.hash) {
+      this.processHash();
+    } else {
+      this.ngZone.run(() => {
+        this.message = 'No hay código de medalla para verificar';
+        this.spinner = false;
+        this.isProcessing = false;
+        this.isSuccess = false;
+        this.hasFoundMedal = false;
+        this.isRequestCompleted = true;
+        this.showError = true;
+      });
     }
   }
 
@@ -133,6 +202,8 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.checkingSubscriber ? this.checkingSubscriber.unsubscribe() : null;
+    if (this.checkingSubscriber) {
+      this.checkingSubscriber.unsubscribe();
+    }
   }
 }

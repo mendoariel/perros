@@ -20,6 +20,7 @@ import { PartnersComponent } from "../pages/partners/partners.component";
 import { PartnerDetailComponent } from "../pages/partner-detail/partner-detail.component";
 import { PrivacyPolicyComponent } from "../pages/privacy-policy/privacy-policy.component";
 import { TermsOfServiceComponent } from "../pages/terms-of-service/terms-of-service.component";
+import { TokenTestComponent } from "../pages/token-test/token-test.component";
 
 export const routes: Route[] = [
     {
@@ -111,6 +112,10 @@ export const routes: Route[] = [
     {
         path: 'terms-of-service',
         component: TermsOfServiceComponent
+    },
+    {
+        path: 'token-test',
+        component: TokenTestComponent
     },
     {
         path: 'pagina-no-encontrada',

@@ -18,45 +18,35 @@ export class PetsService {
         return environment.perrosQrApi;
     }
 
-    private getHeaders() {
-        if (isPlatformServer(this.platformId)) {
-            return {};
-        }
-        const token = localStorage.getItem('access_token');
-        return {
-            headers: new HttpHeaders().set('Authorization', `Bearer ${token}`)
-        };
-    }
-
     getPets(): Observable<Pet[]> {
-        return this.http.get<Pet[]>(`${this.getApiUrl()}pets`, this.getHeaders());
+        return this.http.get<Pet[]>(`${this.getApiUrl()}pets`);
     }
 
     getPetById(id: string): Observable<Pet> {
-        return this.http.get<Pet>(`${this.getApiUrl()}pets/${id}`, this.getHeaders());
+        return this.http.get<Pet>(`${this.getApiUrl()}pets/${id}`);
     }
 
     createPet(pet: Pet): Observable<Pet> {
-        return this.http.post<Pet>(`${this.getApiUrl()}pets`, pet, this.getHeaders());
+        return this.http.post<Pet>(`${this.getApiUrl()}pets`, pet);
     }
 
     updatePet(id: string, pet: Pet): Observable<Pet> {
-        return this.http.put<Pet>(`${this.getApiUrl()}pets/${id}`, pet, this.getHeaders());
+        return this.http.put<Pet>(`${this.getApiUrl()}pets/${id}`, pet);
     }
 
     deletePet(id: string): Observable<void> {
-        return this.http.delete<void>(`${this.getApiUrl()}pets/${id}`, this.getHeaders());
+        return this.http.delete<void>(`${this.getApiUrl()}pets/${id}`);
     }
 
     getMyPet(medalString: string): Observable<Pet> {
-        return this.http.get<Pet>(`${this.getApiUrl()}pets/my/${medalString}`, this.getHeaders());
+        return this.http.get<Pet>(`${this.getApiUrl()}pets/my/${medalString}`);
     }
 
     getMyPets(): Observable<Pet[]> {
-        return this.http.get<Pet[]>(`${this.getApiUrl()}pets/mine`, this.getHeaders());
+        return this.http.get<Pet[]>(`${this.getApiUrl()}pets/mine`);
     }
 
     updateMedal(body: any): Observable<any> {
-        return this.http.put<any>(`${this.getApiUrl()}pets/update-medal`, body, this.getHeaders());
+        return this.http.put<any>(`${this.getApiUrl()}pets/update-medal`, body);
     }
 }

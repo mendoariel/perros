@@ -1,70 +1,156 @@
-<main class="my-pets-container">
-  <section class="main-content">
-    <!-- Loading state -->
-    <div class="loading-container" *ngIf="spinner">
-      <mat-spinner></mat-spinner>
-      <p>Cargando mascotas...</p>
+<div class="my-pets-container">
+  <!-- Background with gradient -->
+  <div class="my-pets-background">
+    <div class="background-pattern"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="my-pets-content">
+    <!-- Header Section -->
+    <div class="header-section">
+      <div class="header-content">
+        <div class="header-icon">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+          </svg>
+        </div>
+        <h1 class="page-title">Mis Mascotas</h1>
+        <p class="page-subtitle">Gestiona y protege a tus compañeros peludos</p>
+      </div>
     </div>
 
-    <!-- Error state -->
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="spinner">
+      <div class="loading-spinner">
+        <svg class="animate-spin h-12 w-12 text-[#006455]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+      <p class="loading-text">Cargando tus mascotas...</p>
+    </div>
+
+    <!-- Error State -->
     <div class="error-container" *ngIf="!spinner && error">
-      <mat-icon class="error-icon">error_outline</mat-icon>
-      <p>{{ error }}</p>
-      <button mat-raised-button color="primary" (click)="getOnlyMyPets()">
+      <div class="error-icon">
+        <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+        </svg>
+      </div>
+      <h3 class="error-title">Error al cargar mascotas</h3>
+      <p class="error-message">{{ error }}</p>
+      <button class="retry-button" (click)="getOnlyMyPets()">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
         Intentar de nuevo
       </button>
     </div>
 
     <!-- Content when not loading -->
     <ng-container *ngIf="!spinner && !error">
-      <!-- Debug info -->
-      <div *ngIf="myPets">
-        <p>Número de mascotas: {{ myPets.length }}</p>
+      <!-- Stats Section -->
+      <div class="stats-section" *ngIf="myPets && myPets.length > 0">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number">{{ totalPets }}</div>
+            <div class="stat-label">Mascotas Registradas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ enabledPets }}</div>
+            <div class="stat-label">Completamente Protegidas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ incompletePets }}</div>
+            <div class="stat-label">Pendientes de Completar</div>
+          </div>
+        </div>
       </div>
 
-      <!-- Pets grid -->
+      <!-- Pets Grid -->
       <div class="pets-grid" *ngIf="myPets && myPets.length > 0">
-        <mat-card *ngFor="let pet of myPets" class="pet-card" appearance="outlined">
-          <mat-card-header>
-            <div mat-card-avatar class="example-header-image"></div>
-            <mat-card-title>{{ pet.petName }}</mat-card-title>
-          </mat-card-header>
-          
-          <div *ngIf="pet.status === 'INCOMPLETE'" class="image-container">
-            <mat-icon>pets</mat-icon>
-          </div>
-          
-          <div *ngIf="pet.status === 'ENABLED' && pet.image" class="image-container">
-            <img mat-card-image [src]="env.perrosQrApi + 'pets/files/' + pet.image" alt="Foto de mascota">
+        <div *ngFor="let pet of myPets" class="pet-card" [class.incomplete]="pet.status === 'INCOMPLETE'">
+          <!-- Pet Image -->
+          <div class="pet-image-container">
+            <div *ngIf="pet.status === 'INCOMPLETE'" class="incomplete-image">
+              <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+              <span class="incomplete-label">Sin foto</span>
+            </div>
+            <img 
+              *ngIf="pet.status === 'ENABLED' && pet.image" 
+              [src]="env.perrosQrApi + 'pets/files/' + pet.image" 
+              [alt]="'Foto de ' + pet.petName"
+              class="pet-image">
           </div>
 
-          <mat-card-content style="margin-top: 2em;">
-            <p *ngIf="pet.status === 'INCOMPLETE'">
-              Cargar una imagen de tu mascota para terminar el proceso
-            </p>
-            <p *ngIf="pet.status === 'ENABLED'">
+          <!-- Pet Info -->
+          <div class="pet-info">
+            <h3 class="pet-name">{{ pet.petName }}</h3>
+            
+            <!-- Status Badge -->
+            <div class="status-badge" [class.enabled]="pet.status === 'ENABLED'" [class.incomplete]="pet.status === 'INCOMPLETE'">
+              <svg *ngIf="pet.status === 'ENABLED'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <svg *ngIf="pet.status === 'INCOMPLETE'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+              {{ pet.status === 'ENABLED' ? 'Protegida' : 'Incompleta' }}
+            </div>
+
+            <!-- Description -->
+            <p class="pet-description" *ngIf="pet.status === 'ENABLED'">
               {{ pet.description || 'Sin descripción' }}
             </p>
-          </mat-card-content>
+            <p class="pet-description incomplete-text" *ngIf="pet.status === 'INCOMPLETE'">
+              Carga una imagen de tu mascota para completar el registro
+            </p>
+          </div>
 
-          <mat-card-actions *ngIf="pet.status === 'INCOMPLETE'">
-            <button (click)="goToMyPetForm(pet.medalString)" style="margin-left: auto;" mat-raised-button color="primary">Completar</button>
-          </mat-card-actions>
-
-          <mat-card-actions *ngIf="pet.status === 'ENABLED'">
-            <button (click)="goToMyPet(pet.medalString)" style="margin-left: auto;" mat-raised-button color="primary">Ver Detalles</button>
-          </mat-card-actions>
-        </mat-card>
+          <!-- Actions -->
+          <div class="pet-actions">
+            <button 
+              *ngIf="pet.status === 'INCOMPLETE'"
+              (click)="goToMyPetForm(pet.medalString)"
+              class="action-button complete-button">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Completar Registro
+            </button>
+            
+            <button 
+              *ngIf="pet.status === 'ENABLED'"
+              (click)="goToMyPet(pet.medalString)"
+              class="action-button view-button">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+              Ver Detalles
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- No pets message -->
+      <!-- No Pets Message -->
       <div class="no-pets-container" *ngIf="!myPets || myPets.length === 0">
-        <mat-icon class="no-pets-icon">pets</mat-icon>
-        <p>No tienes mascotas registradas.</p>
-        <button mat-raised-button color="primary" (click)="navigationService.goToAddPet('')">
-          Registrar una mascota
+        <div class="no-pets-icon">
+          <svg class="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+          </svg>
+        </div>
+        <h3 class="no-pets-title">No tienes mascotas registradas</h3>
+        <p class="no-pets-description">Comienza protegiendo a tu primer compañero peludo</p>
+        <button class="add-pet-button" (click)="navigationService.goToAddPet('')">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          Registrar mi Primera Mascota
         </button>
       </div>
     </ng-container>
-  </section>
-</main>
+  </div>
+</div>

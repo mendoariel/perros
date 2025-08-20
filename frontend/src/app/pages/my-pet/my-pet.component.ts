@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { PetsService } from 'src/app/services/pets.services';
 import { AuthService } from 'src/app/auth/services/auth.service';
-import { MaterialModule } from 'src/app/material/material.module';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { UploadFileService } from 'src/app/services/upload-file.service';
 import { environment } from 'src/environments/environment';
@@ -16,7 +15,6 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   standalone: true,
   imports: [
         CommonModule,
-        MaterialModule,
         FirstNavbarComponent
       ],
   templateUrl: './my-pet.component.html',

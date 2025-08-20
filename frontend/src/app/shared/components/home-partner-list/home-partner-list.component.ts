@@ -1,31 +1,38 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MaterialModule } from 'src/app/material/material.module';
 import { Router } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
-import { Subscription, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { PartnersService, Partner } from '../../../services/partners.service';
+import { PartnersService, Partner } from 'src/app/services/partners.service';
+import { Observable, map, of, catchError, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home-partner-list',
   standalone: true,
   imports: [
     CommonModule,
-    HttpClientModule
+    MaterialModule
   ],
   templateUrl: './home-partner-list.component.html',
-  styleUrls: ['./home-partner-list.component.scss']
+  styleUrl: './home-partner-list.component.scss'
 })
 export class HomePartnerListComponent implements OnInit, OnDestroy {
-  private partnersService = inject(PartnersService);
-  private router = inject(Router);
   private subscription: Subscription | null = null;
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-
+  private cdr: ChangeDetectorRef;
+  private ngZone: NgZone;
+  
   partners: Partner[] = [];
   loading = true;
   error: string | null = null;
-  selectedType: string = 'ALL';
+
+  constructor(
+    private partnersService: PartnersService,
+    private router: Router,
+    cdr: ChangeDetectorRef,
+    ngZone: NgZone
+  ) {
+    this.cdr = cdr;
+    this.ngZone = ngZone;
+  }
 
   ngOnInit() {
     this.loadPartners();
@@ -63,20 +70,20 @@ export class HomePartnerListComponent implements OnInit, OnDestroy {
       })
     ).subscribe({
       next: (partners) => {
-        this.partners = partners;
-        this.loading = false;
-        this.cdr.detectChanges();
+        this.ngZone.run(() => {
+          this.partners = partners;
+          this.loading = false;
+        });
       },
       error: (error) => {
         console.error('Error en la suscripción:', error);
-        this.error = 'Error al cargar los partners. Por favor, intenta de nuevo más tarde.';
-        this.loading = false;
-        this.cdr.detectChanges();
+        this.ngZone.run(() => {
+          this.error = 'Error al cargar los partners. Por favor, intenta de nuevo más tarde.';
+          this.loading = false;
+        });
       }
     });
   }
-
-
 
   getPartnerTypeColor(type: string): string {
     switch (type) {
@@ -135,6 +142,8 @@ export class HomePartnerListComponent implements OnInit, OnDestroy {
   }
 
   viewAllPartners() {
-    this.router.navigate(['/partners']);
+    this.ngZone.run(() => {
+      this.router.navigate(['/partners']);
+    });
   }
 } 

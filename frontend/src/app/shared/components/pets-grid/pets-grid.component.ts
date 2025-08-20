@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, afterRender, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { Router } from '@angular/router';
@@ -30,14 +30,15 @@ interface Pet {
   templateUrl: './pets-grid.component.html',
   styleUrl: './pets-grid.component.scss'
 })
-export class PetsGridComponent implements OnDestroy {
+export class PetsGridComponent implements OnInit, OnDestroy {
   private petService = inject(PetsService);
   private router = inject(Router);
   private subscription: Subscription | null = null;
   private cdr: ChangeDetectorRef;
+  private ngZone: NgZone;
   
   pets: Pet[] = [];
-  loading = true;
+  loading = false; // Inicializar como false
   error: string | null = null;
   
   imagePath = `${environment.perrosQrApi}pets/files/`;
@@ -46,10 +47,16 @@ export class PetsGridComponent implements OnDestroy {
   constructor(
     private authService: AuthService,
     private navigationService: NavigationService,
-    cdr: ChangeDetectorRef
+    cdr: ChangeDetectorRef,
+    ngZone: NgZone
   ) {
     this.cdr = cdr;
-    afterRender(() => {
+    this.ngZone = ngZone;
+  }
+
+  ngOnInit() {
+    // Usar setTimeout para asegurar que el cambio ocurra en el siguiente ciclo
+    setTimeout(() => {
       this.loadPets();
     });
   }
@@ -61,8 +68,10 @@ export class PetsGridComponent implements OnDestroy {
   }
 
   loadPets() {
-    this.loading = true;
-    this.error = null;
+    this.ngZone.run(() => {
+      this.loading = true;
+      this.error = null;
+    });
     
     this.subscription = this.petService.getPets().pipe(
       map(pets => {
@@ -85,21 +94,25 @@ export class PetsGridComponent implements OnDestroy {
       })
     ).subscribe({
       next: (pets) => {
-        this.pets = pets;
-        this.loading = false;
-        this.cdr.detectChanges();
+        this.ngZone.run(() => {
+          this.pets = pets;
+          this.loading = false;
+        });
       },
       error: (error) => {
         console.error('SUBSCRIBE ERROR', error);
-        this.error = 'Error al cargar las mascotas. Por favor, intenta de nuevo más tarde.';
-        this.loading = false;
-        this.cdr.detectChanges();
+        this.ngZone.run(() => {
+          this.error = 'Error al cargar las mascotas. Por favor, intenta de nuevo más tarde.';
+          this.loading = false;
+        });
       }
     });
   }
 
   goToPet(pet: Pet) {
-    this.navigationService.navigate([`mascota-publica/${pet.medalString}`]);
+    this.ngZone.run(() => {
+      this.router.navigate([`mascota-publica/${pet.medalString}`]);
+    });
   }
 
   onImageError(event: any) {

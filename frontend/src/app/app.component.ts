@@ -1,7 +1,6 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { AuthService } from './auth/services/auth.service';
 import { Subscription } from 'rxjs';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { SpinnerService } from './services/spinner.service';
@@ -24,7 +23,6 @@ export class AppComponent implements OnInit, OnDestroy {
   spinner = true;
   spinnerSubscription: Subscription | undefined;
   constructor(
-    private authService: AuthService,
     private spinnerService: SpinnerService
   ) {}
 

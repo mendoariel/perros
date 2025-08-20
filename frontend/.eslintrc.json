@@ -1,0 +1,94 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "projects/**/*",
+    "dist/**/*",
+    "node_modules/**/*",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "src/app/app.config.ts"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "extends": [
+        "eslint:recommended"
+      ],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module",
+        "project": "./tsconfig.json"
+      },
+      "rules": {
+        // SSR-Specific Rules
+        "no-restricted-globals": [
+          "error",
+          {
+            "name": "window",
+            "message": "Use isPlatformBrowser() check before accessing window object to ensure SSR compatibility"
+          },
+          {
+            "name": "document",
+            "message": "Use isPlatformBrowser() check before accessing document object to ensure SSR compatibility"
+          },
+          {
+            "name": "localStorage",
+            "message": "Use isPlatformBrowser() check before accessing localStorage to ensure SSR compatibility"
+          },
+          {
+            "name": "sessionStorage",
+            "message": "Use isPlatformBrowser() check before accessing sessionStorage to ensure SSR compatibility"
+          },
+          {
+            "name": "navigator",
+            "message": "Use isPlatformBrowser() check before accessing navigator object to ensure SSR compatibility"
+          },
+          {
+            "name": "location",
+            "message": "Use isPlatformBrowser() check before accessing location object to ensure SSR compatibility"
+          }
+        ],
+        "no-restricted-properties": [
+          "error",
+          {
+            "object": "window",
+            "property": "location",
+            "message": "Use isPlatformBrowser() check before accessing window.location to ensure SSR compatibility"
+          },
+          {
+            "object": "window",
+            "property": "localStorage",
+            "message": "Use isPlatformBrowser() check before accessing window.localStorage to ensure SSR compatibility"
+          },
+          {
+            "object": "window",
+            "property": "sessionStorage",
+            "message": "Use isPlatformBrowser() check before accessing window.sessionStorage to ensure SSR compatibility"
+          },
+          {
+            "object": "document",
+            "property": "cookie",
+            "message": "Use isPlatformBrowser() check before accessing document.cookie to ensure SSR compatibility"
+          }
+        ],
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": ["error", { 
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_",
+          "ignoreRestSiblings": true
+        }]
+      },
+      "plugins": [
+        "@typescript-eslint"
+      ]
+    }
+  ],
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true
+  }
+}

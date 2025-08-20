@@ -62,6 +62,8 @@ services:
       - CORS_ORIGIN=http://localhost:4101,http://localhost:3701
       - RATE_LIMIT_WINDOW=15m
       - RATE_LIMIT_MAX=1000
+      - ACCESS_TOKEN_EXPIRES_IN=300
+      - REFRESH_TOKEN_EXPIRES_IN=2592000
     networks:
       - staging-network
 

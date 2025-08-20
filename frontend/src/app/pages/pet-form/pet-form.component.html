@@ -1,64 +1,182 @@
-<main>
-  <section class="spinner" *ngIf="isLoading">
-    <h1>{{ spinnerMessage }}</h1>
-    <mat-spinner></mat-spinner>
-  </section>
-  <section *ngIf="!isLoading && error">
-    <mat-icon color="warn">error</mat-icon>
-    <p>{{ error }}</p>
-  </section>
-  <section class="main-content" *ngIf="!isLoading && myPet">
-      <h3>Formulario mi mascota</h3>
-      <mat-card class="example-card" appearance="outlined">
-            <mat-card-header>
-              <mat-card-title>{{ myPet.petName || 'Sin nombre' }}</mat-card-title>
-            </mat-card-header>
-            
-            <div *ngIf="!myPet.image" class="image-container">
-              <mat-icon class="image">pets</mat-icon>
-              <div class="input-file-container">
-                <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file">
-                <button (click)="fileInput.click()" style="margin-left: auto;" mat-raised-button color="primary">
-                  <mat-icon>upload_file</mat-icon>
-                  {{ textButton }}
-                </button>
-              </div>
-            </div>
+<div class="pet-form-container">
+  <!-- Loading State -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="loading-content">
+      <div class="loading-spinner">
+        <svg class="spinner" viewBox="0 0 50 50">
+          <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+        </svg>
+      </div>
+      <h3>{{ spinnerMessage }}</h3>
+    </div>
+  </div>
 
-            <div *ngIf="myPet.image" class="image-container">
-              <img mat-card-image [src]="env.perrosQrApi + 'pets/files/' + myPet.image" alt="Foto mascota">
-              <div style="margin-top: 1.2em; text-align: right; width: 100%;">
-                <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file">
-                  <button (click)="fileInput.click()" style="margin-left: auto; margin-right:2em;" mat-raised-button color="primary">
-                    <mat-icon>upload_file</mat-icon>
-                    Cambiar Imagen
-                  </button>
-              </div>
-            </div>
+  <!-- Error State -->
+  <div class="error-overlay" *ngIf="!isLoading && error">
+    <div class="error-content">
+      <div class="error-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+      </div>
+      <h3>Error</h3>
+      <p>{{ error }}</p>
+      <button class="btn-primary" (click)="goToMyPets()">Volver a Mis Mascotas</button>
+    </div>
+  </div>
 
-            <mat-card-content>
-              <form [formGroup]="petForm">
-                <h2>Cargar información</h2>
-                <mat-form-field>
-                  <mat-label>Teléfono:</mat-label>
-                  <input matInput formControlName="phoneNumber" placeholder="Ej 2615551515"> 
-                  <mat-error *ngIf="phoneNumber?.hasError('required')">Ingrese teléfono</mat-error>
-                  <mat-error *ngIf="phoneNumber?.hasError('minlength')">Mínimo de 10 caracteres</mat-error>
-                  <mat-error *ngIf="phoneNumber?.hasError('maxlength')">Máximo de 15 caracteres</mat-error>
-                </mat-form-field>
-                <mat-form-field>
-                  <mat-label>Descripción:</mat-label>
-                  <textarea matInput placeholder="Descripción de la mascota" formControlName="description"></textarea>
-                  <mat-error *ngIf="description?.hasError('required')">Ingrese usuario</mat-error>
-                  <mat-error *ngIf="description?.hasError('minlength')">Mínimo de 9 caracteres</mat-error>
-                  <mat-error *ngIf="description?.hasError('maxlength')">Máximo de 150 caracteres</mat-error>
-                </mat-form-field>
-                <div class="button-container">
-                  <button color="primary" [disabled]="(petForm.invalid || !myPet.image) || (phoneNumber?.value === myPet.phone && description?.value === myPet.description)" mat-raised-button (click)="updatePet()">Guardar</button>
-                  <button color="accent" mat-raised-button (click)="goToMyPets()">Salir</button>
-                </div>
-              </form>
-            </mat-card-content>
-      </mat-card>
-  </section>
-</main>
+  <!-- Main Content -->
+  <div class="main-content" *ngIf="!isLoading && myPet">
+    <!-- Header Section -->
+    <div class="header-section">
+      <div class="header-content">
+        <h1>Completar Información</h1>
+        <p>Ayuda a otros a encontrar a tu mascota agregando información de contacto</p>
+      </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card">
+      <!-- Pet Info Header -->
+      <div class="pet-header">
+        <div class="pet-avatar">
+          <div class="avatar-placeholder" *ngIf="!myPet.image">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4.5 9.5m-2.5 0a2.5 2.5 0 1 1 5 0a2.5 2.5 0 1 1 -5 0"/>
+              <path d="M9 5.5m-2.5 0a2.5 2.5 0 1 1 5 0a2.5 2.5 0 1 1 -5 0"/>
+              <path d="M15 5.5m-2.5 0a2.5 2.5 0 1 1 5 0a2.5 2.5 0 1 1 -5 0"/>
+              <path d="M19.5 9.5m-2.5 0a2.5 2.5 0 1 1 5 0a2.5 2.5 0 1 1 -5 0"/>
+              <path d="M17.34 14.86c-.87-1.02-1.6-1.89-2.48-2.91-.46-.54-1.05-1.08-1.75-1.32-.11-.04-.22-.07-.33-.09-.25-.04-.52-.04-.78-.04s-.53 0-.79.05c-.11.02-.22.05-.33.09-.7.24-1.28.78-1.75 1.32-.87 1.02-1.6 1.89-2.48 2.91-1.31 1.31-2.92 2.76-2.62 4.79.29 1.02 1.02 2.03 2.33 2.32.73.15 3.06-.44 5.54-.44h.18c2.48 0 4.81.58 5.54.44 1.31-.29 2.04-1.31 2.33-2.32.31-2.04-1.3-3.49-2.61-4.8z"/>
+            </svg>
+          </div>
+          <img *ngIf="myPet.image" [src]="env.perrosQrApi + 'pets/files/' + myPet.image" [alt]="myPet.petName || 'Mascota'">
+        </div>
+        <div class="pet-info">
+          <h2>{{ myPet.petName || 'Sin nombre' }}</h2>
+          <div class="pet-status" [class]="'status-' + myPet.status.toLowerCase()">
+            <span class="status-dot"></span>
+            <span class="status-text">{{ myPet.status === 'ENABLED' ? 'Completa' : 'Incompleta' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Upload Section -->
+      <div class="image-section">
+        <div class="upload-area" *ngIf="!myPet.image">
+          <div class="upload-content">
+            <div class="upload-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 7v2.99s-1.99.01-2 0V7h-3s.01-1.99 0-2h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z"/>
+              </svg>
+            </div>
+            <h3>Agregar Foto</h3>
+            <p>Una foto clara ayuda a identificar a tu mascota</p>
+            <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept="image/*">
+            <button class="btn-upload" (click)="fileInput.click()">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+              </svg>
+              {{ textButton }}
+            </button>
+          </div>
+        </div>
+
+        <div class="current-image" *ngIf="myPet.image">
+          <div class="image-container">
+            <img [src]="env.perrosQrApi + 'pets/files/' + myPet.image" [alt]="myPet.petName || 'Mascota'">
+            <div class="image-overlay">
+              <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept="image/*">
+              <button class="btn-change-image" (click)="fileInput.click()">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/>
+                </svg>
+                Cambiar Imagen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Section -->
+      <div class="form-section">
+        <form [formGroup]="petForm">
+          <div class="form-header">
+            <h3>Información de Contacto</h3>
+            <p>Completa los datos para que otros puedan contactarte si encuentran a tu mascota</p>
+          </div>
+
+          <div class="form-group">
+            <label for="phoneNumber">Teléfono de Contacto</label>
+            <div class="input-container">
+              <div class="input-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/>
+                </svg>
+              </div>
+              <input 
+                type="tel" 
+                id="phoneNumber"
+                formControlName="phoneNumber" 
+                placeholder="Ej: 2615551515"
+                [class.error]="phoneNumber?.invalid && phoneNumber?.touched"
+              >
+            </div>
+            <div class="error-message" *ngIf="phoneNumber?.invalid && phoneNumber?.touched">
+              <span *ngIf="phoneNumber?.hasError('required')">El teléfono es requerido</span>
+              <span *ngIf="phoneNumber?.hasError('minlength')">Mínimo 10 dígitos</span>
+              <span *ngIf="phoneNumber?.hasError('maxlength')">Máximo 15 dígitos</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Descripción de la Mascota</label>
+            <div class="input-container">
+              <div class="input-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20,8H4V6H20M20,18H4V12H20M22,4H2V20H22V4Z"/>
+                </svg>
+              </div>
+              <textarea 
+                id="description"
+                formControlName="description" 
+                placeholder="Describe características únicas de tu mascota..."
+                rows="4"
+                [class.error]="description?.invalid && description?.touched"
+              ></textarea>
+            </div>
+            <div class="error-message" *ngIf="description?.invalid && description?.touched">
+              <span *ngIf="description?.hasError('required')">La descripción es requerida</span>
+              <span *ngIf="description?.hasError('minlength')">Mínimo 3 caracteres</span>
+              <span *ngIf="description?.hasError('maxlength')">Máximo 150 caracteres</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button 
+              type="button"
+              class="btn-secondary" 
+              (click)="goToMyPets()"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+              </svg>
+              Cancelar
+            </button>
+            <button 
+              type="button"
+              class="btn-primary" 
+              [disabled]="(petForm.invalid || !myPet.image) || (phoneNumber?.value === myPet.phone && description?.value === myPet.description)"
+              (click)="updatePet()"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z"/>
+              </svg>
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

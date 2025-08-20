@@ -1,145 +1,549 @@
-main {
-    background-color: darkgreen;
-    min-height: 100vh;
+.pet-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
 
-    section.spinner {
-        height: 70vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center; 
-        justify-content: center;
-        background-position: center;
-        background-color: white;
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    section.main-content {
-        border: 1px solid grey;
-        background-color: rgb(218, 247, 232);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-        div.pelu-card {
-            background-color: white;
-            margin-top: 1em;
-            width: 100%;
-            width: 100%;
-            max-width: 350px;
-            border: solid 1px rgb(185, 222, 187);
-            border-radius: 5px;
-            margin-bottom: 3em;
-            box-shadow: 0px 10px 14px 2px black;
-            h1 {
-                padding-top: .8em;
-                padding-left: .8em;
-            }
-            div.image-container {
-                max-width: 350px;
-                width: 100%;
-                height: 200px;
-                background-repeat: no-repeat !important;
-                background-size: cover !important;
-                background-position: center center !important;
-            }
-            div.connection {
-                border: solid 2px grey;
-                margin: 1em;
-                padding: 0;
-                border-radius: 5px;
-                box-shadow: #aaa 8px 8px 8px 0p;
-                margin-top: 1.5em;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    pointer-events: none;
+  }
 
-                h3 {
-                    text-align: center;
-                    font-size: 1.3em;
-                    background: black;
-                    color: white;
-                    margin: 0;
-                    padding: 1.2em 0.5em;
-                }
-                div.info-message {
-                    padding: 1em;
-                }
-            }
-            div.action-container {
-                display: flex;
-                width: 100%;
-                margin-bottom: 2em;
-                margin-top: 1.5em;
-                div.logo {
-                    width: 100%;
-                    div.button {
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: center;
-                        align-items: center;
-                        height: 30px;
-                        border-radius: 8px;
-                        margin: 4px;
-                        a {
-                            text-decoration: none;
-                            font-size: .8em;
-                        }
-                    }
-                    div.button.call-button {
-                        mat-icon {
-                            margin-right: 4px;
-                        }
-                        background: blue;
-                        border: solid 2px blue;
-                        color: white;
-                        a {
-                            color: white;
-                        }
-                        margin-right: 1em;
-                    }
-                    div.button.wame-button {
-                        color: white;
-                        border: solid 2px rgb(13 173 97);
-                        margin-left: 1em;
-                        a {
-                            color: black;
-                        }
-                    }
+  // Loading Overlay
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
 
-                    
-                }
-                img.wame-logo {
-                    width: 17px;
-                    margin-right: 4px;
-                }
-            }
-            div.share-buttons {
-                border: green 1px solid;
-                margin: .5em;
-                padding: 1em;
-                border-radius: 4px;
+    .loading-content {
+      text-align: center;
+      color: white;
+      max-width: 400px;
+      padding: 0 20px;
 
-                h3 {
-                    text-align: center;
-                    font-size: 1.4em;
-                    border-bottom: green solid 1px;
-                }
+      .loading-spinner {
+        margin-bottom: 30px;
 
-                .share-loading {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 1em;
-                    
-                    p {
-                        margin-top: 1em;
-                        color: #666;
-                    }
-                }
-            }
+        .spinner {
+          width: 60px;
+          height: 60px;
+          animation: rotate 2s linear infinite;
+          margin: 0 auto;
+
+          .path {
+            stroke: #667eea;
+            stroke-linecap: round;
+            animation: dash 1.5s ease-in-out infinite;
+          }
         }
+      }
+
+      h3 {
+        font-size: 24px;
+        font-weight: 600;
+        margin: 0 0 10px 0;
+        background: linear-gradient(45deg, #ffffff, #f0f0f0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .loading-subtitle {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.8);
+        margin: 0;
+        font-weight: 400;
+      }
     }
+  }
+
+  // Main Content
+  .main-content {
+    position: relative;
+    z-index: 1;
+
+    // Header Section
+    .header-section {
+      position: relative;
+      height: 300px;
+      overflow: hidden;
+      border-radius: 0 0 30px 30px;
+
+      .header-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        filter: blur(2px);
+        transform: scale(1.1);
+      }
+
+      .header-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+        display: flex;
+        align-items: flex-end;
+        padding: 40px 20px;
+
+        .header-content {
+          width: 100%;
+          max-width: 600px;
+          margin: 0 auto;
+
+          .pet-name {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 10px 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          }
+
+          .pet-description {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 0;
+            line-height: 1.6;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+          }
+        }
+      }
+    }
+
+    // Pet Info Card
+    .pet-info-card {
+      max-width: 600px;
+      margin: -50px auto 0;
+      padding: 0 20px;
+      position: relative;
+      z-index: 2;
+
+      // Pet Image Container
+      .pet-image-container {
+        margin-bottom: 30px;
+
+        .pet-image {
+          position: relative;
+          height: 250px;
+          border-radius: 20px;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+          overflow: hidden;
+
+          .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+
+            .pet-status {
+              background: rgba(255, 255, 255, 0.95);
+              backdrop-filter: blur(10px);
+              border-radius: 25px;
+              padding: 8px 16px;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+              .status-icon {
+                width: 20px;
+                height: 20px;
+                color: #10b981;
+              }
+
+              span {
+                font-size: 14px;
+                font-weight: 600;
+                color: #1f2937;
+              }
+            }
+          }
+        }
+      }
+
+      // Connection Section
+      .connection-section {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        animation: fadeInUp 0.8s ease-out;
+
+        .section-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 20px;
+
+          .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+
+            svg {
+              width: 24px;
+              height: 24px;
+            }
+          }
+
+          h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+          }
+        }
+
+        .info-message {
+          background: #f8fafc;
+          border-radius: 12px;
+          padding: 16px;
+          margin-bottom: 24px;
+
+          p {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 0;
+            line-height: 1.6;
+            text-align: center;
+          }
+        }
+
+        .action-buttons {
+          display: flex;
+          gap: 12px;
+
+          .action-button {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+            .button-icon {
+              width: 24px;
+              height: 24px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              svg {
+                width: 20px;
+                height: 20px;
+              }
+            }
+
+            &:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            }
+
+            &.whatsapp-button {
+              background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+              color: white;
+
+              &:hover {
+                background: linear-gradient(135deg, #128c7e 0%, #075e54 100%);
+              }
+            }
+
+            &.call-button {
+              background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+              color: white;
+
+              &:hover {
+                background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+              }
+            }
+          }
+        }
+      }
+
+      // Share Section
+      .share-section {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+
+        .section-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 24px;
+
+          .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+
+            svg {
+              width: 24px;
+              height: 24px;
+            }
+          }
+
+          h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+          }
+        }
+
+        .share-loading {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 40px 20px;
+
+          .loading-spinner {
+            margin-bottom: 16px;
+
+            .spinner {
+              width: 40px;
+              height: 40px;
+              animation: rotate 2s linear infinite;
+
+              .path {
+                stroke: #667eea;
+                stroke-linecap: round;
+                animation: dash 1.5s ease-in-out infinite;
+              }
+            }
+          }
+
+          p {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 0;
+            text-align: center;
+          }
+        }
+
+        .share-buttons-container {
+          display: flex;
+          justify-content: center;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .pet-container {
+    .main-content {
+      .header-section {
+        height: 250px;
+
+        .header-overlay {
+          padding: 30px 15px;
+
+          .header-content {
+            .pet-name {
+              font-size: 28px;
+            }
+
+            .pet-description {
+              font-size: 14px;
+            }
+          }
+        }
+      }
+
+      .pet-info-card {
+        padding: 0 15px;
+
+        .pet-image-container .pet-image {
+          height: 200px;
+        }
+
+        .connection-section,
+        .share-section {
+          padding: 24px 20px;
+
+          .section-header {
+            .section-icon {
+              width: 36px;
+              height: 36px;
+
+              svg {
+                width: 20px;
+                height: 20px;
+              }
+            }
+
+            h3 {
+              font-size: 18px;
+            }
+          }
+
+          .action-buttons {
+            flex-direction: column;
+
+            .action-button {
+              padding: 14px 20px;
+              font-size: 15px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .pet-container {
+    .main-content {
+      .header-section {
+        height: 200px;
+
+        .header-overlay {
+          padding: 20px 15px;
+
+          .header-content {
+            .pet-name {
+              font-size: 24px;
+            }
+
+            .pet-description {
+              font-size: 13px;
+            }
+          }
+        }
+      }
+
+      .pet-info-card {
+        margin-top: -30px;
+
+        .pet-image-container .pet-image {
+          height: 180px;
+        }
+
+        .connection-section,
+        .share-section {
+          padding: 20px 16px;
+
+          .section-header {
+            .section-icon {
+              width: 32px;
+              height: 32px;
+
+              svg {
+                width: 18px;
+                height: 18px;
+              }
+            }
+
+            h3 {
+              font-size: 16px;
+            }
+          }
+
+          .info-message {
+            padding: 12px;
+
+            p {
+              font-size: 13px;
+            }
+          }
+
+          .action-buttons .action-button {
+            padding: 12px 16px;
+            font-size: 14px;
+
+            .button-icon svg {
+              width: 18px;
+              height: 18px;
+            }
+          }
+        }
+      }
+    }
+  }
 }
