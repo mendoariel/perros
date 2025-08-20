@@ -16,7 +16,13 @@
   <div class="main-content" *ngIf="!spinner && pet">
     <!-- Header Section -->
     <div class="header-section">
-      <div class="header-background" [style.background-image]="pet.background"></div>
+      <div class="header-background">
+        <img 
+          [src]="petImageUrl" 
+          [alt]="pet?.petName || 'Mascota'"
+          class="header-image"
+        />
+      </div>
       <div class="header-overlay">
         <div class="header-content">
           <h1 class="pet-name">{{ pet?.petName || 'Sin nombre' }}</h1>
@@ -27,8 +33,14 @@
 
     <!-- Pet Info Card -->
     <div class="pet-info-card">
+      <!-- Pet Image Container -->
       <div class="pet-image-container">
-        <div class="pet-image" [style.background-image]="pet.background">
+        <div class="pet-image">
+          <img 
+            [src]="petImageUrl" 
+            [alt]="pet?.petName || 'Mascota'"
+            class="pet-image-content"
+          />
           <div class="image-overlay">
             <div class="pet-status">
               <svg class="status-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -104,7 +116,7 @@
           [url]="'https://peludosclick.com/mascota/' + medalString" 
           [title]="(pet?.petName || 'Sin nombre') + ' - PeludosClick'"
           [description]="pet.description"
-          [image]="pet.background"
+          [image]="petImageUrl"
           class="share-buttons-container">
         </share-buttons>
       </div>

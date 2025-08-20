@@ -33,6 +33,7 @@ export class PetComponent implements OnInit, OnDestroy {
   spinnerMessage = 'Cargando información de la mascota...';
   env = environment;
   isImageLoaded = false;
+  petImageUrl = '';
   private cdr: ChangeDetectorRef;
   private ngZone: NgZone;
     
@@ -108,9 +109,14 @@ export class PetComponent implements OnInit, OnDestroy {
         this.ngZone.run(() => {
           this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;
           this.pet.tel = `tel:${this.pet.phone}`;
-          this.pet.background = this.isImageLoaded ? 
-            `url(${imageUrl})` : 
-            `url(${environment.frontend}/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg)`;
+          
+          // Set the direct image URL for img tags
+          this.petImageUrl = this.isImageLoaded ? 
+            imageUrl : 
+            `${environment.frontend}/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
+          
+          // Keep background for backward compatibility (if needed)
+          this.pet.background = this.petImageUrl;
           
           this.setMetaData();
           this.cdr.detectChanges();

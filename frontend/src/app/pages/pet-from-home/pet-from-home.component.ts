@@ -40,6 +40,7 @@ export class PetFromHomeComponent implements OnDestroy {
   env = environment;
   background = `url(${environment.perrosQrApi}pets/files/secrectIMG-20250301-WA0000.jpg)`;
   isImageLoaded = false;
+  petImageUrl = ''; // New property for direct image URL
     
   constructor(
     private route: ActivatedRoute,
@@ -131,9 +132,14 @@ export class PetFromHomeComponent implements OnDestroy {
         
         this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;
         this.pet.tel = `tel: ${this.pet.phone}`;
-        this.pet.background = this.isImageLoaded ? 
-          `url(${imageUrl})` : 
-          `url(${environment.frontend}/${DEFAULT_SOCIAL_IMAGE})`;
+        
+        // Set the direct image URL for img tags
+        this.petImageUrl = this.isImageLoaded ? 
+          imageUrl : 
+          `${environment.frontend}/${DEFAULT_SOCIAL_IMAGE}`;
+        
+        // Keep background for backward compatibility (if needed)
+        this.pet.background = this.petImageUrl;
         
         this.setMetaData();
         this.cdr.detectChanges();
