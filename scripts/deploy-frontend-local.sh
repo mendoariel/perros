@@ -15,23 +15,30 @@ FRONTEND_SERVICE="peludosclick_frontend_service"
 LOCAL_FRONTEND_DIR="frontend"
 
 echo -e "${YELLOW}📦 Construyendo el frontend localmente (producción)...${NC}"
+echo -e "${YELLOW}⏳ Esto puede tomar varios minutos...${NC}"
 cd $LOCAL_FRONTEND_DIR
-npm run build:ssr -- --configuration production
+npm run build:ssr
+echo -e "${GREEN}✅ Build completado${NC}"
 cd ..
 
 echo -e "${YELLOW}🚀 Subiendo carpeta dist al servidor...${NC}"
 
 # Subir la carpeta dist al servidor
+echo -e "${YELLOW}📤 Subiendo archivos al servidor...${NC}"
 rsync -avz --delete $LOCAL_FRONTEND_DIR/dist/ $SERVER_USER@$SERVER_IP:$SERVER_PATH/dist/
 
 echo -e "${GREEN}✅ Carpeta dist subida exitosamente${NC}"
 
 # Ejecutar el deploy en el servidor (reconstruir y levantar el contenedor frontend)
 echo -e "${YELLOW}🔄 Ejecutando deploy en el servidor...${NC}"
+echo -e "${YELLOW}⏳ Reconstruyendo contenedor frontend...${NC}"
 ssh $SERVER_USER@$SERVER_IP "cd $DOCKER_COMPOSE_PATH && docker-compose -f $DOCKER_COMPOSE_FILE up -d --build $FRONTEND_SERVICE"
 
 echo -e "${GREEN}✅ Deploy completado exitosamente${NC}"
 
-# Mostrar los logs del contenedor frontend
+# Mostrar los logs del contenedor frontend (solo los últimos 20 logs)
 echo -e "${YELLOW}📋 Mostrando logs del frontend...${NC}"
-ssh $SERVER_USER@$SERVER_IP "cd $DOCKER_COMPOSE_PATH && docker-compose -f $DOCKER_COMPOSE_FILE logs -f $FRONTEND_SERVICE" 
+ssh $SERVER_USER@$SERVER_IP "cd $DOCKER_COMPOSE_PATH && docker-compose -f $DOCKER_COMPOSE_FILE logs --tail=20 $FRONTEND_SERVICE"
+
+echo -e "${GREEN}✅ Deploy del frontend completado exitosamente${NC}"
+echo -e "${YELLOW}💡 Para ver logs en tiempo real, ejecuta: ssh $SERVER_USER@$SERVER_IP 'cd $DOCKER_COMPOSE_PATH && docker-compose -f $DOCKER_COMPOSE_FILE logs -f $FRONTEND_SERVICE'${NC}" 

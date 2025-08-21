@@ -28,14 +28,16 @@ const DEFAULT_SOCIAL_IMAGE = `${environment.frontend}/assets/default-pet-social.
 export class PetComponent implements OnInit, OnDestroy {
   pet: any;
   petSubscription: Subscription | undefined;
+  routeSubscription: Subscription | undefined;
   medalString: any;
   spinner = false;
   spinnerMessage = 'Cargando información de la mascota...';
   env = environment;
   isImageLoaded = false;
   petImageUrl = '';
+  metaDataSet = false; // Flag to prevent multiple meta data calls
   private cdr: ChangeDetectorRef;
-  private ngZone: NgZone;
+  private ngZone: NgZone
     
   constructor(
     private route: ActivatedRoute,
@@ -56,6 +58,11 @@ export class PetComponent implements OnInit, OnDestroy {
   }
 
   setMetaData() {
+    // Prevent multiple calls
+    if (this.metaDataSet) {
+      return;
+    }
+    
     const petImage = this.isImageLoaded ? 
       `https://api.peludosclick.com/pets/files/${this.pet.image}` : 
       `https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
@@ -68,6 +75,8 @@ export class PetComponent implements OnInit, OnDestroy {
       image: petImage,
       url: `https://peludosclick.com/mascota/${this.medalString}`
     });
+    
+    this.metaDataSet = true;
   }
 
   checkImageExists(imageUrl: string): Promise<boolean> {
@@ -135,6 +144,9 @@ export class PetComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.petSubscription) {
       this.petSubscription.unsubscribe();
+    }
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
     }
   }
 

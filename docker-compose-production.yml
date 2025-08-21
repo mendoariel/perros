@@ -36,13 +36,13 @@ services:
   peludosclick_backend:
     build: 
       context: ./backend-vlad
-      dockerfile: production.Dockerfile
+      dockerfile: production-dist.Dockerfile
       target: production
     container_name: peludosclickbackend
     volumes:
-      - ./backend-vlad:/alberto/backend/src/app
-      - /alberto/backend/src/app/node_modules
-    command: npm run start:prod
+      - ./backend-vlad/dist:/alberto/backend/src/app/dist
+      - ./backend-vlad/public:/alberto/backend/src/app/public
+    command: node dist/main.js
     ports:
       - '3335:3335'
     depends_on: 
