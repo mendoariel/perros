@@ -84,4 +84,23 @@ export class MailService {
                   }
               });
           }
+
+          async sendMedalUnlockApology(data: {
+              medalString: string;
+              userEmail: string;
+              userName: string;
+          }) {
+              Logger.log('Sending medal unlock apology email')
+              await this.mailerService.sendMail({
+                  to: data.userEmail,
+                  from: '"PeludosClick" <info@peludosclick.com>',
+                  subject: 'Desbloquear tu medalla - PeludosClick',
+                  template: './medal-unlock-apology',
+                  context: {
+                      medalString: data.medalString,
+                      userEmail: data.userEmail,
+                      userName: data.userName
+                  }
+              });
+          }
 }

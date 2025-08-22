@@ -585,4 +585,77 @@ export class QrService {
             needsConfirmation: user.userStatus === UserStatus.PENDING && pendingMedals.length > 0
         };
     }
+
+    // Método para enviar email de disculpas por medalla bloqueada
+    async sendUnlockApology(medalString: string, userEmail: string, userName: string): Promise<{
+        message: string;
+        code: string;
+    }> {
+        try {
+            // Verificar que la medalla existe y está en estado REGISTER_PROCESS
+            const medal = await this.prisma.medal.findFirst({
+                where: {
+                    medalString: medalString
+                }
+            });
+
+            if (!medal) {
+                throw new NotFoundException('Medalla no encontrada');
+            }
+
+            if (medal.status !== MedalState.REGISTER_PROCESS) {
+                throw new BadRequestException('La medalla no está en estado de proceso de registro');
+            }
+
+            // Enviar email de disculpas
+            await this.mailService.sendMedalUnlockApology({
+                medalString,
+                userEmail,
+                userName
+            });
+
+            return {
+                message: 'Email de disculpas enviado correctamente',
+                code: 'apology_sent'
+            };
+        } catch (error) {
+            console.error('Error enviando email de disculpas:', error);
+            throw error;
+        }
+    }
+
+    // Método para previsualizar el email de disculpas
+    async previewUnlockApology(medalString: string, userEmail: string, userName: string): Promise<{
+        html: string;
+        subject: string;
+    }> {
+        try {
+            // Generar el HTML del email usando el template
+            const fs = require('fs');
+            const path = require('path');
+            const handlebars = require('handlebars');
+
+            // Leer el template
+            const templatePath = path.join(__dirname, '../../mail/templates/medal-unlock-apology.hbs');
+            const templateContent = fs.readFileSync(templatePath, 'utf8');
+
+            // Compilar el template
+            const template = handlebars.compile(templateContent);
+
+            // Generar el HTML con los datos
+            const html = template({
+                medalString,
+                userEmail,
+                userName
+            });
+
+            return {
+                html,
+                subject: 'Desbloquear tu medalla - PeludosClick'
+            };
+        } catch (error) {
+            console.error('Error generando preview del email:', error);
+            throw error;
+        }
+    }
 }

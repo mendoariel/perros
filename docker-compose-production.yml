@@ -24,6 +24,9 @@ services:
     ports:
       - "9002:9002"
     command: npm run serve:ssr
+    environment:
+      - BACKEND_HOST=peludosclickbackend
+      - BACKEND_PORT=3335
     labels:
       - traefik.http.routers.peludosclick_frontend_service.rule=Host(`www.peludosclick.com`,`peludosclick.com`)
       - traefik.http.routers.peludosclick_frontend_service.tls=true
@@ -45,7 +48,7 @@ services:
     volumes:
       - ./backend-vlad/dist:/alberto/backend/src/app/dist
       - ./backend-vlad/public:/alberto/backend/src/app/public
-    command: node dist/main.js
+    command: node dist/src/main.js
     ports:
       - '3335:3335'
     depends_on: 
@@ -56,6 +59,10 @@ services:
       - traefik.http.routers.peludosclick_backend.tls=true
       - traefik.http.routers.peludosclick_backend.tls.certresolver=lets-encrypt
       - traefik.port=3335
+      - traefik.http.routers.peludosclick_backend_api.rule=Host(`peludosclick.com`) && PathPrefix(`/api`)
+      - traefik.http.routers.peludosclick_backend_api.tls=true
+      - traefik.http.routers.peludosclick_backend_api.tls.certresolver=lets-encrypt
+      - traefik.http.routers.peludosclick_backend_api.service=peludosclick_backend
     networks:
       - internal
       - web

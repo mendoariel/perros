@@ -137,6 +137,40 @@ export class QRCheckingController {
         }
     }
 
+    @Public()
+    @Post('send-unlock-apology')
+    @HttpCode(HttpStatus.OK)
+    async sendUnlockApology(@Body() dto: { medalString: string; userEmail: string; userName: string }): Promise<any> {
+        const startTime = Date.now();
+        try {
+            const result = await this.qrService.sendUnlockApology(dto.medalString, dto.userEmail, dto.userName);
+            const endTime = Date.now();
+            console.log(`Send unlock apology completed in ${endTime - startTime}ms for medal: ${dto.medalString}`);
+            return result;
+        } catch (error) {
+            const endTime = Date.now();
+            console.error(`Send unlock apology failed in ${endTime - startTime}ms for medal: ${dto.medalString}`, error);
+            throw error;
+        }
+    }
+
+    @Public()
+    @Get('preview-unlock-apology/:medalString/:userEmail/:userName')
+    @HttpCode(HttpStatus.OK)
+    async previewUnlockApology(
+        @Param('medalString') medalString: string,
+        @Param('userEmail') userEmail: string,
+        @Param('userName') userName: string
+    ): Promise<any> {
+        try {
+            const result = await this.qrService.previewUnlockApology(medalString, userEmail, userName);
+            return result;
+        } catch (error) {
+            console.error(`Preview unlock apology failed for medal: ${medalString}`, error);
+            throw error;
+        }
+    }
+
 
 
     // @Public()

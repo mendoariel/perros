@@ -26,16 +26,21 @@ export function app(): express.Express {
     const url = require('url');
     
     const parsedUrl = url.parse(req.url);
-                const options = {
-              hostname: 'backend-perros',
-              port: 3333,
-              path: parsedUrl.path,
-              method: req.method,
-              headers: {
-                ...req.headers,
-                host: 'backend-perros:3333'
-              }
-            };
+    
+    // Configuración del backend según el entorno
+    const backendHost = process.env['BACKEND_HOST'] || 'peludosclickbackend';
+    const backendPort = process.env['BACKEND_PORT'] || '3335';
+    
+    const options = {
+      hostname: backendHost,
+      port: backendPort,
+      path: `/api${parsedUrl.path}`,
+      method: req.method,
+      headers: {
+        ...req.headers,
+        host: `${backendHost}:${backendPort}`
+      }
+    };
 
     const proxyReq = http.request(options, (proxyRes: any) => {
       res.writeHead(proxyRes.statusCode, proxyRes.headers);
@@ -49,14 +54,8 @@ export function app(): express.Express {
 
     // Handle POST requests with body
     if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
-      let body = '';
-      req.on('data', (chunk) => {
-        body += chunk.toString();
-      });
-      req.on('end', () => {
-        proxyReq.write(body);
-        proxyReq.end();
-      });
+      // For file uploads, pipe the request directly
+      req.pipe(proxyReq, { end: true });
     } else {
       req.pipe(proxyReq, { end: true });
     }
@@ -68,16 +67,21 @@ export function app(): express.Express {
     const url = require('url');
     
     const parsedUrl = url.parse(req.url);
-                const options = {
-              hostname: 'backend-perros',
-              port: 3333,
-              path: `/pets/files${parsedUrl.path}`,
-              method: req.method,
-              headers: {
-                ...req.headers,
-                host: 'backend-perros:3333'
-              }
-            };
+    
+    // Configuración del backend según el entorno
+    const backendHost = process.env['BACKEND_HOST'] || 'peludosclickbackend';
+    const backendPort = process.env['BACKEND_PORT'] || '3335';
+    
+    const options = {
+      hostname: backendHost,
+      port: backendPort,
+      path: `/pets/files${parsedUrl.path}`,
+      method: req.method,
+      headers: {
+        ...req.headers,
+        host: `${backendHost}:${backendPort}`
+      }
+    };
 
     const proxyReq = http.request(options, (proxyRes: any) => {
       res.writeHead(proxyRes.statusCode, proxyRes.headers);

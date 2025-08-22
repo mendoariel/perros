@@ -29,4 +29,4 @@ RUN chmod +x ./scripts/wait-for-db.sh
 EXPOSE 3335
 
 # Start the application
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
