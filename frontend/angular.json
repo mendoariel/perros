@@ -184,6 +184,11 @@
             "inlineStyleLanguage": "scss"
           },
           "configurations": {
+            "development": {
+              "main": "server.dev.ts"
+            }
+          },
+          "configurations": {
             "production": {
               "outputHashing": "media",
               "fileReplacements": [

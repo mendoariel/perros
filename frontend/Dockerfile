@@ -19,7 +19,7 @@ ENV HOST=0.0.0.0
 ENV BACKEND_URL=http://localhost:3333
 ENV CHROME_BIN=/usr/bin/chromium
 RUN npm run build-local
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start-ssr"]
 
 FROM nginx:alpine AS production
 COPY --from=development /app/dist/frontend/browser /usr/share/nginx/html

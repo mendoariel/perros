@@ -42,7 +42,7 @@ export class PetsGridComponent implements OnDestroy {
   loading = false; // Inicializar como false
   error: string | null = null;
   
-  imagePath = `/pets/files/`;
+  imagePath = environment.production ? `/pets/files/` : `${environment.perrosQrApi}pets/files/`;
   env = environment;
 
   constructor(
@@ -70,56 +70,54 @@ export class PetsGridComponent implements OnDestroy {
   }
 
   loadPets() {
-    this.ngZone.run(() => {
+    // Usar setTimeout para evitar ExpressionChangedAfterItHasBeenCheckedError
+    setTimeout(() => {
       this.loading = true;
       this.error = null;
-    });
-    
-    this.subscription = this.petService.getPets().pipe(
-      map(pets => {
-        return pets.filter(pet => pet.status === 'ENABLED');
-      }),
-      map(pets => {
-        // Mezclar aleatoriamente las mascotas
-        const shuffledPets = this.shuffleArray([...pets]);
-        return shuffledPets;
-      }),
-      map(pets => pets.map(pet => ({
-        ...pet,
-        background: pet.image ? `/pets/files/${pet.image}` : 'assets/main/default-pet-social.jpg',
-        link: `mascota/${pet.medalString}`
-      }))),
-      catchError(error => {
-        console.error('PIPE CATCH ERROR', error);
-        this.error = 'Error al cargar las mascotas. Por favor, intenta de nuevo más tarde.';
-        return of([]);
-      })
-    ).subscribe({
-      next: (pets) => {
-        this.ngZone.run(() => {
+      this.cdr.detectChanges();
+      
+      this.subscription = this.petService.getPets().pipe(
+        map(pets => {
+          return pets.filter(pet => pet.status === 'ENABLED');
+        }),
+        map(pets => {
+          // Mezclar aleatoriamente las mascotas
+          const shuffledPets = this.shuffleArray([...pets]);
+          return shuffledPets;
+        }),
+        map(pets => pets.map(pet => ({
+          ...pet,
+          background: pet.image ? (environment.production ? `/pets/files/${pet.image}` : `${environment.perrosQrApi}pets/files/${pet.image}`) : 'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg',
+          link: `mascota/${pet.medalString}`
+        }))),
+        catchError(error => {
+          console.error('PIPE CATCH ERROR', error);
+          this.error = 'Error al cargar las mascotas. Por favor, intenta de nuevo más tarde.';
+          return of([]);
+        })
+      ).subscribe({
+        next: (pets) => {
           this.pets = pets;
           this.loading = false;
-        });
-      },
-      error: (error) => {
-        console.error('SUBSCRIBE ERROR', error);
-        this.ngZone.run(() => {
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('SUBSCRIBE ERROR', error);
           this.error = 'Error al cargar las mascotas. Por favor, intenta de nuevo más tarde.';
           this.loading = false;
-        });
-      }
-    });
+          this.cdr.detectChanges();
+        }
+      });
+    }, 0);
   }
 
   goToPet(pet: Pet) {
-    this.ngZone.run(() => {
-      this.router.navigate([`mascota-publica/${pet.medalString}`]);
-    });
+    this.router.navigate([`mascota-publica/${pet.medalString}`]);
   }
 
   onImageError(event: any) {
     // Si la imagen falla, usar una imagen por defecto
-    event.target.src = 'assets/main/default-pet-social.jpg';
+    event.target.src = 'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
   }
 
   /**

@@ -42,7 +42,7 @@ export class PetsComponent implements OnDestroy {
   loading = true;
   error: string | null = null;
   
-  imagePath = `/pets/files/`;
+  imagePath = environment.production ? `/pets/files/` : `${environment.perrosQrApi}pets/files/`;
   env = environment;
 
   constructor(
@@ -70,11 +70,11 @@ export class PetsComponent implements OnDestroy {
       map(pets => {
         return pets.filter(pet => pet.status === 'ENABLED');
       }),
-      map(pets => pets.map(pet => ({
-        ...pet,
-        background: pet.image ? `/pets/files/${pet.image}` : 'assets/main/default-pet-social.jpg',
-        link: `mascota/${pet.medalString}`
-      }))),
+              map(pets => pets.map(pet => ({
+          ...pet,
+          background: pet.image ? (environment.production ? `/pets/files/${pet.image}` : `${environment.perrosQrApi}pets/files/${pet.image}`) : 'assets/main/default-pet-social.jpg',
+          link: `mascota/${pet.medalString}`
+        }))),
       catchError(error => {
         console.error('Error al cargar todas las mascotas:', error);
         this.error = 'Error al cargar las mascotas. Por favor, intenta de nuevo más tarde.';
