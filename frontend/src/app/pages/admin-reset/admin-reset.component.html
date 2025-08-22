@@ -1,0 +1,101 @@
+<div class="admin-reset-container">
+  <div class="header">
+    <h1>🔄 Administración de Resets</h1>
+    <p>Procesa solicitudes de reset de medallas</p>
+  </div>
+
+  <div class="content">
+    <div class="form-section">
+      <h2>Procesar Reset de Medalla</h2>
+      
+      <form [formGroup]="resetForm" (ngSubmit)="processReset()" class="reset-form">
+        <div class="form-group">
+          <label for="medalString">Código de Medalla *</label>
+          <input 
+            type="text" 
+            id="medalString"
+            formControlName="medalString"
+            placeholder="Ingresa el código de la medalla"
+            class="form-input"
+            [class.error]="resetForm.get('medalString')?.invalid && resetForm.get('medalString')?.touched"
+          >
+          <div class="error-message" *ngIf="resetForm.get('medalString')?.invalid && resetForm.get('medalString')?.touched">
+            El código de medalla es requerido
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="userEmail">Email del Usuario *</label>
+          <input 
+            type="email" 
+            id="userEmail"
+            formControlName="userEmail"
+            placeholder="Ingresa el email del usuario"
+            class="form-input"
+            [class.error]="resetForm.get('userEmail')?.invalid && resetForm.get('userEmail')?.touched"
+          >
+          <div class="error-message" *ngIf="resetForm.get('userEmail')?.invalid && resetForm.get('userEmail')?.touched">
+            <span *ngIf="resetForm.get('userEmail')?.errors?.['required']">El email es requerido</span>
+            <span *ngIf="resetForm.get('userEmail')?.errors?.['email']">Ingresa un email válido</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            class="btn-primary"
+            [disabled]="resetForm.invalid || spinner"
+          >
+            <span *ngIf="!spinner">🔄 Procesar Reset</span>
+            <span *ngIf="spinner" class="spinner-text">
+              <div class="spinner"></div>
+              {{ spinnerMessage }}
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Mensajes de estado -->
+    <div class="messages" *ngIf="error || success">
+      <div class="error-message" *ngIf="error">
+        <div class="message-content">
+          <span class="icon">⚠️</span>
+          <span>{{ error }}</span>
+          <button class="close-btn" (click)="clearMessages()">×</button>
+        </div>
+      </div>
+      
+      <div class="success-message" *ngIf="success">
+        <div class="message-content">
+          <span class="icon">✅</span>
+          <span>{{ success }}</span>
+          <button class="close-btn" (click)="clearMessages()">×</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="info-section">
+      <h3>📋 Información del Proceso</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <h4>🔄 Reset de Medalla</h4>
+          <p>La medalla se restaura a estado VIRGIN y se eliminan todos los datos asociados.</p>
+        </div>
+        <div class="info-item">
+          <h4>📧 Email de Confirmación</h4>
+          <p>Se envía un email al usuario con confirmación del reset y enlace para registro.</p>
+        </div>
+        <div class="info-item">
+          <h4>👤 Gestión de Usuario</h4>
+          <p>Si es la única medalla del usuario, se elimina la cuenta automáticamente.</p>
+        </div>
+        <div class="info-item">
+          <h4>🗑️ Limpieza de Datos</h4>
+          <p>Se eliminan registros de medallas y se limpia el cache del sistema.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

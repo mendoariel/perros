@@ -42,11 +42,19 @@ export class QrChekingService {
         return this.http.get(`${environment.perrosQrApi}qr/this-email-is-taken/${email}`);
     }
 
-    nextFunction() {
+                  nextFunction() {
 
-    }
+              }
 
-    errorFunction() {
+              errorFunction() {
 
-    }
+              }
+
+              requestMedalReset(resetData: { medalString: string; reason: string; email: string }): any {
+                  return this.http.post(`${environment.perrosQrApi}qr/reset-request`, resetData);
+              }
+
+              processMedalReset(resetData: { medalString: string; userEmail: string }): any {
+                  return this.http.post(`${environment.perrosQrApi}qr/process-reset`, resetData);
+              }
 }

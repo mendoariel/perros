@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset de Medalla - PeludosClick</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .header .logo {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .content h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .content p {
+            color: #5a6c7d;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .medal-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 4px solid #FF6B35;
+        }
+        .medal-info h3 {
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+        .medal-info p {
+            color: #5a6c7d;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .reset-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+        .reset-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning p {
+            color: #856404;
+            margin: 0;
+            font-size: 14px;
+        }
+        .footer {
+            background-color: #2c3e50;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+        }
+        .footer p {
+            margin: 5px 0;
+            color: #bdc3c7;
+        }
+        .footer a {
+            color: #FF6B35;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🐕</div>
+            <h1>PeludosClick</h1>
+        </div>
+        
+        <div class="content">
+            <h2>¡Tu medalla ha sido reseteada!</h2>
+            
+            <p>Hemos procesado tu solicitud de reset para la medalla. La medalla ha sido restaurada a su estado inicial y está lista para ser registrada nuevamente.</p>
+            
+            <div class="medal-info">
+                <h3>Información de la Medalla</h3>
+                <p><strong>Código:</strong> {{medalString}}</p>
+                <p><strong>Estado:</strong> VIRGIN (Lista para registro)</p>
+                <p><strong>Fecha de reset:</strong> {{resetDate}}</p>
+            </div>
+            
+            <p>Ahora puedes registrar tu mascota nuevamente con esta medalla. El proceso es completamente nuevo y seguro.</p>
+            
+            <div class="warning">
+                <p><strong>⚠️ Importante:</strong> Todos los datos anteriores de esta medalla han sido eliminados. Deberás completar el registro desde el principio.</p>
+            </div>
+            
+            <a href="{{registrationUrl}}" class="reset-button">
+                🐾 Registrar Mascota
+            </a>
+            
+            <p style="margin-top: 30px; font-size: 14px; color: #7f8c8d;">
+                Si no solicitaste este reset, por favor contacta inmediatamente con nuestro equipo de soporte.
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 PeludosClick - Tu mascota, siempre contigo</p>
+            <p>¿Necesitas ayuda? <a href="mailto:info@peludosclick.com">info@peludosclick.com</a></p>
+        </div>
+    </div>
+</body>
+</html>

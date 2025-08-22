@@ -15,6 +15,7 @@ export const ROUTES = {
     PET_FORM: 'formulario-mi-mascota',
     PUBLIC_PET: 'mascota-publica',
     ADD_PET: 'agregar-mascota',
+    MASCOTA_CHECKING: 'mascota-checking',
     
     // Error routes
     ERROR: 'pagina-no-encontrada'

@@ -103,6 +103,40 @@ export class QRCheckingController {
         return this.qrService.getUserStatus(email);
     }
 
+    @Public()
+    @Post('reset-request')
+    @HttpCode(HttpStatus.OK)
+    async requestMedalReset(@Body() dto: { medalString: string; reason: string; email: string }): Promise<any> {
+        const startTime = Date.now();
+        try {
+            const result = await this.qrService.requestMedalReset(dto.medalString, dto.reason, dto.email);
+            const endTime = Date.now();
+            console.log(`Reset request completed in ${endTime - startTime}ms for medal: ${dto.medalString}`);
+            return result;
+        } catch (error) {
+            const endTime = Date.now();
+            console.error(`Reset request failed in ${endTime - startTime}ms for medal: ${dto.medalString}`, error);
+            throw error;
+        }
+    }
+
+    @Public()
+    @Post('process-reset')
+    @HttpCode(HttpStatus.OK)
+    async processMedalReset(@Body() dto: { medalString: string; userEmail: string }): Promise<any> {
+        const startTime = Date.now();
+        try {
+            const result = await this.qrService.processMedalReset(dto.medalString, dto.userEmail);
+            const endTime = Date.now();
+            console.log(`Process reset completed in ${endTime - startTime}ms for medal: ${dto.medalString}`);
+            return result;
+        } catch (error) {
+            const endTime = Date.now();
+            console.error(`Process reset failed in ${endTime - startTime}ms for medal: ${dto.medalString}`, error);
+            throw error;
+        }
+    }
+
 
 
     // @Public()

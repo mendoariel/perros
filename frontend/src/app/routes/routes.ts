@@ -21,6 +21,8 @@ import { PartnerDetailComponent } from "../pages/partner-detail/partner-detail.c
 import { PrivacyPolicyComponent } from "../pages/privacy-policy/privacy-policy.component";
 import { TermsOfServiceComponent } from "../pages/terms-of-service/terms-of-service.component";
 import { TokenTestComponent } from "../pages/token-test/token-test.component";
+import { MedalAdministrationComponent } from "../pages/medal-administration/medal-administration.component";
+import { AdminResetComponent } from "../pages/admin-reset/admin-reset.component";
 
 export const routes: Route[] = [
     {
@@ -116,6 +118,14 @@ export const routes: Route[] = [
     {
         path: 'token-test',
         component: TokenTestComponent
+    },
+    {
+        path: 'administracion-medalla/:medalString',
+        component: MedalAdministrationComponent
+    },
+    {
+        path: 'admin-reset',
+        component: AdminResetComponent
     },
     {
         path: 'pagina-no-encontrada',

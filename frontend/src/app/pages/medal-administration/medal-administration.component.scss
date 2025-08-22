@@ -1,5 +1,5 @@
-// Estilos modernos para el componente add-pet
-// Siguiendo el diseño del pet-form.component
+// Estilos para el componente de administración de medalla
+// Reutilizando estilos del add-pet component
 
 // Variables de color
 :root {
@@ -60,6 +60,7 @@
   background: transparent;
   font-size: 1rem;
   color: var(--text-color);
+  resize: vertical;
   
   &::placeholder {
     color: var(--gray-medium);
@@ -67,28 +68,6 @@
   
   &.error {
     color: var(--error-color);
-  }
-}
-
-.input-suffix {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  background: none;
-  border: none;
-  color: var(--gray-medium);
-  cursor: pointer;
-  transition: color 0.2s ease-in-out;
-  
-  &:hover {
-    color: var(--primary-color);
-  }
-  
-  svg {
-    width: 1.25rem;
-    height: 1.25rem;
   }
 }
 
@@ -177,31 +156,48 @@
   }
 }
 
-// Validación de contraseña
-.password-validation {
-  .validation-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
-    
-    &.success {
-      color: var(--success-color);
-    }
-    
-    &.error {
-      color: var(--error-color);
-    }
-    
-    &.neutral {
-      color: var(--gray-medium);
-    }
-    
-    svg {
-      width: 1rem;
-      height: 1rem;
-      margin-right: 0.5rem;
-    }
+// Estados de medalla
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  
+  &.virgin {
+    color: #2563eb;
+    background-color: #dbeafe;
+  }
+  
+  &.register-process {
+    color: #ca8a04;
+    background-color: #fef3c7;
+  }
+  
+  &.enabled {
+    color: #16a34a;
+    background-color: #dcfce7;
+  }
+  
+  &.incomplete {
+    color: #9333ea;
+    background-color: #f3e8ff;
+  }
+  
+  &.disabled {
+    color: #dc2626;
+    background-color: #fee2e2;
+  }
+  
+  &.dead {
+    color: #6b7280;
+    background-color: #f3f4f6;
+  }
+  
+  &.registered {
+    color: #4f46e5;
+    background-color: #e0e7ff;
   }
 }
 
@@ -228,7 +224,7 @@
   }
 }
 
-.form-card {
+.bg-white {
   animation: fadeIn 0.3s ease-out;
 }
 
@@ -258,6 +254,10 @@
   
   .form-input {
     padding: 1rem;
+  }
+  
+  .grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -298,3 +298,32 @@
   100% { transform: rotate(360deg); }
 }
 
+// Mensajes de estado
+.message {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  
+  &.error {
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+  }
+  
+  &.success {
+    background-color: #dcfce7;
+    border: 1px solid #bbf7d0;
+    color: #16a34a;
+  }
+  
+  .flex {
+    display: flex;
+    align-items: center;
+  }
+  
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.5rem;
+  }
+}

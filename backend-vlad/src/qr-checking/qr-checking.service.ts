@@ -407,15 +407,146 @@ export class QrService {
         }
     }
 
-    // Método para limpiar cache de mascotas expirado
-    private cleanExpiredPetCache(): void {
-        const now = Date.now();
-        for (const [key, value] of this.petCache.entries()) {
-            if (now - value.timestamp > this.PET_CACHE_TTL) {
-                this.petCache.delete(key);
-            }
-        }
+      // Método para limpiar cache de mascotas expirado
+  private cleanExpiredPetCache(): void {
+    const now = Date.now();
+    for (const [key, value] of this.petCache.entries()) {
+      if (now - value.timestamp > this.PET_CACHE_TTL) {
+        this.petCache.delete(key);
+      }
     }
+  }
+
+  // Método para solicitar reset de medalla
+  async requestMedalReset(medalString: string, reason: string, email: string): Promise<{ message: string; code: string }> {
+    try {
+      // Verificar que la medalla existe
+      const medal = await this.prisma.virginMedal.findFirst({
+        where: { medalString }
+      });
+
+      if (!medal) {
+        throw new NotFoundException('Medalla no encontrada');
+      }
+
+      // Verificar que el estado permite reset
+      const allowedStates = ['REGISTER_PROCESS', 'PENDING_CONFIRMATION', 'INCOMPLETE'];
+      if (!allowedStates.includes(medal.status)) {
+        throw new BadRequestException('El estado actual de la medalla no permite reset');
+      }
+
+      // Enviar email de notificación al administrador
+      try {
+        await this.mailService.sendMedalResetRequest({
+          medalString,
+          reason,
+          userEmail: email,
+          currentStatus: medal.status
+        });
+      } catch (error) {
+        console.error('Error enviando email de solicitud de reset:', error);
+        // No lanzamos error aquí para no afectar el proceso
+      }
+
+      return {
+        message: 'Solicitud de reset enviada correctamente. Te contactaremos pronto.',
+        code: 'reset_requested'
+      };
+    } catch (error) {
+      console.error('Error en requestMedalReset:', error);
+      throw error;
+    }
+  }
+
+  // Método para procesar el reset de medalla
+  async processMedalReset(medalString: string, userEmail: string): Promise<{ message: string; code: string }> {
+    const startTime = Date.now();
+    
+    try {
+      // Verificar que la medalla existe
+      const virginMedal = await this.prisma.virginMedal.findFirst({
+        where: { medalString }
+      });
+
+      if (!virginMedal) {
+        throw new NotFoundException('Medalla no encontrada');
+      }
+
+      // Verificar que el estado permite reset
+      const allowedStates = ['REGISTER_PROCESS', 'PENDING_CONFIRMATION', 'INCOMPLETE'];
+      if (!allowedStates.includes(virginMedal.status)) {
+        throw new BadRequestException('El estado actual de la medalla no permite reset');
+      }
+
+      // Buscar si existe una medalla registrada con este medalString
+      const registeredMedal = await this.prisma.medal.findFirst({
+        where: { medalString },
+        include: {
+          owner: true
+        }
+      });
+
+      // Iniciar transacción para asegurar consistencia
+      const result = await this.prisma.$transaction(async (prisma) => {
+        // 1. Cambiar el estado de la virgin medalla a VIRGIN
+        await prisma.virginMedal.update({
+          where: { medalString },
+          data: { 
+            status: 'VIRGIN',
+            registerHash: 'genesis'
+          }
+        });
+
+        // 2. Si existe una medalla registrada, eliminarla
+        if (registeredMedal) {
+          await prisma.medal.delete({
+            where: { medalString }
+          });
+
+          // 3. Verificar si el usuario tiene otras medallas
+          const userMedals = await prisma.medal.findMany({
+            where: { ownerId: registeredMedal.ownerId }
+          });
+
+          // Si es la única medalla del usuario, eliminar el usuario
+          if (userMedals.length === 1) {
+            await prisma.user.delete({
+              where: { id: registeredMedal.ownerId }
+            });
+          }
+        }
+
+        // 4. Limpiar cache
+        this.medalCache.delete(medalString);
+        this.petCache.delete(medalString);
+
+        return { success: true };
+      });
+
+      // Enviar email de confirmación al usuario
+      try {
+        await this.mailService.sendMedalResetConfirmation({
+          medalString,
+          userEmail,
+          resetDate: new Date().toLocaleString('es-ES')
+        });
+      } catch (error) {
+        console.error('Error enviando email de confirmación de reset:', error);
+        // No lanzamos error aquí para no afectar el proceso
+      }
+
+      const endTime = Date.now();
+      console.log(`Medal reset completed in ${endTime - startTime}ms for medal: ${medalString}`);
+
+      return {
+        message: 'Medalla reseteada correctamente. Se ha enviado un email de confirmación.',
+        code: 'reset_completed'
+      };
+    } catch (error) {
+      console.error('Error en processMedalReset:', error);
+      throw error;
+    }
+  }
 
     // Método para verificar el estado de un usuario y sus medallas
     async getUserStatus(email: string): Promise<{

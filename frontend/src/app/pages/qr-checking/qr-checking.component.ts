@@ -25,7 +25,8 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
   isSuccess = false;
   hasFoundMedal = false;
   isRequestCompleted = false;
-  showError = false; // Nueva bandera para controlar la visualización del error
+  showError = false;
+  processingMessage = 'Procesando información...';
   private hash: string | null = null;
 
   constructor(
@@ -80,7 +81,8 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
       this.isSuccess = false;
       this.hasFoundMedal = false;
       this.isRequestCompleted = false;
-      this.showError = false; // Ocultar error durante la búsqueda
+      this.showError = false;
+      this.processingMessage = 'Procesando información...';
     });
     
     this.callCheckingService(this.hash);
@@ -116,28 +118,44 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
           this.isSuccess = true;
           this.spinner = false;
           this.message = '';
-          this.showError = false; // Asegurar que el error no se muestre
+          this.showError = false;
           
-          // Procesar según el estado después de un delay
+          // Procesar según el estado con mensajes específicos
           setTimeout(() => {
             if (res.status === 'VIRGIN') {
               this.isProcessing = true;
+              this.processingMessage = 'Redirigiendo al registro de mascota...';
               setTimeout(() => {
                 this.goToAddPet(res.medalString);
-              }, 1500);
+              }, 1000); // Reducido de 1500 a 1000
             } else if (res.status === 'REGISTER_PROCESS') {
               this.isProcessing = true;
+              this.processingMessage = 'Esta medalla está en proceso de registro...';
               setTimeout(() => {
                 this.openSnackBar('Esta medalla está en proceso de registro.');
-                this.goHome();
-              }, 1500);
+                this.goToMedalAdministration(res.medalString);
+              }, 1000);
             } else if (res.status === 'ENABLED') {
               this.isProcessing = true;
+              this.processingMessage = 'Redirigiendo a la información de la mascota...';
               setTimeout(() => {
                 this.goPet(res.medalString);
-              }, 1500);
+              }, 1000);
+            } else if (res.status === 'INCOMPLETE') {
+              this.isProcessing = true;
+              this.processingMessage = 'Completando información de la mascota...';
+              setTimeout(() => {
+                this.goToMedalAdministration(res.medalString);
+              }, 1000);
+            } else {
+              // Para otros estados, mostrar mensaje genérico
+              this.isProcessing = true;
+              this.processingMessage = 'Procesando estado de la medalla...';
+              setTimeout(() => {
+                this.goToMedalAdministration(res.medalString);
+              }, 1000);
             }
-          }, 1000); // Delay aumentado para asegurar que el éxito se muestre
+          }, 500); // Reducido de 1000 a 500
         });
       },
       error: (error: any) => {
@@ -151,9 +169,9 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
               this.isProcessing = false;
               this.isSuccess = false;
               this.isRequestCompleted = true;
-              this.showError = true; // Solo mostrar error después del delay
+              this.showError = true;
             });
-          }, 500); // Delay para evitar flash
+          }, 500);
         }
       }
     });
@@ -168,6 +186,12 @@ export class QrCheckingComponent implements OnInit, OnDestroy {
   goPet(medalString: string) {
     this.ngZone.run(() => {
       this.router.navigate([`/mascota/${medalString}`]);
+    });
+  }
+
+  goToMedalAdministration(medalString: string) {
+    this.ngZone.run(() => {
+      this.router.navigate([`/administracion-medalla/${medalString}`]);
     });
   }
 

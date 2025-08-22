@@ -26,16 +26,16 @@ export function app(): express.Express {
     const url = require('url');
     
     const parsedUrl = url.parse(req.url);
-    const options = {
-      hostname: 'peludosclickbackend',
-      port: 3335,
-      path: parsedUrl.path,
-      method: req.method,
-      headers: {
-        ...req.headers,
-        host: 'peludosclickbackend:3335'
-      }
-    };
+                const options = {
+              hostname: 'backend-perros',
+              port: 3333,
+              path: parsedUrl.path,
+              method: req.method,
+              headers: {
+                ...req.headers,
+                host: 'backend-perros:3333'
+              }
+            };
 
     const proxyReq = http.request(options, (proxyRes: any) => {
       res.writeHead(proxyRes.statusCode, proxyRes.headers);
@@ -68,16 +68,16 @@ export function app(): express.Express {
     const url = require('url');
     
     const parsedUrl = url.parse(req.url);
-    const options = {
-      hostname: 'peludosclickbackend',
-      port: 3335,
-      path: `/pets/files${parsedUrl.path}`,
-      method: req.method,
-      headers: {
-        ...req.headers,
-        host: 'peludosclickbackend:3335'
-      }
-    };
+                const options = {
+              hostname: 'backend-perros',
+              port: 3333,
+              path: `/pets/files${parsedUrl.path}`,
+              method: req.method,
+              headers: {
+                ...req.headers,
+                host: 'backend-perros:3333'
+              }
+            };
 
     const proxyReq = http.request(options, (proxyRes: any) => {
       res.writeHead(proxyRes.statusCode, proxyRes.headers);

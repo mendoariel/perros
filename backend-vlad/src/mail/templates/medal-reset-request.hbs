@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitud de Reset de Medalla - PeludosClick</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #FFD700;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #006455;
+            margin-bottom: 10px;
+        }
+        .title {
+            color: #006455;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .alert {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .info-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .info-item {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+            color: #006455;
+        }
+        .value {
+            color: #333;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 14px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #006455;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🐾 PeludosClick</div>
+            <h1 class="title">Solicitud de Reset de Medalla</h1>
+        </div>
+
+        <div class="alert">
+            <strong>⚠️ Nueva solicitud de reset de medalla</strong><br>
+            Un usuario ha solicitado resetear el estado de su medalla.
+        </div>
+
+        <div class="info-section">
+            <h3>📋 Detalles de la Solicitud</h3>
+            
+            <div class="info-item">
+                <span class="label">Código de Medalla:</span>
+                <span class="value">{{medalString}}</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="label">Estado Actual:</span>
+                <span class="value">{{currentStatus}}</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="label">Email del Usuario:</span>
+                <span class="value">{{userEmail}}</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="label">Fecha y Hora:</span>
+                <span class="value">{{date}}</span>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>📝 Motivo del Reset</h3>
+            <p>{{reason}}</p>
+        </div>
+
+                          <div class="info-section">
+                      <h3>🔧 Acciones Recomendadas</h3>
+                      <ol>
+                          <li>Verificar el estado actual de la medalla en la base de datos</li>
+                          <li>Contactar al usuario para confirmar los detalles</li>
+                          <li>Evaluar si el reset es necesario y apropiado</li>
+                          <li>Si se aprueba, ejecutar el reset usando los scripts de administración</li>
+                          <li>Notificar al usuario sobre el resultado</li>
+                      </ol>
+                  </div>
+
+                             <div style="text-align: center; margin: 30px 0;">
+               <a href="https://peludosclick.com/admin-reset" class="button">Procesar Reset de Medalla</a>
+           </div>
+
+        <div class="footer">
+            <p>Este es un email automático del sistema de PeludosClick</p>
+            <p>No responder a este email. Para consultas, contactar al equipo de soporte.</p>
+        </div>
+    </div>
+</body>
+</html>

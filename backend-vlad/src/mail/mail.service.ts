@@ -43,4 +43,45 @@ export class MailService {
             }
         });
     }
+
+              async sendMedalResetRequest(data: {
+              medalString: string;
+              reason: string;
+              userEmail: string;
+              currentStatus: string;
+          }) {
+              Logger.log('Sending medal reset request notification')
+              await this.mailerService.sendMail({
+                  to: 'info@peludosclick.com', // Email del administrador
+                  from: '"PeludosClick" <info@peludosclick.com>',
+                  subject: 'Solicitud de Reset de Medalla - PeludosClick',
+                  template: './medal-reset-request',
+                  context: {
+                      medalString: data.medalString,
+                      reason: data.reason,
+                      userEmail: data.userEmail,
+                      currentStatus: data.currentStatus,
+                      date: new Date().toLocaleString('es-ES')
+                  }
+              });
+          }
+
+          async sendMedalResetConfirmation(data: {
+              medalString: string;
+              userEmail: string;
+              resetDate: string;
+          }) {
+              Logger.log('Sending medal reset confirmation to user')
+              await this.mailerService.sendMail({
+                  to: data.userEmail,
+                  from: '"PeludosClick" <info@peludosclick.com>',
+                  subject: 'Tu medalla ha sido reseteada - PeludosClick',
+                  template: './medal-reset-user',
+                  context: {
+                      medalString: data.medalString,
+                      resetDate: data.resetDate,
+                      registrationUrl: 'https://peludosclick.com/registrar-mascota'
+                  }
+              });
+          }
 }
