@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, OnDestroy, afterRender, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { Router } from '@angular/router';
@@ -15,10 +15,11 @@ import { Observable, map, of, catchError, Subscription } from 'rxjs';
   templateUrl: './home-partner-list.component.html',
   styleUrl: './home-partner-list.component.scss'
 })
-export class HomePartnerListComponent implements OnInit, OnDestroy {
+export class HomePartnerListComponent implements OnDestroy {
   private subscription: Subscription | null = null;
   private cdr: ChangeDetectorRef;
   private ngZone: NgZone;
+  private dataLoaded = false; // Flag para evitar múltiples llamadas
   
   partners: Partner[] = [];
   loading = true;
@@ -32,10 +33,14 @@ export class HomePartnerListComponent implements OnInit, OnDestroy {
   ) {
     this.cdr = cdr;
     this.ngZone = ngZone;
-  }
-
-  ngOnInit() {
-    this.loadPartners();
+    
+    // Usar afterRender para cargar datos después del render inicial
+    afterRender(() => {
+      if (!this.dataLoaded) {
+        this.dataLoaded = true;
+        this.loadPartners();
+      }
+    });
   }
 
   ngOnDestroy() {

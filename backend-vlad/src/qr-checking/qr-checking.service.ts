@@ -9,6 +9,20 @@ var createHash = require('hash-generator');
 
 @Injectable()
 export class QrService {
+    // Cache en memoria para medallas consultadas frecuentemente
+    private medalCache = new Map<string, { status: MedalState; medalString: string; registerHash: string; timestamp: number }>();
+    private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+    
+    // Cache para datos de mascotas
+    private petCache = new Map<string, { 
+        petName: string; 
+        phone: string | null; 
+        image: string | null; 
+        description: string | null; 
+        timestamp: number 
+    }>();
+    private readonly PET_CACHE_TTL = 10 * 60 * 1000; // 10 minutos
+
     constructor(
         private prisma: PrismaService,
         private mailService: MailService
@@ -19,12 +33,40 @@ export class QrService {
         medalString: string;
         registerHash: string;
     }> {
+        // Limpiar cache expirado cada 100 consultas (aproximadamente)
+        if (this.medalCache.size > 100) {
+            this.cleanExpiredCache();
+        }
+
+        // Verificar cache primero
+        const cached = this.medalCache.get(dto.medalString);
+        if (cached && (Date.now() - cached.timestamp) < this.CACHE_TTL) {
+            return {
+                status: cached.status,
+                medalString: cached.medalString,
+                registerHash: cached.registerHash
+            };
+        }
+
+        // Optimización: usar select específico para reducir datos transferidos
         const medal = await this.prisma.virginMedal.findFirst({
             where: {
                 medalString: dto.medalString
+            },
+            select: {
+                status: true,
+                medalString: true,
+                registerHash: true
             }
         });
+        
         if (!medal) throw new NotFoundException('No se encontro la medalla');
+        
+        // Guardar en cache
+        this.medalCache.set(dto.medalString, {
+            ...medal,
+            timestamp: Date.now()
+        });
         
         return {
             status: medal.status, 
@@ -181,24 +223,56 @@ export class QrService {
         image: string | null;
         description: string | null;
     }> {
+        // Limpiar cache expirado cada 100 consultas (aproximadamente)
+        if (this.petCache.size > 100) {
+            this.cleanExpiredPetCache();
+        }
+
+        // Verificar cache primero
+        const cached = this.petCache.get(medalString);
+        if (cached && (Date.now() - cached.timestamp) < this.PET_CACHE_TTL) {
+            return {
+                petName: cached.petName,
+                phone: cached.phone,
+                image: cached.image,
+                description: cached.description
+            };
+        }
+
+        // Optimización: usar select específico en lugar de include para reducir datos transferidos
         const medal = await this.prisma.medal.findFirst({
             where: {
                 medalString: medalString
             },
-            include: {
-                owner: true
+            select: {
+                petName: true,
+                image: true,
+                description: true,
+                owner: {
+                    select: {
+                        phonenumber: true
+                    }
+                }
             }
         });
 
         if(!medal) throw new NotFoundException('No records for this medal');
         if(!medal.owner) throw new NotFoundException('No user for this medal');
 
-        return {
+        const result = {
             petName: medal.petName,
             phone: medal.owner.phonenumber,
             image: medal.image,
             description: medal.description
         };
+
+        // Guardar en cache
+        this.petCache.set(medalString, {
+            ...result,
+            timestamp: Date.now()
+        });
+
+        return result;
     }
 
     async isThisEmailTaken(email: string): Promise<{ emailIsTaken: boolean }> {
@@ -320,6 +394,26 @@ export class QrService {
         } catch (error) {
             console.error('Error reenviando email de confirmación:', error);
             throw new ServiceUnavailableException('No se pudo reenviar el email de confirmación');
+        }
+    }
+
+    // Método para limpiar cache expirado
+    private cleanExpiredCache(): void {
+        const now = Date.now();
+        for (const [key, value] of this.medalCache.entries()) {
+            if (now - value.timestamp > this.CACHE_TTL) {
+                this.medalCache.delete(key);
+            }
+        }
+    }
+
+    // Método para limpiar cache de mascotas expirado
+    private cleanExpiredPetCache(): void {
+        const now = Date.now();
+        for (const [key, value] of this.petCache.entries()) {
+            if (now - value.timestamp > this.PET_CACHE_TTL) {
+                this.petCache.delete(key);
+            }
         }
     }
 

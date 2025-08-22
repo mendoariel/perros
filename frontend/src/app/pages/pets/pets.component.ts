@@ -42,7 +42,7 @@ export class PetsComponent implements OnDestroy {
   loading = true;
   error: string | null = null;
   
-  imagePath = `${environment.perrosQrApi}pets/files/`;
+  imagePath = `/pets/files/`;
   env = environment;
 
   constructor(
@@ -72,7 +72,7 @@ export class PetsComponent implements OnDestroy {
       }),
       map(pets => pets.map(pet => ({
         ...pet,
-        background: `${environment.perrosQrApi}pets/files/${pet.image}`,
+        background: pet.image ? `/pets/files/${pet.image}` : 'assets/main/default-pet-social.jpg',
         link: `mascota/${pet.medalString}`
       }))),
       catchError(error => {

@@ -14,8 +14,18 @@ export class QRCheckingController {
     @Public()
     @Post('checking')
     @HttpCode(HttpStatus.CREATED)
-    chekingMedal(@Body() dto: QRCheckingDto): Promise<MedalStatus | string> {
-        return this.qrService.QRCheking(dto);
+    async chekingMedal(@Body() dto: QRCheckingDto): Promise<MedalStatus | string> {
+        const startTime = Date.now();
+        try {
+            const result = await this.qrService.QRCheking(dto);
+            const endTime = Date.now();
+            console.log(`QR Check completed in ${endTime - startTime}ms for medal: ${dto.medalString}`);
+            return result;
+        } catch (error) {
+            const endTime = Date.now();
+            console.error(`QR Check failed in ${endTime - startTime}ms for medal: ${dto.medalString}`, error);
+            throw error;
+        }
     }
 
     // create a medal and a user
@@ -30,8 +40,18 @@ export class QRCheckingController {
     @Public()
     @Get('pet/:medalString')
     @HttpCode(HttpStatus.OK)
-    getPet(@Param('medalString') medalString: string): Promise<any> {
-        return this.qrService.getPet(medalString);
+    async getPet(@Param('medalString') medalString: string): Promise<any> {
+        const startTime = Date.now();
+        try {
+            const result = await this.qrService.getPet(medalString);
+            const endTime = Date.now();
+            console.log(`GetPet completed in ${endTime - startTime}ms for medal: ${medalString}`);
+            return result;
+        } catch (error) {
+            const endTime = Date.now();
+            console.error(`GetPet failed in ${endTime - startTime}ms for medal: ${medalString}`, error);
+            throw error;
+        }
     }
 
     @Public()

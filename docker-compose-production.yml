@@ -29,6 +29,9 @@ services:
       - traefik.http.routers.peludosclick_frontend_service.tls=true
       - traefik.http.routers.peludosclick_frontend_service.tls.certresolver=lets-encrypt
       - traefik.port=9002
+      - traefik.http.services.peludosclick_frontend_service.loadbalancer.server.port=9002
+      - traefik.http.middlewares.peludosclick_frontend_timeout.headers.customrequestheaders.X-Forwarded-Proto=https
+      - traefik.http.routers.peludosclick_frontend_service.middlewares=peludosclick_frontend_timeout
     networks:
       - internal
       - web

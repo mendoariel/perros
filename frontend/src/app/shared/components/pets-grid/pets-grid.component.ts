@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, inject, OnDestroy, afterRender, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { Router } from '@angular/router';
@@ -30,18 +30,19 @@ interface Pet {
   templateUrl: './pets-grid.component.html',
   styleUrl: './pets-grid.component.scss'
 })
-export class PetsGridComponent implements OnInit, OnDestroy {
+export class PetsGridComponent implements OnDestroy {
   private petService = inject(PetsService);
   private router = inject(Router);
   private subscription: Subscription | null = null;
   private cdr: ChangeDetectorRef;
   private ngZone: NgZone;
+  private dataLoaded = false; // Flag para evitar múltiples llamadas
   
   pets: Pet[] = [];
   loading = false; // Inicializar como false
   error: string | null = null;
   
-  imagePath = `${environment.perrosQrApi}pets/files/`;
+  imagePath = `/pets/files/`;
   env = environment;
 
   constructor(
@@ -52,12 +53,13 @@ export class PetsGridComponent implements OnInit, OnDestroy {
   ) {
     this.cdr = cdr;
     this.ngZone = ngZone;
-  }
-
-  ngOnInit() {
-    // Usar setTimeout para asegurar que el cambio ocurra en el siguiente ciclo
-    setTimeout(() => {
-      this.loadPets();
+    
+    // Usar afterRender para cargar datos después del render inicial
+    afterRender(() => {
+      if (!this.dataLoaded) {
+        this.dataLoaded = true;
+        this.loadPets();
+      }
     });
   }
 
@@ -84,7 +86,7 @@ export class PetsGridComponent implements OnInit, OnDestroy {
       }),
       map(pets => pets.map(pet => ({
         ...pet,
-        background: `${environment.perrosQrApi}pets/files/${pet.image}`,
+        background: pet.image ? `/pets/files/${pet.image}` : 'assets/main/default-pet-social.jpg',
         link: `mascota/${pet.medalString}`
       }))),
       catchError(error => {

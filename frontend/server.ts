@@ -20,8 +20,78 @@ export function app(): express.Express {
   server.set('view engine', 'html');
   server.set('views', distFolder);
 
-  // Example Express Rest API endpoints
-  // server.get('/api/**', (req, res) => { });
+  // Proxy API requests to backend
+  server.use('/api', (req, res, next) => {
+    const http = require('http');
+    const url = require('url');
+    
+    const parsedUrl = url.parse(req.url);
+    const options = {
+      hostname: 'peludosclickbackend',
+      port: 3335,
+      path: parsedUrl.path,
+      method: req.method,
+      headers: {
+        ...req.headers,
+        host: 'peludosclickbackend:3335'
+      }
+    };
+
+    const proxyReq = http.request(options, (proxyRes: any) => {
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res, { end: true });
+    });
+
+    proxyReq.on('error', (err: any) => {
+      console.error('Proxy error:', err);
+      res.status(500).send('Proxy error');
+    });
+
+    // Handle POST requests with body
+    if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
+      let body = '';
+      req.on('data', (chunk) => {
+        body += chunk.toString();
+      });
+      req.on('end', () => {
+        proxyReq.write(body);
+        proxyReq.end();
+      });
+    } else {
+      req.pipe(proxyReq, { end: true });
+    }
+  });
+
+  // Proxy static files from backend
+  server.use('/pets/files', (req, res, next) => {
+    const http = require('http');
+    const url = require('url');
+    
+    const parsedUrl = url.parse(req.url);
+    const options = {
+      hostname: 'peludosclickbackend',
+      port: 3335,
+      path: `/pets/files${parsedUrl.path}`,
+      method: req.method,
+      headers: {
+        ...req.headers,
+        host: 'peludosclickbackend:3335'
+      }
+    };
+
+    const proxyReq = http.request(options, (proxyRes: any) => {
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res, { end: true });
+    });
+
+    proxyReq.on('error', (err: any) => {
+      console.error('Static files proxy error:', err);
+      res.status(404).send('File not found');
+    });
+
+    req.pipe(proxyReq, { end: true });
+  });
+
   // Serve static files from /browser
   server.get('*.*', express.static(distFolder, {
     maxAge: '1y'

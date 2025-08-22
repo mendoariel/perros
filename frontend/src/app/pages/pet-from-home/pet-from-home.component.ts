@@ -39,7 +39,7 @@ export class PetFromHomeComponent implements OnDestroy {
   spinnerMessage = 'Cargando...';
   textButton = 'Agregar foto';
   env = environment;
-  background = `url(${environment.perrosQrApi}pets/files/secrectIMG-20250301-WA0000.jpg)`;
+  background = `url(/pets/files/secrectIMG-20250301-WA0000.jpg)`;
   isImageLoaded = false;
   petImageUrl = ''; // New property for direct image URL
   metaDataSet = false; // Flag to prevent multiple meta data calls
@@ -78,7 +78,7 @@ export class PetFromHomeComponent implements OnDestroy {
     
     // Construct absolute URLs
     const petImageUrl = this.isImageLoaded ? 
-      `pets/files/${this.pet.image}` : 
+      (this.pet.image ? `pets/files/${this.pet.image}` : 'assets/main/default-pet-social.jpg') : 
       'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
     
     const description = this.pet.description || 'Conoce más sobre esta mascota en PeludosClick';
@@ -108,12 +108,20 @@ export class PetFromHomeComponent implements OnDestroy {
       this.metaDataSet = true;
     };
     img.src = this.isImageLoaded ? 
-      `https://api.peludosclick.com/pets/files/${this.pet.image}` : 
+      (this.pet.image ? `https://peludosclick.com/pets/files/${this.pet.image}` : 'https://peludosclick.com/assets/main/default-pet-social.jpg') : 
       `https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
   }
 
   checkImageExists(imageUrl: string): Promise<boolean> {
     return new Promise((resolve) => {
+      // Check if we're in the browser environment
+      if (typeof window === 'undefined') {
+        // We're in SSR, assume image exists
+        this.isImageLoaded = true;
+        resolve(true);
+        return;
+      }
+
       const img = new Image();
       img.onload = () => {
         this.isImageLoaded = true;
@@ -135,7 +143,7 @@ export class PetFromHomeComponent implements OnDestroy {
         this.pet = pet;
         
         // Check if the pet image exists
-        const imageUrl = `${this.env.perrosQrApi}pets/files/${pet.image}`;
+        const imageUrl = pet.image ? `/pets/files/${pet.image}` : '/assets/main/default-pet-social.jpg';
         await this.checkImageExists(imageUrl);
         
         this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;

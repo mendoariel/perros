@@ -19,4 +19,4 @@ ENV NODE_ENV=production
 EXPOSE 9002
 
 # Start the application
-CMD ["node", "dist/peludosclick-app/server/main.js"]
+CMD ["node", "dist/frontend/server/main.js"]

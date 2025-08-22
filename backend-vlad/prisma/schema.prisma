@@ -41,6 +41,8 @@ model Medal {
   updateAt     DateTime   @default(now()) @map("updated_at")
   owner        User       @relation(fields: [ownerId], references: [id])
 
+  @@index([medalString])
+  @@index([status])
   @@map("medals")
 }
 
@@ -52,6 +54,8 @@ model VirginMedal {
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime?  @map("updated_at")
 
+  @@index([medalString])
+  @@index([status])
   @@map("virgin_medals")
 }
 

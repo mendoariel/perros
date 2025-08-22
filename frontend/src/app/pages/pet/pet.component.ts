@@ -64,7 +64,7 @@ export class PetComponent implements OnInit, OnDestroy {
     }
     
     const petImage = this.isImageLoaded ? 
-      `https://api.peludosclick.com/pets/files/${this.pet.image}` : 
+      (this.pet.image ? `https://peludosclick.com/pets/files/${this.pet.image}` : 'https://peludosclick.com/assets/main/default-pet-social.jpg') : 
       `https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
     
     const description = this.pet.description || 'Conoce más sobre esta mascota en PeludosClick';
@@ -81,17 +81,21 @@ export class PetComponent implements OnInit, OnDestroy {
 
   checkImageExists(imageUrl: string): Promise<boolean> {
     return new Promise((resolve) => {
+      // Check if we're in the browser environment
+      if (typeof window === 'undefined') {
+        // We're in SSR, assume image exists
+        this.isImageLoaded = true;
+        resolve(true);
+        return;
+      }
+
       const img = new Image();
       img.onload = () => {
-        this.ngZone.run(() => {
-          this.isImageLoaded = true;
-        });
+        this.isImageLoaded = true;
         resolve(true);
       };
       img.onerror = () => {
-        this.ngZone.run(() => {
-          this.isImageLoaded = false;
-        });
+        this.isImageLoaded = false;
         resolve(false);
       };
       img.src = imageUrl;
@@ -99,23 +103,21 @@ export class PetComponent implements OnInit, OnDestroy {
   }
   
   getPet(medalString: string) {
-    this.ngZone.run(() => {
-      this.spinner = true;
-      this.spinnerMessage = 'Cargando información de la mascota...';
-    });
+    this.spinner = true;
+    this.spinnerMessage = 'Cargando información de la mascota...';
 
     this.petSubscription = this.qrCheckingService.getPet(medalString).subscribe({
       next: async (pet: any) => {
-        this.ngZone.run(() => {
-          this.spinner = false;
-          this.pet = pet;
-        });
+        this.spinner = false;
+        this.pet = pet;
         
-        // Check if the pet image exists
-        const imageUrl = `${this.env.perrosQrApi}pets/files/${pet.image}`;
-        await this.checkImageExists(imageUrl);
+        // Check if the pet image exists (optimizado para evitar bloqueos)
+        const imageUrl = pet.image ? `/pets/files/${pet.image}` : '/assets/main/default-pet-social.jpg';
         
-        this.ngZone.run(() => {
+        // Usar setTimeout para evitar bloqueos en el hilo principal
+        setTimeout(async () => {
+          await this.checkImageExists(imageUrl);
+          
           this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;
           this.pet.tel = `tel:${this.pet.phone}`;
           
@@ -129,14 +131,12 @@ export class PetComponent implements OnInit, OnDestroy {
           
           this.setMetaData();
           this.cdr.detectChanges();
-        });
+        }, 0);
       },
       error: (error: any) => {
-        this.ngZone.run(() => {
-          this.spinner = false;
-          this.handleError(error);
-          this.cdr.detectChanges();
-        });
+        this.spinner = false;
+        this.handleError(error);
+        this.cdr.detectChanges();
       }
     });
   }
