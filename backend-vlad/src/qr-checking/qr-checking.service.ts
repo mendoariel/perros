@@ -110,8 +110,8 @@ export class QrService {
         virginMedal: any, 
         user: any
     ): Promise<{ text: string; code: string }> {
-        // Usar transacción para asegurar consistencia
-        return await this.prisma.$transaction(async (tx) => {
+        // Usar transacción para asegurar consistencia (sin envío de email)
+        const result = await this.prisma.$transaction(async (tx) => {
             // Crear la medalla
             const medalCreated = await tx.medal.create({
                 data: {
@@ -135,27 +135,31 @@ export class QrService {
                 data: { status: MedalState.REGISTER_PROCESS }
             });
 
-            // Intentar enviar email (si falla, no afecta la transacción)
-            try {
-                await this.sendEmailConfirmMedal(user.email, virginMedal.medalString);
-            } catch (error) {
-                console.error('Error enviando email de confirmación de medalla:', error);
-                // No lanzamos error aquí para no revertir la transacción
-            }
-            
-            return { 
-                text: 'Le hemos enviado un email, siga las intrucciones para activar su medalla.',
-                code: 'medalcreated'
-            };
+            return medalCreated;
+        }, {
+            timeout: 20000 // 20 segundos de timeout
         });
+
+        // Enviar email FUERA de la transacción para evitar timeouts
+        try {
+            await this.sendEmailConfirmMedal(user.email, virginMedal.medalString);
+        } catch (error) {
+            console.error('Error enviando email de confirmación de medalla:', error);
+            // No lanzamos error aquí para no afectar el proceso
+        }
+        
+        return { 
+            text: 'Le hemos enviado un email, siga las intrucciones para activar su medalla.',
+            code: 'medalcreated'
+        };
     }
 
     private async processMedalForNewUser(
         dto: PostMedalDto, 
         virginMedal: any
     ): Promise<{ text: string; code: string }> {
-        // Usar transacción para asegurar consistencia
-        return await this.prisma.$transaction(async (tx) => {
+        // Usar transacción para asegurar consistencia (sin envío de email)
+        const result = await this.prisma.$transaction(async (tx) => {
             const hash = await this.hashData(dto.password);
             const unicHash = await this.createHashNotUsedToUser();
             
@@ -189,19 +193,23 @@ export class QrService {
                 data: { status: MedalState.REGISTER_PROCESS }
             });
 
-            // Intentar enviar email (si falla, no afecta la transacción)
-            try {
-                await this.sendEmailConfirmAccount(userCreated.email, userCreated.hashToRegister, virginMedal.medalString);
-            } catch (error) {
-                console.error('Error enviando email de confirmación de cuenta:', error);
-                // No lanzamos error aquí para no revertir la transacción
-            }
-            
-            return { 
-                text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta.',
-                code: 'usercreated'
-            };
+            return userCreated;
+        }, {
+            timeout: 20000 // 20 segundos de timeout
         });
+
+        // Enviar email FUERA de la transacción para evitar timeouts
+        try {
+            await this.sendEmailConfirmAccount(result.email, result.hashToRegister, virginMedal.medalString);
+        } catch (error) {
+            console.error('Error enviando email de confirmación de cuenta:', error);
+            // No lanzamos error aquí para no afectar el proceso
+        }
+        
+        return { 
+            text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta.',
+            code: 'usercreated'
+        };
     }
 
     async putVirginMedalRegisterProcess(medalString: string): Promise<VirginMedal> {
