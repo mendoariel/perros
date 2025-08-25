@@ -1,19 +1,6 @@
 <div class="qr-checking-container">
-  <!-- Loading State -->
-  <div class="loading-overlay" *ngIf="spinner">
-    <div class="loading-content">
-      <div class="loading-spinner">
-        <svg class="spinner" viewBox="0 0 50 50">
-          <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
-        </svg>
-      </div>
-      <h3>Buscando QR...</h3>
-      <p class="loading-subtitle">Verificando el código de la medalla</p>
-    </div>
-  </div>
-
   <!-- Success State (Shown immediately when found) -->
-  <div class="success-overlay" *ngIf="!spinner && isSuccess && !isProcessing">
+  <div class="success-overlay" *ngIf="isSuccess && !isProcessing">
     <div class="success-content">
       <div class="success-icon">
         <svg viewBox="0 0 24 24" fill="currentColor">
@@ -26,7 +13,7 @@
   </div>
 
   <!-- Processing State (Shown during navigation) -->
-  <div class="processing-overlay" *ngIf="!spinner && isSuccess && isProcessing">
+  <div class="processing-overlay" *ngIf="isSuccess && isProcessing">
     <div class="processing-content">
       <div class="processing-spinner">
         <svg class="spinner" viewBox="0 0 50 50">
@@ -39,7 +26,7 @@
   </div>
 
   <!-- Error State (Only shown when explicitly allowed) -->
-  <div class="error-overlay" *ngIf="!spinner && !isSuccess && showError && message">
+  <div class="error-overlay" *ngIf="!isSuccess && showError && message">
     <div class="error-content">
       <div class="error-icon">
         <svg viewBox="0 0 24 24" fill="currentColor">
