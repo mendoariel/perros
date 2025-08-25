@@ -112,7 +112,7 @@ export class PetComponent implements OnInit, OnDestroy {
         this.pet = pet;
         
         // Check if the pet image exists (optimizado para evitar bloqueos)
-        const imageUrl = pet.image ? `/pets/files/${pet.image}` : '/assets/main/default-pet-social.jpg';
+        const imageUrl = pet.image ? `${environment.perrosQrApi}pets/files/${pet.image}` : '/assets/main/default-pet-social.jpg';
         
         // Usar setTimeout para evitar bloqueos en el hilo principal
         setTimeout(async () => {
@@ -124,7 +124,7 @@ export class PetComponent implements OnInit, OnDestroy {
           // Set the direct image URL for img tags
           this.petImageUrl = this.isImageLoaded ? 
             imageUrl : 
-            `${environment.frontend}/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
+            '/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
           
           // Keep background for backward compatibility (if needed)
           this.pet.background = this.petImageUrl;

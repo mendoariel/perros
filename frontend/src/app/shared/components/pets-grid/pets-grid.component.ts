@@ -112,7 +112,7 @@ export class PetsGridComponent implements OnDestroy {
   }
 
   goToPet(pet: Pet) {
-    this.router.navigate([`mascota-publica/${pet.medalString}`]);
+    this.navigationService.navigate([`mascota-publica/${pet.medalString}`]);
   }
 
   onImageError(event: any) {

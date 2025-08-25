@@ -6,6 +6,7 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { JwtModule } from '@auth0/angular-jwt';
 import { environment } from 'src/environments/environment';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { provideClientHydration } from '@angular/platform-browser';
 
 export function tokenGetter() {
   // Esta función se ejecuta en el contexto del navegador, no en SSR
@@ -32,6 +33,7 @@ export const appConfig: ApplicationConfig = {
       })
     ),
     provideAnimations(),
+    provideClientHydration(),
     provideRouter(routes),
     provideHttpClient(
       withFetch(),
