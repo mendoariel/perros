@@ -1,131 +1,139 @@
-<main class="min-h-screen bg-[#FFFDD0]">
-  <!-- Hero Section -->
-  <section class="max-w-7xl mx-auto px-4 py-16">
-    <div class="flex flex-col lg:flex-row items-center gap-16">
-      <!-- Left Side - Hero Image -->
-      <div class="lg:w-1/2">
-        <div class="relative">
-          <div class="bg-gradient-to-br from-[#006455]/10 to-[#FFD700]/10 rounded-3xl p-8 shadow-xl">
-            <img 
-              src="assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg" 
-              alt="Mascotas felices y seguras con medallas PeludosClick"
-              class="w-full h-96 object-cover rounded-2xl shadow-lg"
-            />
+<main class="min-h-screen">
+  <!-- Hero Section - Background crema con gradiente sutil -->
+  <section class="hero-section bg-gradient-to-br from-[#FFFDD0] via-[#FFF8DC] to-[#F5F5DC] py-20 section-entrance">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex flex-col lg:flex-row items-center gap-16">
+        <!-- Left Side - Hero Image -->
+        <div class="lg:w-1/2">
+          <div class="relative">
+            <div class="bg-gradient-to-br from-[#006455]/10 to-[#FFD700]/10 rounded-3xl p-8 shadow-xl">
+              <img 
+                src="assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg" 
+                alt="Mascotas felices y seguras con medallas PeludosClick"
+                class="w-full h-96 object-cover rounded-2xl shadow-lg"
+              />
+            </div>
           </div>
         </div>
+        
+        <!-- Right Side - Hero Content -->
+        <div class="lg:w-1/2 text-center lg:text-left">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-[#006455] mb-6 leading-tight">
+            Protege a tu Mascota y Conéctate con la Comunidad
+          </h1>
+          <p class="text-xl text-[#36454F] mb-8 leading-relaxed">
+            PeludosClick te ayuda a encontrar a tu mascota si se pierde, con una medalla con QR vinculada a vos. 
+            Una solución moderna y efectiva para mantener a tu compañero seguro.
+          </p>
+          <button 
+            class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-8 py-4 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#006455]"
+            (click)="scrollToPuntosVenta()"
+          >
+            Protege a tu Mascota Ahora
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mascotas Protegidas Section - Background verde claro -->
+  <section class="pets-section bg-gradient-to-br from-[#E8F5E8] via-[#F0F8F0] to-[#E0F0E0] py-12 section-entrance">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-8">
+        <h2 class="section-header text-2xl md:text-3xl font-bold text-[#006455] mb-3">
+          Mascotas Protegidas
+        </h2>
+        <p class="text-base text-[#36454F]">Peludos que ya están conectados y protegidos con PeludosClick</p>
       </div>
       
-      <!-- Right Side - Hero Content -->
-      <div class="lg:w-1/2 text-center lg:text-left">
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-[#006455] mb-6 leading-tight">
-          Protege a tu Mascota y Conéctate con la Comunidad
-        </h1>
-        <p class="text-xl text-[#36454F] mb-8 leading-relaxed">
-          PeludosClick te ayuda a encontrar a tu mascota si se pierde, con una medalla con QR vinculada a vos. 
-          Una solución moderna y efectiva para mantener a tu compañero seguro.
-        </p>
+      <!-- Componente de Grilla de Mascotas -->
+      <div class="pets-grid-compact">
+        <app-pets-grid></app-pets-grid>
+      </div>
+      
+      <!-- Botón para Ver Todas las Mascotas -->
+      <div class="text-center mt-6">
         <button 
-          class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-8 py-4 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#006455]"
-          (click)="scrollToPuntosVenta()"
+          class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-6 py-3 rounded-lg text-base shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#006455]"
+          (click)="navigateToAllPets()"
         >
-          Protege a tu Mascota Ahora
+          Ver Todas las Mascotas
         </button>
       </div>
     </div>
   </section>
 
-  <!-- Mascotas Protegidas Section -->
-  <section class="max-w-7xl mx-auto px-4 py-16">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl md:text-4xl font-bold text-[#006455] mb-4">
-        Mascotas Protegidas
-      </h2>
-      <p class="text-lg text-[#36454F]">Peludos que ya están conectados y protegidos con PeludosClick</p>
-    </div>
-    
-    <!-- Componente de Grilla de Mascotas -->
-    <app-pets-grid></app-pets-grid>
-    
-    <!-- Botón para Ver Todas las Mascotas -->
-    <div class="text-center mt-8">
-      <button 
-        class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-8 py-4 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#006455]"
-        (click)="navigateToAllPets()"
-      >
-        Ver Todas las Mascotas
-      </button>
+  <!-- Proceso de Activación Section - Background dorado claro -->
+  <section class="process-section bg-gradient-to-br from-[#FFF8DC] via-[#FDF5E6] to-[#FAF0E6] py-12 section-entrance">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center">
+        <h2 class="section-header text-2xl md:text-3xl font-bold text-[#006455] mb-8">
+          ¿Cómo Activar tu Medalla QR?
+        </h2>
+        
+        <!-- Tarjetas de Pasos del Proceso -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <!-- Paso 1: Escaneo del QR -->
+          <div class="card-enhanced bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border-l-4 border-[#006455]">
+            <div class="w-16 h-16 bg-gradient-to-br from-[#006455]/20 to-[#006455]/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <mat-icon class="text-[#006455] text-2xl flex items-center justify-center">qr_code_scanner</mat-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-[#006455] mb-3 text-center">Paso 1: Escanea tu Medalla</h3>
+            <p class="text-sm text-[#36454F] text-center leading-relaxed">Usa tu smartphone para escanear el código QR de tu medalla PeludosClick.</p>
+          </div>
+
+          <!-- Paso 2: Confirmación por Email -->
+          <div class="card-enhanced bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border-l-4 border-[#FFD700]">
+            <div class="w-16 h-16 bg-gradient-to-br from-[#FFD700]/20 to-[#FFD700]/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <mat-icon class="text-[#FFD700] text-2xl flex items-center justify-center">email</mat-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-[#006455] mb-3 text-center">Paso 2: Confirma tu Cuenta</h3>
+            <p class="text-sm text-[#36454F] text-center leading-relaxed">Recibe un email de confirmación y accede a tu perfil de mascota.</p>
+          </div>
+
+          <!-- Paso 3: Completar Perfil -->
+          <div class="card-enhanced bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border-l-4 border-[#006455]">
+            <div class="w-16 h-16 bg-gradient-to-br from-[#006455]/20 to-[#006455]/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <mat-icon class="text-[#006455] text-2xl flex items-center justify-center">pets</mat-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-[#006455] mb-3 text-center">Paso 3: Completa el Perfil</h3>
+            <p class="text-sm text-[#36454F] text-center leading-relaxed">Agrega fotos, datos de contacto y toda la información de tu mascota.</p>
+          </div>
+        </div>
+
+        <!-- Resultado Final - Mascota Protegida -->
+        <div class="bg-gradient-to-r from-[#006455] to-[#FFD700] rounded-xl p-6 text-white shadow-xl max-w-2xl mx-auto">
+          <h3 class="text-xl font-bold mb-3 text-center">¡Tu Mascota Está Protegida!</h3>
+          <p class="text-base opacity-90 text-center leading-relaxed">Cualquier persona que encuentre a tu mascota puede escanear la medalla y contactarte inmediatamente.</p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Proceso de Activación Section -->
-  <section class="max-w-7xl mx-auto px-4 py-16">
-    <div class="text-center">
-      <h2 class="text-3xl md:text-4xl font-bold text-[#006455] mb-12">
-        ¿Cómo Activar tu Medalla QR?
-      </h2>
+  <!-- Puntos de Venta Section - Background azul claro -->
+  <section id="puntos-venta" class="partners-section bg-gradient-to-br from-[#E6F3FF] via-[#F0F8FF] to-[#E0F0FF] py-20 section-entrance">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="section-header text-3xl md:text-4xl font-bold text-[#006455] mb-4">
+          Puntos de Venta PeludosClick
+        </h2>
+        <p class="text-lg text-[#36454F]">Encuentra dónde obtener tu medalla PeludosClick</p>
+      </div>
       
-      <!-- Tarjetas de Pasos del Proceso -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-        <!-- Paso 1: Escaneo del QR -->
-        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border-l-4 border-[#006455]">
-          <div class="w-20 h-20 bg-gradient-to-br from-[#006455]/20 to-[#006455]/30 rounded-full flex items-center justify-center mx-auto mb-6">
-            <mat-icon class="text-[#006455] text-3xl">qr_code_scanner</mat-icon>
-          </div>
-          <h3 class="text-xl font-semibold text-[#006455] mb-4">Paso 1: Escanea tu Medalla</h3>
-          <p class="text-[#36454F]">Usa tu smartphone para escanear el código QR de tu medalla PeludosClick.</p>
-        </div>
-
-        <!-- Paso 2: Confirmación por Email -->
-        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border-l-4 border-[#FFD700]">
-          <div class="w-20 h-20 bg-gradient-to-br from-[#FFD700]/20 to-[#FFD700]/30 rounded-full flex items-center justify-center mx-auto mb-6">
-            <mat-icon class="text-[#FFD700] text-3xl">email</mat-icon>
-          </div>
-          <h3 class="text-xl font-semibold text-[#006455] mb-4">Paso 2: Confirma tu Cuenta</h3>
-          <p class="text-[#36454F]">Recibe un email de confirmación y accede a tu perfil de mascota.</p>
-        </div>
-
-        <!-- Paso 3: Completar Perfil -->
-        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border-l-4 border-[#006455]">
-          <div class="w-20 h-20 bg-gradient-to-br from-[#006455]/20 to-[#006455]/30 rounded-full flex items-center justify-center mx-auto mb-6">
-            <mat-icon class="text-[#006455] text-3xl">pets</mat-icon>
-          </div>
-          <h3 class="text-xl font-semibold text-[#006455] mb-4">Paso 3: Completa el Perfil</h3>
-          <p class="text-[#36454F]">Agrega fotos, datos de contacto y toda la información de tu mascota.</p>
-        </div>
+      <!-- Componente dinámico de Partners -->
+      <app-home-partner-list></app-home-partner-list>
+      
+      <!-- Llamada a la Acción - Puntos de Venta -->
+      <div class="text-center mt-8">
+        <p class="text-lg text-[#006455] font-semibold mb-4">
+          Visita nuestras tiendas y obtén tu medalla
+        </p>
+        <button 
+          class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-8 py-4 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#006455]"
+        >
+          Encuentra tu Punto de Venta
+        </button>
       </div>
-
-      <!-- Resultado Final - Mascota Protegida -->
-      <div class="bg-gradient-to-r from-[#006455] to-[#FFD700] rounded-2xl p-8 text-white shadow-xl">
-        <h3 class="text-2xl font-bold mb-4">¡Tu Mascota Está Protegida!</h3>
-        <p class="text-lg opacity-90">Cualquier persona que encuentre a tu mascota puede escanear la medalla y contactarte inmediatamente.</p>
-      </div>
-    </div>
-  </section>
-
-  
-
-  <!-- Puntos de Venta Section -->
-  <section id="puntos-venta" class="max-w-7xl mx-auto px-4 py-16">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl md:text-4xl font-bold text-[#006455] mb-4">
-        Puntos de Venta PeludosClick
-      </h2>
-      <p class="text-lg text-[#36454F]">Encuentra dónde obtener tu medalla PeludosClick</p>
-    </div>
-    
-    <!-- Componente dinámico de Partners -->
-    <app-home-partner-list></app-home-partner-list>
-    
-    <!-- Llamada a la Acción - Puntos de Venta -->
-    <div class="text-center mt-8">
-      <p class="text-lg text-[#006455] font-semibold mb-4">
-        Visita nuestras tiendas y obtén tu medalla
-      </p>
-      <button 
-        class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-8 py-4 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#006455]"
-      >
-        Encuentra tu Punto de Venta
-      </button>
     </div>
   </section>
   

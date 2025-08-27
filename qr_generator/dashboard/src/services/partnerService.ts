@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Partner, PartnerStats, CreatePartnerRequest, UpdatePartnerRequest } from '../types/dashboard';
 import { authService } from './authService';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333/api';
 
 // Crear instancia de axios con interceptor para manejar autenticación
 const api = axios.create({
@@ -120,6 +120,56 @@ export const partnerService = {
     }
   },
 
+  // Subir imagen de perfil
+  async uploadProfileImage(id: number, file: File): Promise<Partner> {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      // Obtener token de autenticación
+      const token = authService.getAccessToken();
+      if (!token) {
+        await authService.login();
+      }
+      
+      const response = await axios.post(`${API_BASE_URL}/partners/${id}/upload-profile-image`, formData, {
+        headers: {
+          'Authorization': `Bearer ${authService.getAccessToken()}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading profile image:', error);
+      throw new Error('Error al subir la imagen de perfil');
+    }
+  },
+
+  // Subir imagen de portada
+  async uploadCoverImage(id: number, file: File): Promise<Partner> {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      // Obtener token de autenticación
+      const token = authService.getAccessToken();
+      if (!token) {
+        await authService.login();
+      }
+      
+      const response = await axios.post(`${API_BASE_URL}/partners/${id}/upload-cover-image`, formData, {
+        headers: {
+          'Authorization': `Bearer ${authService.getAccessToken()}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading cover image:', error);
+      throw new Error('Error al subir la imagen de portada');
+    }
+  },
+
   // Obtener estadísticas de partners
   async getPartnerStats(): Promise<PartnerStats> {
     try {
@@ -133,6 +183,7 @@ export const partnerService = {
         restaurants: partners.filter(p => p.partnerType === 'RESTAURANT').length,
         veterinarians: partners.filter(p => p.partnerType === 'VETERINARIAN').length,
         petShops: partners.filter(p => p.partnerType === 'PET_SHOP').length,
+        petFriendly: partners.filter(p => p.partnerType === 'PET_FRIENDLY').length,
         others: partners.filter(p => p.partnerType === 'OTHER').length,
       };
       
@@ -140,6 +191,58 @@ export const partnerService = {
     } catch (error) {
       console.error('Error calculating partner stats:', error);
       throw new Error('Error al calcular estadísticas de partners');
+    }
+  },
+
+  // Obtener galería de un partner
+  async getPartnerGallery(id: number): Promise<any[]> {
+    try {
+      const response = await api.get(`/partners/${id}/gallery`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching partner gallery:', error);
+      throw new Error('Error al obtener la galería del partner');
+    }
+  },
+
+  // Subir imagen a la galería
+  async uploadGalleryImage(id: number, file: File, altText?: string, order?: number): Promise<any> {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      if (altText) {
+        formData.append('altText', altText);
+      }
+      if (order !== undefined) {
+        formData.append('order', order.toString());
+      }
+      
+      // Obtener token de autenticación
+      const token = authService.getAccessToken();
+      if (!token) {
+        await authService.login();
+      }
+      
+      const response = await axios.post(`${API_BASE_URL}/partners/${id}/gallery`, formData, {
+        headers: {
+          'Authorization': `Bearer ${authService.getAccessToken()}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading gallery image:', error);
+      throw new Error('Error al subir imagen a la galería');
+    }
+  },
+
+  // Eliminar imagen de la galería
+  async removeGalleryImage(id: number, imageId: number): Promise<void> {
+    try {
+      await api.delete(`/partners/${id}/gallery/${imageId}`);
+    } catch (error) {
+      console.error('Error removing gallery image:', error);
+      throw new Error('Error al eliminar imagen de la galería');
     }
   }
 }; 

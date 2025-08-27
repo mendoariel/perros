@@ -3,5 +3,5 @@ export const environment = {
     title: 'Local Development',
     production: false,
     perrosQrApi: 'http://localhost:3333/api/',
-    isServer: true // En SSR siempre es true, en el navegador se puede verificar dinámicamente
+    isServer: typeof window === 'undefined' // Verificar dinámicamente si estamos en el servidor
 };

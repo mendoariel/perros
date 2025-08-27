@@ -60,22 +60,32 @@ model VirginMedal {
 }
 
 model Partner {
-  id          Int           @id @default(autoincrement())
-  name        String
-  address     String
-  whatsapp    String?
-  phone       String?
-  description String?
-  website     String?
-  partnerType PartnerType   @map("partner_type")
-  status      PartnerStatus @default(ACTIVE)
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @default(now()) @map("updated_at")
-  articles    Article[]
-  catalog     Catalog?
-  comments    Comment[]
-  offers      Offer[]
-  services    Service[]
+  id               Int              @id @default(autoincrement())
+  name             String
+  address          String
+  whatsapp         String?
+  phone            String?
+  description      String?
+  website          String?
+  partnerType      PartnerType      @map("partner_type")
+  status           PartnerStatus    @default(ACTIVE)
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @default(now()) @map("updated_at")
+  cover_image      String?
+  profile_image    String?
+  latitude         Float?           @default(0)
+  longitude        Float?           @default(0)
+  positioning      Int?             @default(0)
+  instagram        String?
+  facebook         String?
+  escaparate_image String?
+  urlGoogleMap     String?        @map("url_google_map")
+  articles         Article[]
+  catalog          Catalog?
+  comments         Comment[]
+  offers           Offer[]
+  partner_images   partner_images[]
+  services         Service[]
 
   @@map("partners")
 }
@@ -176,6 +186,17 @@ model MedalFront {
   @@map("medal_fronts")
 }
 
+model partner_images {
+  id         Int      @id @default(autoincrement())
+  image_url  String
+  alt_text   String?
+  order      Int      @default(0)
+  partner_id Int
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  partners   Partner  @relation(fields: [partner_id], references: [id], onDelete: Cascade)
+}
+
 enum Role {
   VISITOR
   FRIAS_EDITOR
@@ -200,10 +221,11 @@ enum UserStatus {
 }
 
 enum PartnerType {
-  VETERINARY
+  RESTAURANT
+  VETERINARIAN
   PET_SHOP
-  MINIMARKET
-  CAFETERIA
+  PET_FRIENDLY
+  OTHER
 }
 
 enum PartnerStatus {

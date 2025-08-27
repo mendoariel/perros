@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333/api';
 
-// Credenciales hardcodeadas para el dashboard
-const DASHBOARD_EMAIL = 'mendoariel@hotmail.com';
-const DASHBOARD_PASSWORD = 'Casadesara1';
+// Credenciales del dashboard desde variables de entorno
+const DASHBOARD_EMAIL = process.env.REACT_APP_DASHBOARD_USERNAME || 'admin';
+const DASHBOARD_PASSWORD = process.env.REACT_APP_DASHBOARD_PASSWORD || 'admin123';
 
 interface AuthResponse {
   access_token: string;

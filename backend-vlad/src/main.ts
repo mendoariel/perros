@@ -21,9 +21,13 @@ async function bootstrap() {
 
   // Serve static files from public directory
   app.use('/pets/files', express.static(join(process.cwd(), 'public', 'files')));
+  app.use('/images/partners', express.static(join(process.cwd(), 'public', 'images', 'partners')));
+  app.use('/images/partners/gallery', express.static(join(process.cwd(), 'public', 'images', 'partners', 'gallery')));
 
   // const reflector = new Reflector(); 
   // app.useGlobalGuards(new AtGuard(reflector));
-  await app.listen(process.env.BACKPORT);
+  const port = process.env.BACKPORT || 3333;
+  console.log(`Application is running on port ${port}`);
+  await app.listen(port);
 }
 bootstrap();

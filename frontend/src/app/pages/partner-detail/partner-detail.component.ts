@@ -4,8 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { Subscription, of } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
-import { PartnersService, Partner } from '../../services/partners.service';
+import { PartnersService, Partner, PartnerImage } from '../../services/partners.service';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-partner-detail',
@@ -136,8 +137,56 @@ export class PartnerDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  openMaps(address: string) {
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+  openInstagram(instagram: string) {
+    if (instagram) {
+      // Si no tiene https://, agregarlo
+      const url = instagram.startsWith('http') ? instagram : `https://instagram.com/${instagram.replace('@', '')}`;
+      window.open(url, '_blank');
+    }
+  }
+
+  openFacebook(facebook: string) {
+    if (facebook) {
+      // Si no tiene https://, agregarlo
+      const url = facebook.startsWith('http') ? facebook : `https://facebook.com/${facebook}`;
+      window.open(url, '_blank');
+    }
+  }
+
+  openMaps(partner: Partner) {
+    console.log('=== DATOS DEL PARTNER PARA MAPS ===');
+    console.log('Partner completo:', partner);
+    console.log('Latitude:', partner.latitude);
+    console.log('Longitude:', partner.longitude);
+    console.log('Address:', partner.address);
+    console.log('Name:', partner.name);
+    console.log('urlGoogleMap:', partner.urlGoogleMap);
+    
+    let mapsUrl: string;
+    
+    // Si tenemos una URL de Google Maps específica, usarla primero
+    if (partner.urlGoogleMap) {
+      mapsUrl = partner.urlGoogleMap;
+      console.log('Usando URL específica de Google Maps:', mapsUrl);
+    } else if (partner.latitude && partner.longitude) {
+      // Si tenemos coordenadas, usarlas para mayor precisión
+      const label = partner.name ? encodeURIComponent(partner.name) : '';
+      mapsUrl = `https://www.google.com/maps?q=${partner.latitude},${partner.longitude}&z=16${label ? `&t=m&z=16&q=${partner.latitude},${partner.longitude}(${label})` : ''}`;
+      console.log('Usando coordenadas:', mapsUrl);
+    } else if (partner.address) {
+      // Si no hay coordenadas, usar la dirección con zoom
+      mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(partner.address)}&zoom=15`;
+      console.log('Usando dirección:', mapsUrl);
+    } else if (partner.name) {
+      // Fallback: buscar por nombre del partner
+      mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(partner.name)}&zoom=15`;
+      console.log('Usando nombre:', mapsUrl);
+    } else {
+      console.log('No hay información para mostrar en el mapa');
+      return; // No hay información para mostrar en el mapa
+    }
+    
+    console.log('URL final del mapa:', mapsUrl);
     window.open(mapsUrl, '_blank');
   }
 
@@ -178,5 +227,38 @@ export class PartnerDetailComponent implements OnInit, OnDestroy {
       default:
         return 'Desconocido';
     }
+  }
+
+  onImageError(event: Event, fallbackImage: string) {
+    const img = event.target as HTMLImageElement;
+    if (img) {
+      img.src = fallbackImage;
+    }
+  }
+
+  getImageUrl(imageUrl: string | undefined): string {
+    if (!imageUrl) return '';
+    if (imageUrl.startsWith('http')) {
+      return imageUrl;
+    }
+    // Si estamos en el servidor (SSR), usar URL completa
+    if (environment.isServer) {
+      return `http://localhost:3333${imageUrl}`;
+    }
+    // Si estamos en el navegador, usar URL relativa
+    return environment.production ? imageUrl : `${environment.perrosQrApi.replace('/api/', '')}${imageUrl}`;
+  }
+
+  openImageModal(image: PartnerImage) {
+    // Por ahora solo abrimos la imagen en una nueva pestaña
+    // En el futuro se puede implementar un modal
+    const fullImageUrl = this.getImageUrl(image.imageUrl);
+    window.open(fullImageUrl, '_blank');
+  }
+
+  openEscaparateModal(imageUrl: string, altText: string) {
+    // Método específico para el escaparate
+    const fullImageUrl = this.getImageUrl(imageUrl);
+    window.open(fullImageUrl, '_blank');
   }
 } 

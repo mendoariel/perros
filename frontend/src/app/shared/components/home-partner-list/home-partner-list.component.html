@@ -1,14 +1,80 @@
-<!-- Sección de Partners -->
-<section class="py-16 bg-gray-50">
+<!-- Sección de Partners - Estilo Kiwoko -->
+<section class="py-16 bg-gradient-to-br from-blue-50 to-green-50">
   <div class="container mx-auto px-4">
-    <!-- Título de la sección -->
+    <!-- Banner Promocional Mejorado -->
+    <div class="bg-gradient-to-r from-pink-100 via-orange-100 to-yellow-100 rounded-3xl p-8 mb-12 shadow-xl relative overflow-hidden">
+      <!-- Elementos decorativos de fondo -->
+      <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-200 to-orange-200 rounded-full opacity-30 transform translate-x-8 -translate-y-8"></div>
+      <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-pink-200 to-red-200 rounded-full opacity-30 transform -translate-x-6 translate-y-6"></div>
+      
+      <div class="flex flex-col lg:flex-row items-center justify-between relative z-10">
+        <div class="flex items-center mb-6 lg:mb-0">
+          <div class="mr-6 relative">
+            <div class="text-6xl font-bold text-yellow-500 mb-2 animate-pulse">🏆</div>
+            <div class="text-3xl font-bold text-red-600 bg-white px-3 py-1 rounded-full shadow-lg">-30%</div>
+            <div class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+              <span class="text-white text-xs font-bold">!</span>
+            </div>
+          </div>
+          <div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">
+              ¡Descubre lugares PetFriendly!
+            </h2>
+            <p class="text-lg text-gray-600">
+              Los mejores establecimientos que piensan y cuidan a nuestras mascotas!
+            </p>
+            <div class="flex items-center mt-3 space-x-2">
+              <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">✅ Verificados</span>
+              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">🌟 Premium</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center space-x-6">
+          <div class="text-center group">
+            <div class="text-5xl group-hover:scale-110 transition-transform duration-300">🐕</div>
+            <div class="text-sm text-gray-600 font-medium">Perros</div>
+            <div class="text-xs text-gray-500">Mascotas</div>
+          </div>
+          <div class="text-center group">
+            <div class="text-5xl group-hover:scale-110 transition-transform duration-300">🐱</div>
+            <div class="text-sm text-gray-600 font-medium">Gatos</div>
+            <div class="text-xs text-gray-500">Felinos</div>
+          </div>
+          <div class="text-center group">
+            <div class="text-5xl group-hover:scale-110 transition-transform duration-300">🏥</div>
+            <div class="text-sm text-gray-600 font-medium">Veterinarias</div>
+            <div class="text-xs text-gray-500">Salud</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Título de la sección mejorado -->
     <div class="text-center mb-12">
-      <h2 class="text-4xl font-bold text-[#006455] mb-4">
-        En estos lugares podés encontrar las medallas con ID 
-      </h2>
-      <p class="text-xl text-[#36454F] max-w-2xl mx-auto">
-        Descubre los mejores establecimientos pet-friendly en Godoy Cruz, Mendoza
+      <div class="flex items-center justify-center mb-4">
+        <span class="text-4xl mr-3">🎯</span>
+        <h2 class="text-4xl font-bold text-[#006455] text-center">
+          ¡Descubre lugares PetFriendly!
+        </h2>
+        <span class="text-4xl ml-3">🎯</span>
+      </div>
+      <p class="text-xl text-[#36454F] max-w-2xl mx-auto mb-6 text-center">
+        Los mejores establecimientos que piensan y cuidan a nuestras mascotas!
       </p>
+      <div class="flex justify-center space-x-4">
+        <div class="flex items-center text-sm text-gray-600">
+          <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+          Establecimientos verificados
+        </div>
+        <div class="flex items-center text-sm text-gray-600">
+          <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+          Atención personalizada
+        </div>
+        <div class="flex items-center text-sm text-gray-600">
+          <span class="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+          Calidad garantizada
+        </div>
+      </div>
     </div>
 
     <!-- Loading State -->
@@ -35,105 +101,110 @@
     <div *ngIf="!loading && !error" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <div 
         *ngFor="let partner of partners" 
-        class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+        class="bg-white rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border-0 overflow-hidden relative group">
         
+        <!-- Badge de oferta -->
+        <div class="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold z-10">
+          ¡Destacado!
+        </div>
+        
+        <!-- Imagen de fondo decorativa -->
+        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-green-100 rounded-full opacity-20 transform translate-x-8 -translate-y-8"></div>
+        
+        <!-- Imagen de portada -->
+        <div class="relative mb-6 -mx-6 -mt-6 h-32 bg-gradient-to-r from-blue-100 to-green-100 rounded-t-3xl overflow-hidden">
+          <img 
+            [src]="getImageUrl(partner.coverImage) || getImageUrl('/images/partners/cover_21959b110c74f81910da2d237c2b8d99a6.jpg')"
+            [alt]="'Portada de ' + partner.name"
+            class="w-full h-full object-cover"
+            (error)="onImageError($event, getImageUrl('/images/partners/cover_21959b110c74f81910da2d237c2b8d99a6.jpg'))">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        </div>
+
         <!-- Header del Partner -->
-        <div class="flex items-center mb-4">
-          <div class="w-12 h-12 bg-gradient-to-br from-[#006455]/20 to-[#006455]/30 rounded-full flex items-center justify-center mr-3">
-            <svg class="w-6 h-6" [class]="getPartnerTypeColor(partner.partnerType)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path *ngIf="partner.partnerType === 'VETERINARIAN'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-              <path *ngIf="partner.partnerType === 'PET_SHOP'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-              <path *ngIf="partner.partnerType === 'RESTAURANT'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18z"></path>
-              <path *ngIf="partner.partnerType === 'OTHER'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-            </svg>
+        <div class="flex items-center mb-6 relative z-10">
+          <!-- Imagen de perfil -->
+          <div class="relative mr-4">
+            <div class="w-16 h-16 rounded-2xl overflow-hidden shadow-lg border-4 border-white">
+              <img 
+                [src]="getImageUrl(partner.profileImage) || getImageUrl('/images/partners/profile_bd776d119f9de4fa98a10c39c4acd9d4e.jpg')"
+                [alt]="'Perfil de ' + partner.name"
+                class="w-full h-full object-cover"
+                (error)="onImageError($event, getImageUrl('/images/partners/profile_bd776d119f9de4fa98a10c39c4acd9d4e.jpg'))">
+            </div>
+            <!-- Badge de tipo en la esquina -->
+            <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-[#006455] rounded-full flex items-center justify-center shadow-lg">
+              <div class="text-xs">
+                <span *ngIf="partner.partnerType === 'VETERINARIAN'">🏥</span>
+                <span *ngIf="partner.partnerType === 'PET_SHOP'">🛍️</span>
+                <span *ngIf="partner.partnerType === 'RESTAURANT'">🍽️</span>
+                <span *ngIf="partner.partnerType === 'OTHER'">🏢</span>
+              </div>
+            </div>
           </div>
           <div class="flex-1">
-            <h3 class="text-lg font-bold text-[#006455]">{{ partner.name }}</h3>
-            <p class="text-sm text-[#36454F]">{{ getPartnerTypeLabel(partner.partnerType) }}</p>
+            <h3 class="text-xl font-bold text-[#006455] mb-1">{{ partner.name }}</h3>
+            <div class="flex items-center">
+              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                {{ getPartnerTypeLabel(partner.partnerType) }}
+              </span>
+              <span 
+                class="ml-2 px-2 py-1 rounded-full text-xs font-medium"
+                [ngClass]="{
+                  'bg-green-100 text-green-800': partner.status === 'ACTIVE',
+                  'bg-red-100 text-red-800': partner.status === 'INACTIVE',
+                  'bg-yellow-100 text-yellow-800': partner.status === 'PENDING'
+                }">
+                {{ partner.status === 'ACTIVE' ? 'Activo' : 
+                   partner.status === 'INACTIVE' ? 'Inactivo' : 'Pendiente' }}
+              </span>
+            </div>
           </div>
         </div>
 
         <!-- Descripción -->
-        <p *ngIf="partner.description" class="text-[#36454F] mb-4 text-sm">
+        <p *ngIf="partner.description" class="text-[#36454F] mb-6 text-sm leading-relaxed relative z-10">
           {{ getShortDescription(partner.description) }}
         </p>
 
         <!-- Información de contacto -->
-        <div class="space-y-2 mb-4">
-          <div *ngIf="partner.address" class="flex items-center text-sm text-[#36454F]">
-            <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="space-y-3 mb-6 relative z-10">
+          <div *ngIf="partner.address" class="flex items-center text-sm text-[#36454F] bg-gray-50 px-3 py-2 rounded-lg">
+            <svg class="w-4 h-4 text-[#006455] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
             </svg>
             <span class="truncate">{{ partner.address }}</span>
           </div>
-          <div *ngIf="partner.phone" class="flex items-center text-sm text-[#36454F]">
-            <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-            </svg>
-            <span>{{ partner.phone }}</span>
-          </div>
         </div>
 
         <!-- Botones de acción -->
-        <div class="flex gap-2 flex-wrap">
-          <!-- WhatsApp -->
-          <button 
-            *ngIf="partner.whatsapp"
-            (click)="openWhatsApp(partner.whatsapp!)"
-            class="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-full transition-colors"
-            title="Contactar por WhatsApp">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
-            </svg>
-          </button>
-
-          <!-- Teléfono -->
-          <button 
-            *ngIf="partner.phone"
-            (click)="openPhone(partner.phone!)"
-            class="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-full transition-colors"
-            title="Llamar">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-            </svg>
-          </button>
-
+        <div class="flex gap-3 flex-wrap relative z-10">
           <!-- Website -->
           <button 
             *ngIf="partner.website"
             (click)="openWebsite(partner.website!)"
-            class="p-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-full transition-colors"
+            class="flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"
             title="Visitar sitio web">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"></path>
             </svg>
-          </button>
-
-          <!-- Maps -->
-          <button 
-            *ngIf="partner.address"
-            (click)="openMaps(partner.address!)"
-            class="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
-            title="Ver en Google Maps">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"></path>
-            </svg>
+            <span class="text-sm font-medium">Web</span>
           </button>
         </div>
 
-        <!-- Badge de estado -->
-        <div class="mt-4">
-          <span 
-            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-            [ngClass]="{
-              'bg-green-100 text-green-800': partner.status === 'ACTIVE',
-              'bg-red-100 text-red-800': partner.status === 'INACTIVE',
-              'bg-yellow-100 text-yellow-800': partner.status === 'PENDING'
-            }">
-            {{ partner.status === 'ACTIVE' ? 'Activo' : 
-               partner.status === 'INACTIVE' ? 'Inactivo' : 'Pendiente' }}
-          </span>
+        <!-- Botón principal para abrir el partner -->
+        <div class="mt-4 pt-4 border-t border-gray-100 relative z-10">
+          <button 
+            (click)="openPartnerDetail(partner.id)"
+            class="w-full bg-[#006455] hover:bg-[#005544] text-white px-4 py-3 rounded-xl font-medium transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
+            <span class="flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+              </svg>
+              <span>Abrir</span>
+            </span>
+          </button>
         </div>
       </div>
     </div>
@@ -147,11 +218,16 @@
     </div>
 
     <!-- Botón para ver más -->
-    <div *ngIf="!loading && !error && partners.length > 0" class="text-center mt-12">
+    <div *ngIf="!loading && !error && partners.length > 0" class="text-center mt-16">
       <button 
         (click)="viewAllPartners()"
-        class="bg-[#006455] hover:bg-[#005544] text-white px-8 py-3 rounded-lg font-medium transition-colors">
-        Ver Todos los Partners
+        class="bg-gradient-to-r from-[#006455] to-[#008066] hover:from-[#005544] hover:to-[#006455] text-white px-10 py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105">
+        <span class="flex items-center gap-3">
+          <span>Ver Todos los Partners</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+          </svg>
+        </span>
       </button>
     </div>
   </div>

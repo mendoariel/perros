@@ -3,11 +3,18 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainNavigation from './components/MainNavigation';
 import GenericDashboard from './components/GenericDashboard';
 import PartnersManagement from './components/PartnersManagement';
+import PartnerCreate from './components/PartnerCreate';
+import PartnerEdit from './components/PartnerEdit';
 import MedalFrontsGenerator from './components/MedalFrontsGenerator';
 import QRGenerator from './components/QRGenerator';
 import MedallasPredefinidas from './components/MedallasPredefinidas';
 import { NavigationItem } from './types/dashboard';
 import './index.css';
+
+// Debug: Verificar variables de entorno
+console.log('Environment variables check:');
+console.log('REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+console.log('NODE_ENV:', process.env.NODE_ENV);
 
 // Configuración de navegación
 const navigationItems: NavigationItem[] = [
@@ -72,6 +79,8 @@ function App() {
             <Route path="/" element={<GenericDashboard />} />
             <Route path="/medallas" element={<GenericDashboard />} />
             <Route path="/partners" element={<PartnersManagement />} />
+            <Route path="/partners/create" element={<PartnerCreate />} />
+            <Route path="/partners/:id/edit" element={<PartnerEdit />} />
             <Route path="/creacion-de-frentes-de-medallas" element={<MedalFrontsGenerator />} />
             <Route path="/medallas-predefinidas" element={<MedallasPredefinidas />} />
             <Route path="/creacion-de-codigos-qr" element={<QRGenerator />} />

@@ -3,6 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
+export interface PartnerImage {
+  id: number;
+  imageUrl: string;
+  altText?: string;
+  order: number;
+  partnerId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Partner {
   id: number;
   name: string;
@@ -11,10 +21,20 @@ export interface Partner {
   phone?: string;
   description?: string;
   website?: string;
+  instagram?: string;
+  facebook?: string;
   partnerType: 'RESTAURANT' | 'VETERINARIAN' | 'PET_SHOP' | 'OTHER';
   status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
+  profileImage?: string;
+  coverImage?: string;
+  escaparateImage?: string;
+  urlGoogleMap?: string;
+  latitude?: number;
+  longitude?: number;
+  positioning?: number;
   createdAt: string;
   updatedAt?: string;
+  gallery?: PartnerImage[];
   _count?: {
     articles: number;
     services: number;
@@ -56,5 +76,10 @@ export class PartnersService {
   // Obtener partners destacados (activos y con más contenido)
   getFeaturedPartners(): Observable<Partner[]> {
     return this.http.get<Partner[]>(`${this.getApiUrl()}partners`);
+  }
+
+  // Crear nuevo partner
+  createPartner(partner: Omit<Partner, 'id' | 'createdAt' | 'updatedAt' | '_count'>): Observable<Partner> {
+    return this.http.post<Partner>(`${this.getApiUrl()}partners`, partner);
   }
 } 

@@ -66,8 +66,13 @@ export interface Partner {
   phone?: string;
   description?: string;
   website?: string;
+  instagram?: string;
+  facebook?: string;
   partnerType: PartnerType;
   status: PartnerStatus;
+  profileImage?: string;
+  coverImage?: string;
+  gallery?: PartnerImage[];
   createdAt: string;
   updatedAt?: string;
   _count?: {
@@ -82,10 +87,11 @@ export interface PartnerStats extends DashboardStats {
   restaurants: number;
   veterinarians: number;
   petShops: number;
+  petFriendly: number;
   others: number;
 }
 
-export type PartnerType = 'RESTAURANT' | 'VETERINARIAN' | 'PET_SHOP' | 'OTHER';
+export type PartnerType = 'RESTAURANT' | 'VETERINARIAN' | 'PET_SHOP' | 'PET_FRIENDLY' | 'OTHER';
 export type PartnerStatus = 'ACTIVE' | 'INACTIVE' | 'PENDING';
 
 export interface CreatePartnerRequest {
@@ -95,7 +101,21 @@ export interface CreatePartnerRequest {
   phone?: string;
   description?: string;
   website?: string;
+  instagram?: string;
+  facebook?: string;
   partnerType: PartnerType;
+  profileImage?: string;
+  coverImage?: string;
+}
+
+export interface PartnerImage {
+  id: number;
+  imageUrl: string;
+  altText?: string;
+  order: number;
+  partnerId: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UpdatePartnerRequest {
@@ -105,6 +125,10 @@ export interface UpdatePartnerRequest {
   phone?: string;
   description?: string;
   website?: string;
+  instagram?: string;
+  facebook?: string;
   partnerType?: PartnerType;
   status?: PartnerStatus;
+  profileImage?: string;
+  coverImage?: string;
 } 

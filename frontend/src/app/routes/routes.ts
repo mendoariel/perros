@@ -18,6 +18,7 @@ import { PetFromHomeComponent } from "../pages/pet-from-home/pet-from-home.compo
 import { HomeComponent } from "../pages/home/home.component";
 import { PartnersComponent } from "../pages/partners/partners.component";
 import { PartnerDetailComponent } from "../pages/partner-detail/partner-detail.component";
+import { PartnerCreateComponent } from "../pages/partner-create/partner-create.component";
 import { PrivacyPolicyComponent } from "../pages/privacy-policy/privacy-policy.component";
 import { TermsOfServiceComponent } from "../pages/terms-of-service/terms-of-service.component";
 import { TokenTestComponent } from "../pages/token-test/token-test.component";
@@ -90,6 +91,10 @@ export const routes: Route[] = [
     {
         path: 'partner/:id',
         component: PartnerDetailComponent
+    },
+    {
+        path: 'partner-create',
+        component: PartnerCreateComponent
     },
     {
         path: 'login',

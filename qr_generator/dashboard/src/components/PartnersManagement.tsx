@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Partner, PartnerStats, CreatePartnerRequest, UpdatePartnerRequest, PartnerType, PartnerStatus } from '../types/dashboard';
+import { useNavigate } from 'react-router-dom';
+import { Partner, PartnerStats, UpdatePartnerRequest, PartnerType, PartnerStatus } from '../types/dashboard';
 import { partnerService } from '../services/partnerService';
 import { SampleDataLoader } from '../utils/sampleDataLoader';
 
 const PartnersManagement: React.FC = () => {
+  const navigate = useNavigate();
   const [partners, setPartners] = useState<Partner[]>([]);
   const [stats, setStats] = useState<PartnerStats>({
     total: 0,
@@ -13,26 +15,18 @@ const PartnersManagement: React.FC = () => {
     restaurants: 0,
     veterinarians: 0,
     petShops: 0,
+    petFriendly: 0,
     others: 0
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingPartner, setEditingPartner] = useState<Partner | null>(null);
+
   const [filterType, setFilterType] = useState<PartnerType | 'ALL'>('ALL');
   const [filterStatus, setFilterStatus] = useState<PartnerStatus | 'ALL'>('ALL');
   const [loadingSampleData, setLoadingSampleData] = useState(false);
 
-  const [formData, setFormData] = useState<CreatePartnerRequest>({
-    name: '',
-    address: '',
-    whatsapp: '',
-    phone: '',
-    description: '',
-    website: '',
-    partnerType: 'RESTAURANT'
-  });
+
 
   const loadData = async () => {
     try {
@@ -42,9 +36,12 @@ const PartnersManagement: React.FC = () => {
         partnerService.getAllPartners(),
         partnerService.getPartnerStats()
       ]);
+      console.log('Partners loaded:', partnersData);
+      console.log('Partners count:', partnersData.length);
       setPartners(partnersData);
       setStats(statsData);
     } catch (err) {
+      console.error('Error loading data:', err);
       setError('Error al cargar los datos: ' + (err as Error).message);
     } finally {
       setLoading(false);
@@ -72,33 +69,14 @@ const PartnersManagement: React.FC = () => {
     }
   };
 
-  const handleCreatePartner = async () => {
-    try {
-      await partnerService.createPartner(formData);
-      setShowCreateDialog(false);
-      setFormData({
-        name: '',
-        address: '',
-        whatsapp: '',
-        phone: '',
-        description: '',
-        website: '',
-        partnerType: 'RESTAURANT'
-      });
-      loadData();
-    } catch (err) {
-      setError('Error al crear partner: ' + (err as Error).message);
-    }
+
+
+  const handleCreatePartner = () => {
+    navigate('/partners/create');
   };
 
-  const handleUpdatePartner = async (id: number, data: UpdatePartnerRequest) => {
-    try {
-      await partnerService.updatePartner(id, data);
-      setEditingPartner(null);
-      loadData();
-    } catch (err) {
-      setError('Error al actualizar partner: ' + (err as Error).message);
-    }
+  const handleEditPartner = (partner: Partner) => {
+    navigate(`/partners/${partner.id}/edit`);
   };
 
   const handleDeletePartner = async (id: number) => {
@@ -136,6 +114,7 @@ const PartnersManagement: React.FC = () => {
       RESTAURANT: 'bg-orange-100 text-orange-800',
       VETERINARIAN: 'bg-blue-100 text-blue-800',
       PET_SHOP: 'bg-green-100 text-green-800',
+      PET_FRIENDLY: 'bg-purple-100 text-purple-800',
       OTHER: 'bg-gray-100 text-gray-800'
     };
     return colors[type] || 'bg-gray-100 text-gray-800';
@@ -156,6 +135,9 @@ const PartnersManagement: React.FC = () => {
     return matchesType && matchesStatus;
   });
 
+  console.log('Filtered partners:', filteredPartners);
+  console.log('Filtered partners count:', filteredPartners.length);
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-96">
@@ -174,7 +156,7 @@ const PartnersManagement: React.FC = () => {
         <div className="flex space-x-3">
           <button
             className="btn-primary flex items-center space-x-2"
-            onClick={() => setShowCreateDialog(true)}
+            onClick={handleCreatePartner}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -205,7 +187,7 @@ const PartnersManagement: React.FC = () => {
       )}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <div className="card">
           <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
             Total Partners
@@ -238,9 +220,18 @@ const PartnersManagement: React.FC = () => {
             {stats.veterinarians}
           </p>
         </div>
+        <div className="card">
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+            Pet Friendly
+          </h3>
+          <p className="mt-2 text-3xl font-bold text-purple-600">
+            {stats.petFriendly}
+          </p>
+        </div>
       </div>
 
-      {/* Filters and Search */}
+      {/* Filters and Search - TEMPORARILY COMMENTED OUT */}
+      {/* 
       <div className="card">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
@@ -281,6 +272,7 @@ const PartnersManagement: React.FC = () => {
           </select>
         </div>
       </div>
+      */}
 
       {/* Partners Table */}
       <div className="card">
@@ -300,7 +292,7 @@ const PartnersManagement: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Contacto
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">
                   Acciones
                 </th>
               </tr>
@@ -309,12 +301,24 @@ const PartnersManagement: React.FC = () => {
               {filteredPartners.map((partner) => (
                 <tr key={partner.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        {partner.name}
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-10 w-10 mr-3">
+                        <img
+                          className="h-10 w-10 rounded-lg object-cover border-2 border-gray-200"
+                          src={partner.profileImage || 'http://localhost:3333/images/partners/profile_bd776d119f9de4fa98a10c39c4acd9d4e.jpg'}
+                          alt={partner.name}
+                          onError={(e) => {
+                            e.currentTarget.src = 'http://localhost:3333/images/partners/profile_bd776d119f9de4fa98a10c39c4acd9d4e.jpg';
+                          }}
+                        />
                       </div>
-                      <div className="text-sm text-gray-500">
-                        {partner.address}
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {partner.name}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {partner.address}
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -334,19 +338,27 @@ const PartnersManagement: React.FC = () => {
                       {partner.whatsapp && <div>📱 {partner.whatsapp}</div>}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button
-                      onClick={() => setEditingPartner(partner)}
-                      className="text-blue-600 hover:text-blue-900 mr-3"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => handleDeletePartner(partner.id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      Eliminar
-                    </button>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium w-48">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEditPartner(partner)}
+                        className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => handleDeletePartner(partner.id)}
+                        className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                      >
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Eliminar
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -355,180 +367,7 @@ const PartnersManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Create Partner Dialog */}
-      {showCreateDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Nuevo Partner</h3>
-            <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Nombre"
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-              <input
-                type="text"
-                placeholder="Dirección"
-                value={formData.address}
-                onChange={(e) => setFormData({...formData, address: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-              <input
-                type="text"
-                placeholder="WhatsApp"
-                value={formData.whatsapp}
-                onChange={(e) => setFormData({...formData, whatsapp: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-              <input
-                type="text"
-                placeholder="Teléfono"
-                value={formData.phone}
-                onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-              <textarea
-                placeholder="Descripción"
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                rows={3}
-              />
-              <input
-                type="text"
-                placeholder="Website"
-                value={formData.website}
-                onChange={(e) => setFormData({...formData, website: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-              <select
-                value={formData.partnerType}
-                onChange={(e) => setFormData({...formData, partnerType: e.target.value as PartnerType})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <option value="RESTAURANT">Restaurante</option>
-                <option value="VETERINARIAN">Veterinario</option>
-                <option value="PET_SHOP">Pet Shop</option>
-                <option value="OTHER">Otro</option>
-              </select>
-            </div>
-            <div className="flex justify-end space-x-3 mt-6">
-              <button
-                onClick={() => setShowCreateDialog(false)}
-                className="btn-secondary"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleCreatePartner}
-                className="btn-primary"
-              >
-                Crear
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Edit Partner Dialog */}
-      {editingPartner && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Editar Partner</h3>
-            <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Nombre"
-                defaultValue={editingPartner.name}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                id="edit-name"
-              />
-              <input
-                type="text"
-                placeholder="Dirección"
-                defaultValue={editingPartner.address}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                id="edit-address"
-              />
-              <input
-                type="text"
-                placeholder="WhatsApp"
-                defaultValue={editingPartner.whatsapp}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                id="edit-whatsapp"
-              />
-              <input
-                type="text"
-                placeholder="Teléfono"
-                defaultValue={editingPartner.phone}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                id="edit-phone"
-              />
-              <textarea
-                placeholder="Descripción"
-                defaultValue={editingPartner.description}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                rows={3}
-                id="edit-description"
-              />
-              <input
-                type="text"
-                placeholder="Website"
-                defaultValue={editingPartner.website}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                id="edit-website"
-              />
-              <select
-                defaultValue={editingPartner.partnerType}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                id="edit-type"
-              >
-                <option value="RESTAURANT">Restaurante</option>
-                <option value="VETERINARIAN">Veterinario</option>
-                <option value="PET_SHOP">Pet Shop</option>
-                <option value="OTHER">Otro</option>
-              </select>
-              <select
-                defaultValue={editingPartner.status}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                id="edit-status"
-              >
-                <option value="ACTIVE">Activo</option>
-                <option value="INACTIVE">Inactivo</option>
-                <option value="PENDING">Pendiente</option>
-              </select>
-            </div>
-            <div className="flex justify-end space-x-3 mt-6">
-              <button
-                onClick={() => setEditingPartner(null)}
-                className="btn-secondary"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => {
-                  const updateData: UpdatePartnerRequest = {
-                    name: (document.getElementById('edit-name') as HTMLInputElement)?.value,
-                    address: (document.getElementById('edit-address') as HTMLInputElement)?.value,
-                    whatsapp: (document.getElementById('edit-whatsapp') as HTMLInputElement)?.value,
-                    phone: (document.getElementById('edit-phone') as HTMLInputElement)?.value,
-                    description: (document.getElementById('edit-description') as HTMLTextAreaElement)?.value,
-                    website: (document.getElementById('edit-website') as HTMLInputElement)?.value,
-                    partnerType: (document.getElementById('edit-type') as HTMLSelectElement)?.value as PartnerType,
-                    status: (document.getElementById('edit-status') as HTMLSelectElement)?.value as PartnerStatus,
-                  };
-                  handleUpdatePartner(editingPartner.id, updateData);
-                }}
-                className="btn-primary"
-              >
-                Guardar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { MaterialModule } from 'src/app/material/material.module';
 import { Router } from '@angular/router';
 import { PartnersService, Partner } from 'src/app/services/partners.service';
 import { Observable, map, of, catchError, Subscription } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-home-partner-list',
@@ -136,8 +137,22 @@ export class HomePartnerListComponent implements OnDestroy {
     }
   }
 
-  openMaps(address: string) {
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+  openMaps(partner: Partner) {
+    let mapsUrl: string;
+    
+    // Si tenemos coordenadas, usarlas para mayor precisión
+    if (partner.latitude && partner.longitude) {
+      // URL mejorada con zoom y etiqueta
+      const label = partner.name ? encodeURIComponent(partner.name) : '';
+      mapsUrl = `https://www.google.com/maps?q=${partner.latitude},${partner.longitude}&z=16${label ? `&t=m&z=16&q=${partner.latitude},${partner.longitude}(${label})` : ''}`;
+    } else if (partner.address) {
+      // Si no hay coordenadas, usar la dirección con zoom
+      mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(partner.address)}&zoom=15`;
+    } else {
+      // Fallback: buscar por nombre del partner
+      mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(partner.name)}&zoom=15`;
+    }
+    
     window.open(mapsUrl, '_blank');
   }
 
@@ -146,9 +161,35 @@ export class HomePartnerListComponent implements OnDestroy {
     return description.length > 100 ? description.substring(0, 100) + '...' : description;
   }
 
+  onImageError(event: Event, fallbackImage: string) {
+    const img = event.target as HTMLImageElement;
+    if (img) {
+      img.src = fallbackImage;
+    }
+  }
+
+  getImageUrl(imageUrl: string | undefined): string {
+    if (!imageUrl) return '';
+    if (imageUrl.startsWith('http')) {
+      return imageUrl;
+    }
+    // Si estamos en el servidor (SSR), usar URL completa
+    if (environment.isServer) {
+      return `http://localhost:3333${imageUrl}`;
+    }
+    // Si estamos en el navegador, usar URL relativa
+    return environment.production ? imageUrl : `${environment.perrosQrApi.replace('/api/', '')}${imageUrl}`;
+  }
+
   viewAllPartners() {
     this.ngZone.run(() => {
       this.router.navigate(['/partners']);
+    });
+  }
+
+  openPartnerDetail(partnerId: number) {
+    this.ngZone.run(() => {
+      this.router.navigate(['/partner', partnerId]);
     });
   }
 } 

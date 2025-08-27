@@ -68,14 +68,18 @@ services:
       - app-network
   # The Postgres Admin tool if we want to run some custom queries and so on against our Database
   postgres_admin-perros:
-    image: dpage/pgadmin4:4.28
+    image: dpage/pgadmin4:8.7
     depends_on: 
        - postgres
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     ports:
       - 5050:80
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
     networks:
       - app-network
 
@@ -93,10 +97,10 @@ services:
       - PG_PASSWORD=casadesara
       - PG_DATABASE=peludosclick
       # API URL para el frontend del dashboard (local)
-      - REACT_APP_API_URL=http://localhost:3333
+      - REACT_APP_API_URL=http://localhost:3333/api
       # Credenciales del dashboard (local)
-      - REACT_APP_DASHBOARD_USERNAME=admin
-      - REACT_APP_DASHBOARD_PASSWORD=admin123
+      - REACT_APP_DASHBOARD_USERNAME=mendoariel@hotmail.com
+      - REACT_APP_DASHBOARD_PASSWORD=Casadesara1
     depends_on: 
       postgres:
         condition: service_healthy
@@ -109,6 +113,8 @@ services:
 volumes:
   postgres_data:
     name: postgres_data_local
+  pgadmin_data:
+    name: pgadmin_data_local
 
 networks:
   app-network:

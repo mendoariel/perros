@@ -1,47 +1,101 @@
-<!-- Hero Section -->
-<section class="bg-gradient-to-r from-[#006455] to-[#008066] text-white py-16">
+<!-- Hero Section - Estilo Comercial -->
+<section class="bg-gradient-to-br from-blue-50 to-green-50 py-16">
   <div class="container mx-auto px-4">
+    <!-- Banner Promocional -->
+    <div class="bg-gradient-to-r from-pink-100 to-orange-100 rounded-3xl p-8 mb-12 shadow-lg">
+      <div class="flex flex-col lg:flex-row items-center justify-between">
+        <div class="flex items-center mb-6 lg:mb-0">
+          <div class="mr-6">
+            <div class="text-6xl font-bold text-yellow-500 mb-2">🏆</div>
+            <div class="text-2xl font-bold text-red-600">-30%</div>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">
+              ¡Nuestros Partners!
+            </h1>
+            <p class="text-lg text-gray-600">
+              Los mejores establecimientos pet-friendly en Godoy Cruz, Mendoza
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="text-center">
+            <div class="text-4xl">🐕</div>
+            <div class="text-sm text-gray-600">Perros</div>
+          </div>
+          <div class="text-center">
+            <div class="text-4xl">🐱</div>
+            <div class="text-sm text-gray-600">Gatos</div>
+          </div>
+          <div class="text-center">
+            <div class="text-4xl">🏥</div>
+            <div class="text-sm text-gray-600">Veterinarias</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Título Principal -->
     <div class="text-center">
-      <h1 class="text-4xl md:text-5xl font-bold mb-4">
+      <h1 class="text-4xl md:text-5xl font-bold text-[#006455] mb-4">
         Nuestros Partners
       </h1>
-      <p class="text-xl md:text-2xl max-w-3xl mx-auto">
+      <p class="text-xl md:text-2xl max-w-3xl mx-auto text-[#36454F]">
         Descubre los mejores establecimientos pet-friendly en Godoy Cruz, Mendoza
       </p>
     </div>
   </div>
 </section>
 
-<!-- Estadísticas -->
-<section class="py-8 bg-gray-50">
+<!-- Estadísticas - Estilo Comercial -->
+<section class="py-12 bg-white">
   <div class="container mx-auto px-4">
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-      <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-        <div class="text-2xl font-bold text-[#006455]">{{ getStats().total }}</div>
-        <div class="text-sm text-gray-600">Total</div>
+    <!-- Botón para crear nuevo partner - TEMPORARILY HIDDEN -->
+    <!-- <div class="text-center mb-8">
+      <button 
+        (click)="createNewPartner()"
+        class="bg-gradient-to-r from-[#006455] to-[#008066] hover:from-[#005544] hover:to-[#006455] text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105">
+        <span class="flex items-center gap-3">
+          <span>✨ Crear Nuevo Partner</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+        </span>
+      </button>
+    </div> -->
+    
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+      <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="text-4xl mb-2">📊</div>
+        <div class="text-3xl font-bold text-[#006455]">{{ getStats().total }}</div>
+        <div class="text-sm font-medium text-gray-700">Total</div>
       </div>
-      <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-        <div class="text-2xl font-bold text-green-600">{{ getStats().active }}</div>
-        <div class="text-sm text-gray-600">Activos</div>
+      <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="text-4xl mb-2">✅</div>
+        <div class="text-3xl font-bold text-green-600">{{ getStats().active }}</div>
+        <div class="text-sm font-medium text-gray-700">Activos</div>
       </div>
-      <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-        <div class="text-2xl font-bold text-blue-600">{{ getStats().veterinarians }}</div>
-        <div class="text-sm text-gray-600">Veterinarias</div>
+      <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="text-4xl mb-2">🏥</div>
+        <div class="text-3xl font-bold text-blue-600">{{ getStats().veterinarians }}</div>
+        <div class="text-sm font-medium text-gray-700">Veterinarias</div>
       </div>
-      <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-        <div class="text-2xl font-bold text-green-600">{{ getStats().petShops }}</div>
-        <div class="text-sm text-gray-600">Pet Shops</div>
+      <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="text-4xl mb-2">🛍️</div>
+        <div class="text-3xl font-bold text-green-600">{{ getStats().petShops }}</div>
+        <div class="text-sm font-medium text-gray-700">Pet Shops</div>
       </div>
-      <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-        <div class="text-2xl font-bold text-orange-600">{{ getStats().restaurants }}</div>
-        <div class="text-sm text-gray-600">Restaurantes</div>
+      <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="text-4xl mb-2">🍽️</div>
+        <div class="text-3xl font-bold text-orange-600">{{ getStats().restaurants }}</div>
+        <div class="text-sm font-medium text-gray-700">Restaurantes</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Filtros y Búsqueda -->
-<section class="py-8 bg-white border-b">
+<!-- Filtros y Búsqueda - TEMPORARILY HIDDEN -->
+<section *ngIf="false" class="py-8 bg-white border-b">
   <div class="container mx-auto px-4">
     <div class="flex flex-col md:flex-row gap-4">
       <!-- Búsqueda -->
@@ -126,18 +180,39 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <div 
         *ngFor="let partner of filteredPartners" 
-        class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer"
+        class="bg-white rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border-0 overflow-hidden cursor-pointer group"
         (click)="viewPartner(partner)">
+        
+        <!-- Imagen de portada -->
+        <div class="relative mb-6 -mx-6 -mt-6 h-32 bg-gradient-to-r from-blue-100 to-green-100 rounded-t-3xl overflow-hidden">
+          <img 
+            [src]="getImageUrl(partner.coverImage) || getImageUrl('/images/partners/cover_21959b110c74f81910da2d237c2b8d99a6.jpg')"
+            [alt]="'Portada de ' + partner.name"
+            class="w-full h-full object-cover"
+            (error)="onImageError($event, getImageUrl('/images/partners/cover_21959b110c74f81910da2d237c2b8d99a6.jpg'))">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        </div>
         
         <!-- Header del Partner -->
         <div class="flex items-center mb-4">
-          <div class="w-12 h-12 bg-gradient-to-br from-[#006455]/20 to-[#006455]/30 rounded-full flex items-center justify-center mr-3">
-            <svg class="w-6 h-6" [class]="getPartnerTypeColor(partner.partnerType)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path *ngIf="partner.partnerType === 'VETERINARIAN'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-              <path *ngIf="partner.partnerType === 'PET_SHOP'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-              <path *ngIf="partner.partnerType === 'RESTAURANT'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18z"></path>
-              <path *ngIf="partner.partnerType === 'OTHER'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-            </svg>
+          <!-- Imagen de perfil -->
+          <div class="relative mr-3">
+            <div class="w-12 h-12 rounded-xl overflow-hidden shadow-lg border-2 border-white">
+              <img 
+                [src]="getImageUrl(partner.profileImage) || getImageUrl('/images/partners/profile_bd776d119f9de4fa98a10c39c4acd9d4e.jpg')"
+                [alt]="'Perfil de ' + partner.name"
+                class="w-full h-full object-cover"
+                (error)="onImageError($event, getImageUrl('/images/partners/profile_bd776d119f9de4fa98a10c39c4acd9d4e.jpg'))">
+            </div>
+            <!-- Badge de tipo en la esquina -->
+            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-[#006455] rounded-full flex items-center justify-center shadow-lg">
+              <div class="text-xs">
+                <span *ngIf="partner.partnerType === 'VETERINARIAN'">🏥</span>
+                <span *ngIf="partner.partnerType === 'PET_SHOP'">🛍️</span>
+                <span *ngIf="partner.partnerType === 'RESTAURANT'">🍽️</span>
+                <span *ngIf="partner.partnerType === 'OTHER'">🏢</span>
+              </div>
+            </div>
           </div>
           <div class="flex-1">
             <h3 class="text-lg font-bold text-[#006455]">{{ partner.name }}</h3>
@@ -201,17 +276,6 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"></path>
             </svg>
           </button>
-
-          <!-- Maps -->
-          <button 
-            *ngIf="partner.address"
-            (click)="openMaps(partner.address!)"
-            class="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
-            title="Ver en Google Maps">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"></path>
-            </svg>
-          </button>
         </div>
 
         <!-- Badge de estado -->
@@ -232,7 +296,7 @@
         <div class="mt-4 pt-4 border-t border-gray-100">
           <button 
             class="w-full bg-[#006455] hover:bg-[#005544] text-white px-4 py-2 rounded-lg font-medium transition-colors">
-            Ver Detalles
+            Abrir
           </button>
         </div>
       </div>
