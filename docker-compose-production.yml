@@ -63,6 +63,14 @@ services:
       - traefik.http.routers.peludosclick_backend_api.tls=true
       - traefik.http.routers.peludosclick_backend_api.tls.certresolver=lets-encrypt
       - traefik.http.routers.peludosclick_backend_api.service=peludosclick_backend
+      - traefik.http.routers.peludosclick_backend_images.rule=Host(`peludosclick.com`) && PathPrefix(`/images`)
+      - traefik.http.routers.peludosclick_backend_images.tls=true
+      - traefik.http.routers.peludosclick_backend_images.tls.certresolver=lets-encrypt
+      - traefik.http.routers.peludosclick_backend_images.service=peludosclick_backend
+      - traefik.http.routers.peludosclick_backend_pets.rule=Host(`peludosclick.com`) && PathPrefix(`/pets`)
+      - traefik.http.routers.peludosclick_backend_pets.tls=true
+      - traefik.http.routers.peludosclick_backend_pets.tls.certresolver=lets-encrypt
+      - traefik.http.routers.peludosclick_backend_pets.service=peludosclick_backend
     networks:
       - internal
       - web

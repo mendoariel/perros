@@ -37,7 +37,7 @@ export class PartnersService {
         offers: true,
         comments: true,
         catalog: true,
-        gallery: true,
+        partner_images: true,
         _count: {
           select: {
             articles: true,
@@ -59,7 +59,7 @@ export class PartnersService {
         offers: true,
         comments: true,
         catalog: true,
-        gallery: true,
+        partner_images: true,
       },
     });
 
@@ -79,7 +79,7 @@ export class PartnersService {
         offers: true,
         comments: true,
         catalog: true,
-        gallery: true,
+        partner_images: true,
       },
     });
   }
@@ -96,7 +96,7 @@ export class PartnersService {
         offers: true,
         comments: true,
         catalog: true,
-        gallery: true,
+        partner_images: true,
       },
     });
   }
@@ -113,7 +113,7 @@ export class PartnersService {
         offers: true,
         comments: true,
         catalog: true,
-        gallery: true,
+        partner_images: true,
       },
     });
   }

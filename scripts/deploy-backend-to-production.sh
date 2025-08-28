@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# =============================================================================
+# SCRIPT DE DEPLOY DEL BACKEND A PRODUCCIÓN
+# =============================================================================
+# 
+# ⚠️  IMPORTANTE: A pesar del nombre "local", este script hace deploy a PRODUCCIÓN
+# 
+# Este script:
+# 1. Construye el backend localmente
+# 2. Sube la carpeta dist/ al servidor de producción (67.205.144.228)
+# 3. Reconstruye y reinicia el contenedor en producción
+#
+# Servidor de destino: 67.205.144.228
+# Ruta en servidor: /root/apps/2025/peludosclick_app/perros/backend-vlad
+# =============================================================================
+
 # Colores para los mensajes
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'

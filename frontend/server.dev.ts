@@ -129,6 +129,36 @@ export function app(): express.Express {
     req.pipe(proxyReq, { end: true });
   });
 
+  // Proxy images from backend for development
+  server.use('/images/partners', (req, res, next) => {
+    const http = require('http');
+    const url = require('url');
+    
+    const parsedUrl = url.parse(req.url);
+    const options = {
+      hostname: 'backend-perros', // Use the local Docker service name
+      port: 3333,
+      path: `/images/partners${parsedUrl.path}`,
+      method: req.method,
+      headers: {
+        ...req.headers,
+        host: 'backend-perros:3333'
+      }
+    };
+
+    const proxyReq = http.request(options, (proxyRes: any) => {
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res, { end: true });
+    });
+
+    proxyReq.on('error', (err: any) => {
+      console.error('Images proxy error:', err);
+      res.status(404).send('Image not found');
+    });
+
+    req.pipe(proxyReq, { end: true });
+  });
+
   // Serve static files from /browser with proper MIME types
   server.use(express.static(distFolder, {
     maxAge: '0', // No cache in development

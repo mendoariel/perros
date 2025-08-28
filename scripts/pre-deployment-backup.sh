@@ -55,18 +55,18 @@ if ! docker ps | grep -q "peludosclickbackend"; then
     sleep 10
 fi
 
-# Crear backup de archivos (uploads, fotos, etc.)
-echo "   Copiando archivos del contenedor..."
-docker exec peludosclickbackend tar -czf /tmp/files_backup.tar.gz -C /app/uploads . 2>/dev/null || {
-    echo "⚠️  No se encontraron archivos en /app/uploads, creando backup vacío"
-    docker exec peludosclickbackend mkdir -p /tmp/uploads && docker exec peludosclickbackend tar -czf /tmp/files_backup.tar.gz -C /tmp uploads
+# Crear backup de toda la carpeta public (archivos, imágenes, etc.)
+echo "   Copiando toda la carpeta public del contenedor..."
+docker exec peludosclickbackend tar -czf /tmp/public_backup.tar.gz -C /app public 2>/dev/null || {
+    echo "⚠️  No se encontró la carpeta public, creando backup vacío"
+    docker exec peludosclickbackend mkdir -p /tmp/public && docker exec peludosclickbackend tar -czf /tmp/public_backup.tar.gz -C /tmp public
 }
 
-# Copiar el backup de archivos al host
-docker cp peludosclickbackend:/tmp/files_backup.tar.gz $FILES_BACKUP_FILE
+# Copiar el backup de la carpeta public al host
+docker cp peludosclickbackend:/tmp/public_backup.tar.gz $FILES_BACKUP_FILE
 
 if [ $? -eq 0 ]; then
-    echo "✅ Backup de archivos completado: $FILES_BACKUP_FILE"
+    echo "✅ Backup de carpeta public completado: $FILES_BACKUP_FILE"
 else
     echo "❌ Error al realizar backup de archivos"
     exit 1
@@ -84,19 +84,19 @@ Timestamp: $TIMESTAMP
 
 ARCHIVOS INCLUIDOS:
 - Base de datos: $DB_BACKUP_FILE.gz
-- Archivos/Fotos: $FILES_BACKUP_FILE
+- Carpeta public completa: $FILES_BACKUP_FILE (incluye archivos, imágenes de partners, etc.)
 
 TAMAÑOS:
 - Base de datos: $(du -h $DB_BACKUP_FILE.gz | cut -f1)
-- Archivos: $(du -h $FILES_BACKUP_FILE | cut -f1)
+- Carpeta public: $(du -h $FILES_BACKUP_FILE | cut -f1)
 
 INSTRUCCIONES DE RESTAURACIÓN:
 1. Para restaurar base de datos:
    gunzip -c $DB_BACKUP_FILE.gz | docker exec -i mi-perro-qr-postgres-1 psql -U mendoariel peludosclick
 
-2. Para restaurar archivos:
+2. Para restaurar carpeta public completa:
    docker cp $FILES_BACKUP_FILE peludosclickbackend:/tmp/
-   docker exec peludosclickbackend tar -xzf /tmp/files_backup.tar.gz -C /app/uploads
+   docker exec peludosclickbackend tar -xzf /tmp/public_backup.tar.gz -C /app
 
 NOTAS:
 - Este backup fue creado automáticamente antes del despliegue

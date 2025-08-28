@@ -5,5 +5,6 @@ export const environment = {
     frontend: 'https://peludosclick.com',
     title: 'Production',
     production: true,
-    perrosQrApi: '/api/'
+    perrosQrApi: '/api/',
+    isServer: typeof window === 'undefined'
 };
