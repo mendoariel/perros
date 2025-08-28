@@ -136,23 +136,229 @@ export function app(): express.Express {
     maxAge: '1y'
   }));
 
+  // Function to fetch pet data from API
+  async function fetchPetData(medalString: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const http = require('http');
+      const backendHost = process.env['BACKEND_HOST'] || 'peludosclickbackend';
+      const backendPort = process.env['BACKEND_PORT'] || '3335';
+      
+      const options = {
+        hostname: backendHost,
+        port: backendPort,
+        path: `/api/qr/pet/${medalString}`,
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      };
+
+      const req = http.request(options, (res: any) => {
+        let data = '';
+        res.on('data', (chunk: any) => {
+          data += chunk;
+        });
+        res.on('end', () => {
+          try {
+            const pet = JSON.parse(data);
+            resolve(pet);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      });
+
+      req.on('error', (error: any) => {
+        reject(error);
+      });
+
+      req.end();
+    });
+  }
+
+  // Function to update meta tags in HTML
+  function updateMetaTags(html: string, pet: any, medalString: string, isPublicPage: boolean = true): string {
+    const metaBaseUrl = 'https://peludosclick.com';
+    const apiBaseUrl = 'https://api.peludosclick.com';
+    
+    // Construct absolute URLs
+    const petImageUrl = pet.image ? 
+      `${apiBaseUrl}/pets/files/${pet.image}` : 
+      `${metaBaseUrl}/assets/default-pet-social.jpg`;
+    
+    const description = pet.description || 'Conoce más sobre esta mascota en PeludosClick';
+    const title = `${pet.petName} - PeludosClick`;
+    const url = isPublicPage ? 
+      `${metaBaseUrl}/mascota-publica/${medalString}` : 
+      `${metaBaseUrl}/mascota/${medalString}`;
+
+    // Add meta tags to HTML
+    const metaTags = `
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="${title}">
+    <meta name="description" content="${description}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="${title}">
+    <meta property="og:description" content="${description}">
+    <meta property="og:image" content="${petImageUrl}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:alt" content="${title}">
+    <meta property="og:url" content="${url}">
+    <meta property="og:site_name" content="PeludosClick">
+    <meta property="og:locale" content="es_LA">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${title}">
+    <meta name="twitter:description" content="${description}">
+    <meta name="twitter:image" content="${petImageUrl}">
+    <meta name="twitter:image:alt" content="${title}">
+    <meta name="twitter:site" content="@peludosClick">
+    
+    <!-- WhatsApp specific -->
+    <meta property="og:image:secure_url" content="${petImageUrl}">
+    `;
+
+    // Replace the comment with actual meta tags
+    let updatedHtml = html.replace(
+      /<!-- Meta tags will be generated dynamically by the server -->/,
+      metaTags
+    );
+
+    // Update title
+    updatedHtml = updatedHtml.replace(
+      /<title>[^<]*<\/title>/g,
+      `<title>${title}</title>`
+    );
+
+    return updatedHtml;
+  }
+
+  // Function to add default meta tags for non-pet pages
+  function addDefaultMetaTags(html: string): string {
+    const metaBaseUrl = 'https://peludosclick.com';
+    const defaultImage = `${metaBaseUrl}/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
+    const defaultTitle = 'PeludosClick - Chapitas QR para mascotas';
+    const defaultDescription = 'Mantén a tu mascota segura con nuestras chapitas QR. Escanea y contacta al dueño inmediatamente por WhatsApp.';
+    const defaultUrl = metaBaseUrl;
+
+    const metaTags = `
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="${defaultTitle}">
+    <meta name="description" content="${defaultDescription}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="${defaultTitle}">
+    <meta property="og:description" content="${defaultDescription}">
+    <meta property="og:image" content="${defaultImage}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:alt" content="${defaultTitle}">
+    <meta property="og:url" content="${defaultUrl}">
+    <meta property="og:site_name" content="PeludosClick">
+    <meta property="og:locale" content="es_LA">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${defaultTitle}">
+    <meta name="twitter:description" content="${defaultDescription}">
+    <meta name="twitter:image" content="${defaultImage}">
+    <meta name="twitter:image:alt" content="${defaultTitle}">
+    <meta name="twitter:site" content="@peludosClick">
+    
+    <!-- WhatsApp specific -->
+    <meta property="og:image:secure_url" content="${defaultImage}">
+    `;
+
+    // Replace the comment with default meta tags
+    let updatedHtml = html.replace(
+      /<!-- Meta tags will be generated dynamically by the server -->/,
+      metaTags
+    );
+
+    // Update title
+    updatedHtml = updatedHtml.replace(
+      /<title>[^<]*<\/title>/g,
+      `<title>${defaultTitle}</title>`
+    );
+
+    return updatedHtml;
+  }
+
   // All regular routes use the Angular engine
-  server.get('*', (req, res, next) => {
+  server.get('*', async (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
 
-    commonEngine
-      .render({
-        bootstrap,
-        documentFilePath: indexHtml,
-        url: `${protocol}://${headers.host}${originalUrl}`,
-        publicPath: distFolder,
-        providers: [
-          { provide: APP_BASE_HREF, useValue: baseUrl },
-          { provide: 'NODE_ENV', useValue: 'production' }
-        ],
-      })
-      .then((html) => res.send(html))
-      .catch((err) => next(err));
+    // Check if this is a pet page
+    const petMatch = originalUrl.match(/\/mascota(?:-publica)?\/([^\/\?]+)/);
+    
+    if (petMatch) {
+      const medalString = petMatch[1];
+      const isPublicPage = originalUrl.includes('/mascota-publica/');
+      
+      try {
+        // Fetch pet data
+        const pet = await fetchPetData(medalString);
+        
+        // Render the page
+        const html = await commonEngine.render({
+          bootstrap,
+          documentFilePath: indexHtml,
+          url: `${protocol}://${headers.host}${originalUrl}`,
+          publicPath: distFolder,
+          providers: [
+            { provide: APP_BASE_HREF, useValue: baseUrl },
+            { provide: 'NODE_ENV', useValue: 'production' }
+          ],
+        });
+
+        // Update meta tags with pet data
+        const updatedHtml = updateMetaTags(html, pet, medalString, isPublicPage);
+        
+        res.send(updatedHtml);
+      } catch (error) {
+        console.error('Error fetching pet data:', error);
+        // Fallback to normal rendering
+        commonEngine
+          .render({
+            bootstrap,
+            documentFilePath: indexHtml,
+            url: `${protocol}://${headers.host}${originalUrl}`,
+            publicPath: distFolder,
+            providers: [
+              { provide: APP_BASE_HREF, useValue: baseUrl },
+              { provide: 'NODE_ENV', useValue: 'production' }
+            ],
+          })
+          .then((html) => res.send(html))
+          .catch((err) => next(err));
+      }
+         } else {
+       // Normal rendering for non-pet pages
+       commonEngine
+         .render({
+           bootstrap,
+           documentFilePath: indexHtml,
+           url: `${protocol}://${headers.host}${originalUrl}`,
+           publicPath: distFolder,
+           providers: [
+             { provide: APP_BASE_HREF, useValue: baseUrl },
+             { provide: 'NODE_ENV', useValue: 'production' }
+           ],
+         })
+         .then((html) => {
+           // Add default meta tags for non-pet pages
+           const updatedHtml = addDefaultMetaTags(html);
+           res.send(updatedHtml);
+         })
+         .catch((err) => next(err));
+     }
   });
 
   return server;

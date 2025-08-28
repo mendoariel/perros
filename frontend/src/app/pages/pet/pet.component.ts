@@ -8,6 +8,7 @@ import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
 import { ShareIconsModule } from 'ngx-sharebuttons/icons';
 import { MetaService } from 'src/app/services/meta.service';
+import { ServerMetaService } from 'src/app/services/server-meta.service';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
@@ -29,6 +30,7 @@ export class PetComponent implements OnDestroy {
   medalString: any;
   env = environment;
   petImageUrl = '';
+  shareImageUrl = ''; // Absolute URL for social sharing
   metaDataSet = false; // Flag to prevent multiple meta data calls
     
   constructor(
@@ -36,6 +38,7 @@ export class PetComponent implements OnDestroy {
     private qrCheckingService: QrChekingService,
     private router: Router,
     private metaService: MetaService,
+    private serverMetaService: ServerMetaService,
     private navigationService: NavigationService,
     private cdr: ChangeDetectorRef
   ) {
@@ -48,6 +51,7 @@ export class PetComponent implements OnDestroy {
     this.routeSubscription = this.route.params.subscribe(params => {
       const medalString = params['medalString'];
       if (medalString) {
+        this.medalString = medalString; // Assign to class property
         this.getPet(medalString);
       } else {
         this.navigationService.goToHome();
@@ -64,7 +68,7 @@ export class PetComponent implements OnDestroy {
     // Construct absolute URLs
     const petImageUrl = this.pet.image ? 
       `pets/files/${this.pet.image}` : 
-      'assets/main/default-pet-social.jpg';
+      'assets/default-pet-social.jpg';
     
     const description = this.pet.description || 'Conoce más sobre esta mascota en PeludosClick';
     
@@ -94,7 +98,7 @@ export class PetComponent implements OnDestroy {
     };
     img.src = this.pet.image ? 
       `https://peludosclick.com/pets/files/${this.pet.image}` : 
-      'https://peludosclick.com/assets/main/default-pet-social.jpg';
+      'https://peludosclick.com/assets/default-pet-social.jpg';
   }
 
 
@@ -107,13 +111,21 @@ export class PetComponent implements OnDestroy {
         // Set the image URL directly
         this.petImageUrl = pet.image ? 
           `${environment.perrosQrApi}pets/files/${pet.image}` : 
-          '/assets/main/default-pet-social.jpg';
+          '/assets/default-pet-social.jpg';
+        
+        // Set absolute URL for social sharing
+        this.shareImageUrl = pet.image ? 
+          `https://api.peludosclick.com/pets/files/${pet.image}` : 
+          'https://peludosclick.com/assets/default-pet-social.jpg';
         
         this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;
         this.pet.tel = `tel: ${this.pet.phone}`;
         
         // Keep background for backward compatibility (if needed)
         this.pet.background = this.petImageUrl;
+        
+        // Update server-side meta tags
+        this.serverMetaService.updateMetaTagsForPet(pet, medalString, false);
         
         this.setMetaData();
         this.cdr.detectChanges();
@@ -140,7 +152,7 @@ export class PetComponent implements OnDestroy {
 
   onImageError(event: any) {
     // Si la imagen falla, usar una imagen por defecto
-    event.target.src = '/assets/main/default-pet-social.jpg';
+    event.target.src = '/assets/default-pet-social.jpg';
   }
 
   handleError(error: any) {
