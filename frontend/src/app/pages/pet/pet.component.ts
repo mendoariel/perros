@@ -1,8 +1,6 @@
-import { ROUTES } from 'src/app/core/constants/routes.constants';
-import { Component, OnDestroy, OnInit, afterRender, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
-import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
@@ -10,8 +8,6 @@ import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
 import { ShareIconsModule } from 'ngx-sharebuttons/icons';
 import { MetaService } from 'src/app/services/meta.service';
-import { PetsService } from 'src/app/services/pets.services';
-import { AuthService } from 'src/app/auth/services/auth.service';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 
 // Default social sharing image if pet image is not available
@@ -21,39 +17,39 @@ const DEFAULT_SOCIAL_IMAGE = `${environment.frontend}/assets/default-pet-social.
   selector: 'app-pet',
   standalone: true,
   imports: [
-          CommonModule,
-          MaterialModule,
-          FirstNavbarComponent,
-          ShareButtonsModule,
-          ShareIconsModule
-        ],
+    CommonModule,
+    MaterialModule,
+    ShareButtonsModule,
+    ShareIconsModule
+  ],
   templateUrl: './pet.component.html',
   styleUrls: ['./pet.component.scss']
 })
 export class PetComponent implements OnInit, OnDestroy {
   pet: any;
   petSubscription: Subscription | undefined;
+  routeSubscription: Subscription | undefined;
   medalString: any;
   spinner = false;
-  spinnerMessage = 'Cargando...';
-  textButton = 'Agregar foto';
+  spinnerMessage = 'Cargando información de la mascota...';
   env = environment;
-  background = 'url(http://localhost:3333/pets/files/secrectIMG-20250301-WA0000.jpg)';
-  frontend = environment.frontend;
   isImageLoaded = false;
+  petImageUrl = '';
+  metaDataSet = false; // Flag to prevent multiple meta data calls
   private cdr: ChangeDetectorRef;
+  private ngZone: NgZone
     
   constructor(
     private route: ActivatedRoute,
     private qrCheckingService: QrChekingService,
     private router: Router,
     private metaService: MetaService,
-    private petsServices: PetsService,
-    private authService: AuthService,
     private navigationService: NavigationService,
-    cdr: ChangeDetectorRef
+    cdr: ChangeDetectorRef,
+    ngZone: NgZone
   ) {
     this.cdr = cdr;
+    this.ngZone = ngZone;
   }
 
   ngOnInit(): void {
@@ -62,6 +58,11 @@ export class PetComponent implements OnInit, OnDestroy {
   }
 
   setMetaData() {
+    // Prevent multiple calls
+    if (this.metaDataSet) {
+      return;
+    }
+    
     const petImage = this.isImageLoaded ? 
       `https://api.peludosclick.com/pets/files/${this.pet.image}` : 
       `https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
@@ -74,17 +75,23 @@ export class PetComponent implements OnInit, OnDestroy {
       image: petImage,
       url: `https://peludosclick.com/mascota/${this.medalString}`
     });
+    
+    this.metaDataSet = true;
   }
 
   checkImageExists(imageUrl: string): Promise<boolean> {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
-        this.isImageLoaded = true;
+        this.ngZone.run(() => {
+          this.isImageLoaded = true;
+        });
         resolve(true);
       };
       img.onerror = () => {
-        this.isImageLoaded = false;
+        this.ngZone.run(() => {
+          this.isImageLoaded = false;
+        });
         resolve(false);
       };
       img.src = imageUrl;
@@ -92,39 +99,59 @@ export class PetComponent implements OnInit, OnDestroy {
   }
   
   getPet(medalString: string) {
-    this.spinner = true;
+    this.ngZone.run(() => {
+      this.spinner = true;
+      this.spinnerMessage = 'Cargando información de la mascota...';
+    });
+
     this.petSubscription = this.qrCheckingService.getPet(medalString).subscribe({
       next: async (pet: any) => {
-        this.spinner = false;
-        this.pet = pet;
+        this.ngZone.run(() => {
+          this.spinner = false;
+          this.pet = pet;
+        });
         
         // Check if the pet image exists
         const imageUrl = `${this.env.perrosQrApi}pets/files/${pet.image}`;
         await this.checkImageExists(imageUrl);
         
-        this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;
-        this.pet.tel = `tel: ${this.pet.phone}`;
-        this.pet.background = this.isImageLoaded ? 
-          `url(${imageUrl})` : 
-          `url(${environment.frontend}/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg)`;
-        
-        this.setMetaData();
-        this.cdr.detectChanges();
+        this.ngZone.run(() => {
+          this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;
+          this.pet.tel = `tel:${this.pet.phone}`;
+          
+          // Set the direct image URL for img tags
+          this.petImageUrl = this.isImageLoaded ? 
+            imageUrl : 
+            `${environment.frontend}/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
+          
+          // Keep background for backward compatibility (if needed)
+          this.pet.background = this.petImageUrl;
+          
+          this.setMetaData();
+          this.cdr.detectChanges();
+        });
       },
       error: (error: any) => {
-        this.spinner = false;
-        this.handleError(error);
-        this.cdr.detectChanges();
+        this.ngZone.run(() => {
+          this.spinner = false;
+          this.handleError(error);
+          this.cdr.detectChanges();
+        });
       }
     });
   }
   
   ngOnDestroy(): void {
-    this.petSubscription?.unsubscribe();
+    if (this.petSubscription) {
+      this.petSubscription.unsubscribe();
+    }
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
   }
 
   handleError(error: any) {
-    if(error.status === 404) {
+    if (error.status === 404) {
       this.navigationService.goToHome();
     }
   }

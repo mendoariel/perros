@@ -3,16 +3,18 @@ import { Prisma, MedalState } from "@prisma/client";
 import { Response } from "express";
 import { join } from "path";
 import { PrismaService } from "src/prisma/prisma.service";
-import { UpdateMedalDto } from "./dto/update-medal.dto";
+import { UpdateMedalDto } from "./dto";
 import { FILE_UPLOAD_DIR } from "src/constans";
 import { MailService } from "src/mail/mail.service";
+import { ImageResizeService } from "src/services/image-resize.service";
 import * as fs from 'fs';
 
 @Injectable()
 export class PetsServicie {
     constructor(
         private prisma: PrismaService,
-        private mailService: MailService
+        private mailService: MailService,
+        private imageResizeService: ImageResizeService
     ) {}
 
     async allPet() {
@@ -77,6 +79,65 @@ export class PetsServicie {
         return res.sendFile(filePath);
     }
 
+    async getSocialFileByFileName(fileName: string, res: Response) {
+        const socialFileName = this.imageResizeService.getSocialImageFilename(fileName);
+        const socialFilePath = join(process.cwd(), 'public', 'files', socialFileName);
+        
+        // Check if social image exists, if not create it
+        if (!this.imageResizeService.socialImageExists(fileName)) {
+            try {
+                await this.imageResizeService.resizeForSocialMedia(fileName);
+            } catch (error) {
+                console.error('Error creating social image:', error);
+                // Fallback to original image
+                const originalFilePath = join(process.cwd(), 'public', 'files', fileName);
+                return res.sendFile(originalFilePath);
+            }
+        }
+        
+        // Add aggressive cache control headers for social media
+        res.set({
+            'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate, max-age=0',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            'Surrogate-Control': 'no-store',
+            'Vary': 'User-Agent'
+        });
+        
+        return res.sendFile(socialFilePath);
+    }
+
+    async getWhatsAppFileByFileName(fileName: string, petId: string, res: Response) {
+        const socialFileName = this.imageResizeService.getSocialImageFilename(fileName);
+        const socialFilePath = join(process.cwd(), 'public', 'files', socialFileName);
+        
+        // Check if social image exists, if not create it
+        if (!this.imageResizeService.socialImageExists(fileName)) {
+            try {
+                await this.imageResizeService.resizeForSocialMedia(fileName);
+            } catch (error) {
+                console.error('Error creating social image:', error);
+                // Fallback to original image
+                const originalFilePath = join(process.cwd(), 'public', 'files', fileName);
+                return res.sendFile(originalFilePath);
+            }
+        }
+        
+        // Ultra aggressive cache control headers for WhatsApp with pet-specific ETag
+        const petSpecificETag = `"${petId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}"`;
+        res.set({
+            'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0',
+            'Pragma': 'no-cache',
+            'Expires': 'Thu, 01 Jan 1970 00:00:00 GMT',
+            'Surrogate-Control': 'no-store',
+            'Vary': 'User-Agent, Accept-Encoding, Pet-ID',
+            'Last-Modified': new Date().toUTCString(),
+            'ETag': petSpecificETag
+        });
+        
+        return res.sendFile(socialFilePath);
+    }
+
     async loadImage(filename: string, medalString: string) {
         const medal = await this.prisma.medal.findFirst({
             where: {
@@ -102,6 +163,17 @@ export class PetsServicie {
             fs.unlink(path, (error) => { 
                 if(error) console.error(error);
             });
+            
+            // Also delete the old social image if it exists
+            this.imageResizeService.deleteSocialImage(medal.image);
+        }
+
+        // Create social media version of the new image
+        try {
+            await this.imageResizeService.resizeForSocialMedia(filename);
+        } catch (error) {
+            console.error('Error creating social media image:', error);
+            // Don't fail the operation if social image creation fails
         }
 
         return { image: 'load' };

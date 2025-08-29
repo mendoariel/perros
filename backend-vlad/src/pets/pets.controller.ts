@@ -1,12 +1,11 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Logger, NotFoundException, Param, Post, Put, Response, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Logger, NotFoundException, Param, Post, Put, Query, Response, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { PetsServicie } from "./pets.service";
 import { GetCurrentUser, Public } from "src/common/decorators";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { FILE_UPLOAD_DIR } from "src/constans";
 import { fileNameEditor, imageFileFilter } from "src/file.util";
-import { CreateFileDto } from "./dto/create-file.dto";
-import { UpdateMedalDto } from "./dto/update-medal.dto";
+import { CreateFileDto, UpdateMedalDto } from "./dto";
 
 @Controller('pets')
 export class PetsController {
@@ -61,6 +60,25 @@ export class PetsController {
         @Response() res
     ) {
         return this.petService.getFileByFileName(fileName, res)
+    }
+
+    @Get('files/:fileName/social')
+    @Public()
+    getSocialFile(
+        @Param('fileName') fileName: string,
+        @Response() res
+    ) {
+        return this.petService.getSocialFileByFileName(fileName, res)
+    }
+
+    @Get('files/:fileName/whatsapp')
+    @Public()
+    getWhatsAppFile(
+        @Param('fileName') fileName: string,
+        @Query('pet') petId: string,
+        @Response() res
+    ) {
+        return this.petService.getWhatsAppFileByFileName(fileName, petId, res)
     }
 
     @Put('update-medal')

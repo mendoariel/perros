@@ -3,6 +3,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { PetsController } from "./pets.controller";
 import { PetsServicie } from "./pets.service";
 import { MailService } from 'src/mail/mail.service';
+import { ImageResizeService } from 'src/services/image-resize.service';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { MailService } from 'src/mail/mail.service';
   controllers: [PetsController],
   providers: [
     PetsServicie,
-    MailService
+    MailService,
+    ImageResizeService
   ],
   exports: [],
 })

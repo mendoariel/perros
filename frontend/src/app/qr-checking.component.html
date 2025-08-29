@@ -1,0 +1,71 @@
+<div class="qr-checking-container">
+  <!-- Success State (Shown immediately when found) -->
+  <div class="success-overlay" *ngIf="isSuccess && !isProcessing">
+    <div class="success-content">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <h3>¡Medalla encontrada!</h3>
+      <p>{{ processingMessage }}</p>
+    </div>
+  </div>
+
+  <!-- Processing State (Shown during navigation) -->
+  <div class="processing-overlay" *ngIf="isSuccess && isProcessing">
+    <div class="processing-content">
+      <div class="processing-spinner">
+        <svg class="spinner" viewBox="0 0 50 50">
+          <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+        </svg>
+      </div>
+      <h3>¡Medalla encontrada!</h3>
+      <p>{{ processingMessage }}</p>
+    </div>
+  </div>
+
+  <!-- Error State (Only shown when explicitly allowed) -->
+  <div class="error-overlay" *ngIf="!isSuccess && showError && message">
+    <div class="error-content">
+      <div class="error-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+      </div>
+      <h3>Medalla no encontrada</h3>
+      <p>{{ message }}</p>
+      
+      <!-- Possible Solutions -->
+      <div class="solutions-section">
+        <h4>Posibles soluciones:</h4>
+        <ul class="solutions-list">
+          <li>Verifica que el código QR esté completo y legible</li>
+          <li>Asegúrate de que la medalla esté registrada en el sistema</li>
+          <li>Intenta escanear el código nuevamente</li>
+          <li>Contacta al propietario de la mascota</li>
+        </ul>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn-secondary" (click)="goHome()">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Ir al Inicio
+        </button>
+        
+        <button class="btn-primary" (click)="retryChecking()">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 4V10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M23 20V14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14L18.36 18.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Intentar de nuevo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -33,6 +33,7 @@ const DEFAULT_SOCIAL_IMAGE = 'assets/main/cat-dog-free-safe-with-medal-peldudosc
 export class PetFromHomeComponent implements OnDestroy {
   pet: any;
   petSubscription: Subscription | undefined;
+  routeSubscription: Subscription | undefined;
   medalString: any;
   spinner = false;
   spinnerMessage = 'Cargando...';
@@ -40,6 +41,8 @@ export class PetFromHomeComponent implements OnDestroy {
   env = environment;
   background = `url(${environment.perrosQrApi}pets/files/secrectIMG-20250301-WA0000.jpg)`;
   isImageLoaded = false;
+  petImageUrl = ''; // New property for direct image URL
+  metaDataSet = false; // Flag to prevent multiple meta data calls
     
   constructor(
     private route: ActivatedRoute,
@@ -57,7 +60,7 @@ export class PetFromHomeComponent implements OnDestroy {
   }
 
   private loadPetData() {
-    this.route.params.subscribe(params => {
+    this.routeSubscription = this.route.params.subscribe(params => {
       const medalString = params['medalString'];
       if (medalString) {
         this.getPet(medalString);
@@ -68,6 +71,10 @@ export class PetFromHomeComponent implements OnDestroy {
   }
 
   setMetaData() {
+    // Prevent multiple calls
+    if (this.metaDataSet) {
+      return;
+    }
     
     // Construct absolute URLs
     const petImageUrl = this.isImageLoaded ? 
@@ -87,6 +94,7 @@ export class PetFromHomeComponent implements OnDestroy {
       };
       
       this.metaService.updateMetaTags(metaData);
+      this.metaDataSet = true;
     };
     img.onerror = () => {
       // If image fails to load, use default image
@@ -97,6 +105,7 @@ export class PetFromHomeComponent implements OnDestroy {
         url: `/mascota-publica/${this.medalString}`
       };
       this.metaService.updateMetaTags(metaData);
+      this.metaDataSet = true;
     };
     img.src = this.isImageLoaded ? 
       `https://api.peludosclick.com/pets/files/${this.pet.image}` : 
@@ -131,9 +140,14 @@ export class PetFromHomeComponent implements OnDestroy {
         
         this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;
         this.pet.tel = `tel: ${this.pet.phone}`;
-        this.pet.background = this.isImageLoaded ? 
-          `url(${imageUrl})` : 
-          `url(${environment.frontend}/${DEFAULT_SOCIAL_IMAGE})`;
+        
+        // Set the direct image URL for img tags
+        this.petImageUrl = this.isImageLoaded ? 
+          imageUrl : 
+          `${environment.frontend}/${DEFAULT_SOCIAL_IMAGE}`;
+        
+        // Keep background for backward compatibility (if needed)
+        this.pet.background = this.petImageUrl;
         
         this.setMetaData();
         this.cdr.detectChanges();
@@ -152,6 +166,10 @@ export class PetFromHomeComponent implements OnDestroy {
     if (this.petSubscription) {
       console.log('Unsubscribing from pet subscription');
       this.petSubscription.unsubscribe();
+    }
+    if (this.routeSubscription) {
+      console.log('Unsubscribing from route subscription');
+      this.routeSubscription.unsubscribe();
     }
   }
 

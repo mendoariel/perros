@@ -1,40 +1,35 @@
 <main>
   <section class="spinner" *ngIf="spinner">
-    <h1>{{ spinnerMessage }}</h1>
-    <mat-spinner></mat-spinner>
+    <div class="loading-content">
+      <div class="loading-spinner">
+        <svg class="spinner" viewBox="0 0 50 50">
+          <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+        </svg>
+      </div>
+      <h3>{{ spinnerMessage }}</h3>
+    </div>
   </section>
+  
   <section class="main-content" *ngIf="!spinner">
-    <div *ngIf="pet" class="pelu-card" appearance="outlined">
+    <div *ngIf="pet" class="pelu-card">
       <h1>{{ pet?.petName || 'Sin nombre' }}</h1>
-      <div class="image-container" [style.background]="pet.background"></div>
-      <p style="margin-top: 5px; padding: 1em;">{{ pet.description }}</p>
-      
-      <!-- <div class="connection">
-        <h3>Conectar con mi familia</h3>
-        <div class="info-message">
-          <p>Si piensas que estoy perdido puedes conectar con mis dueños</p>
-        </div>
-        <div class="action-container">
-          <div class="logo">
-            <div class="button wame-button">
-              <img class="wame-logo" src="assets/icons/wame-logo.png" alt="whatsapp logo">
-              <a [href]="pet.wame">Whatsapp</a>
-            </div>
-          </div>
-          <div class="logo">
-            <div class="button call-button">
-              <mat-icon>phone</mat-icon>
-              <a [href]="pet.tel">Llamar</a>
-            </div>
-          </div>
-        </div>
-      </div> -->
-      
+      <div class="image-container">
+        <img 
+          [src]="petImageUrl" 
+          [alt]="pet?.petName || 'Mascota'"
+          class="pet-image"
+        />
+      </div>
+      <p class="pet-description">{{ pet.description }}</p>
       
       <div class="share-buttons">
         <h3>Compartir</h3>
         <div *ngIf="spinner" class="share-loading">
-          <mat-spinner diameter="30"></mat-spinner>
+          <div class="loading-spinner">
+            <svg class="spinner" viewBox="0 0 50 50">
+              <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+            </svg>
+          </div>
           <p>Cargando opciones para compartir...</p>
         </div>
         <share-buttons *ngIf="!spinner"
@@ -45,11 +40,10 @@
           [url]="'https://peludosclick.com/mascota-publica/' + medalString" 
           [title]="(pet?.petName || 'Sin nombre') + ' - PeludosClick'"
           [description]="pet.description"
-          [image]="pet.background"
-          class="pt-5">
+          [image]="petImageUrl"
+          class="share-buttons-container">
         </share-buttons>
       </div>
-
-</div>
-</section>
+    </div>
+  </section>
 </main>

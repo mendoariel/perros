@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #2196F3;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .content {
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .medal-info {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .action-button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            color: #666;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>¡Tu Medalla Ha Sido Restaurada! 🐾</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hola <strong>{{userEmail}}</strong>,</p>
+            
+            <p>Hemos detectado que tuviste algunos problemas técnicos al registrar tu medalla anteriormente. ¡No te preocupes! Hemos solucionado el problema y tu medalla está lista para ser completada.</p>
+
+            <div class="warning">
+                <strong>⚠️ Importante:</strong> Para completar el registro de tu medalla, necesitas seguir los pasos que te enviamos en el email de confirmación.
+            </div>
+
+            <h2>Detalles de tu Medalla</h2>
+            <div class="medal-info">
+                <p><strong>Nombre de tu mascota:</strong> {{petName}}</p>
+                <p><strong>Código de medalla:</strong> <code>{{medalString}}</code></p>
+                <p><strong>Estado actual:</strong> <span style="color: #2196F3;">Lista para completar</span></p>
+            </div>
+
+            <h2>¿Qué necesitas hacer?</h2>
+            <ol>
+                <li><strong>Revisa tu email</strong> - Te hemos enviado un nuevo email de confirmación</li>
+                <li><strong>Haz clic en el enlace</strong> - Para completar el registro de tu medalla</li>
+                <li><strong>Agrega los detalles</strong> - Como la descripción y foto de tu mascota</li>
+            </ol>
+
+            <p>Si no recibiste el email de confirmación, puedes solicitarlo nuevamente visitando nuestro sitio web.</p>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{{frontendUrl}}/mascota-checking?medalString={{medalString}}" class="action-button">
+                    Completar Registro de Medalla
+                </a>
+            </div>
+
+            <p><strong>¿Necesitas ayuda?</strong> No dudes en contactarnos si tienes alguna pregunta. Estamos aquí para ayudarte.</p>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 PeludosClick - Todos los derechos reservados</p>
+            <p>Este es un email automático, por favor no respondas a este mensaje.</p>
+        </div>
+    </div>
+</body>
+</html>

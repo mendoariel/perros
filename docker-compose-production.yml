@@ -24,11 +24,17 @@ services:
     ports:
       - "9002:9002"
     command: npm run serve:ssr
+    environment:
+      - BACKEND_HOST=peludosclickbackend
+      - BACKEND_PORT=3335
     labels:
       - traefik.http.routers.peludosclick_frontend_service.rule=Host(`www.peludosclick.com`,`peludosclick.com`)
       - traefik.http.routers.peludosclick_frontend_service.tls=true
       - traefik.http.routers.peludosclick_frontend_service.tls.certresolver=lets-encrypt
       - traefik.port=9002
+      - traefik.http.services.peludosclick_frontend_service.loadbalancer.server.port=9002
+      - traefik.http.middlewares.peludosclick_frontend_timeout.headers.customrequestheaders.X-Forwarded-Proto=https
+      - traefik.http.routers.peludosclick_frontend_service.middlewares=peludosclick_frontend_timeout
     networks:
       - internal
       - web
@@ -36,13 +42,13 @@ services:
   peludosclick_backend:
     build: 
       context: ./backend-vlad
-      dockerfile: production.Dockerfile
+      dockerfile: production-dist.Dockerfile
       target: production
     container_name: peludosclickbackend
     volumes:
-      - ./backend-vlad:/alberto/backend/src/app
-      - /alberto/backend/src/app/node_modules
-    command: npm run start:prod
+      - ./backend-vlad/dist:/alberto/backend/src/app/dist
+      - ./backend-vlad/public:/alberto/backend/src/app/public
+    command: node dist/src/main.js
     ports:
       - '3335:3335'
     depends_on: 
@@ -53,6 +59,18 @@ services:
       - traefik.http.routers.peludosclick_backend.tls=true
       - traefik.http.routers.peludosclick_backend.tls.certresolver=lets-encrypt
       - traefik.port=3335
+      - traefik.http.routers.peludosclick_backend_api.rule=Host(`peludosclick.com`) && PathPrefix(`/api`)
+      - traefik.http.routers.peludosclick_backend_api.tls=true
+      - traefik.http.routers.peludosclick_backend_api.tls.certresolver=lets-encrypt
+      - traefik.http.routers.peludosclick_backend_api.service=peludosclick_backend
+      - traefik.http.routers.peludosclick_backend_images.rule=Host(`peludosclick.com`) && PathPrefix(`/images`)
+      - traefik.http.routers.peludosclick_backend_images.tls=true
+      - traefik.http.routers.peludosclick_backend_images.tls.certresolver=lets-encrypt
+      - traefik.http.routers.peludosclick_backend_images.service=peludosclick_backend
+      - traefik.http.routers.peludosclick_backend_pets.rule=Host(`peludosclick.com`) && PathPrefix(`/pets`)
+      - traefik.http.routers.peludosclick_backend_pets.tls=true
+      - traefik.http.routers.peludosclick_backend_pets.tls.certresolver=lets-encrypt
+      - traefik.http.routers.peludosclick_backend_pets.service=peludosclick_backend
     networks:
       - internal
       - web

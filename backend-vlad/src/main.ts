@@ -9,6 +9,10 @@ import * as express from 'express';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(new ValidationPipe());
+  
+  // Set global prefix for all routes
+  app.setGlobalPrefix('api');
+  
   app.enableCors({
     origin: '*',
     methods: 'GET, PUT, POST, DELETE, PATCH',
