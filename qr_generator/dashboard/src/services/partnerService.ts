@@ -2,11 +2,7 @@ import axios from 'axios';
 import { Partner, PartnerStats, CreatePartnerRequest, UpdatePartnerRequest } from '../types/dashboard';
 import { authService } from './authService';
 
-<<<<<<< HEAD
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
-=======
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333/api';
->>>>>>> gary
 
 // Crear instancia de axios con interceptor para manejar autenticación
 const api = axios.create({
@@ -124,8 +120,6 @@ export const partnerService = {
     }
   },
 
-<<<<<<< HEAD
-=======
   // Subir imagen de perfil
   async uploadProfileImage(id: number, file: File): Promise<Partner> {
     try {
@@ -176,7 +170,6 @@ export const partnerService = {
     }
   },
 
->>>>>>> gary
   // Obtener estadísticas de partners
   async getPartnerStats(): Promise<PartnerStats> {
     try {
@@ -190,10 +183,7 @@ export const partnerService = {
         restaurants: partners.filter(p => p.partnerType === 'RESTAURANT').length,
         veterinarians: partners.filter(p => p.partnerType === 'VETERINARIAN').length,
         petShops: partners.filter(p => p.partnerType === 'PET_SHOP').length,
-<<<<<<< HEAD
-=======
         petFriendly: partners.filter(p => p.partnerType === 'PET_FRIENDLY').length,
->>>>>>> gary
         others: partners.filter(p => p.partnerType === 'OTHER').length,
       };
       
@@ -202,8 +192,6 @@ export const partnerService = {
       console.error('Error calculating partner stats:', error);
       throw new Error('Error al calcular estadísticas de partners');
     }
-<<<<<<< HEAD
-=======
   },
 
   // Obtener galería de un partner
@@ -256,6 +244,5 @@ export const partnerService = {
       console.error('Error removing gallery image:', error);
       throw new Error('Error al eliminar imagen de la galería');
     }
->>>>>>> gary
   }
 }; 
