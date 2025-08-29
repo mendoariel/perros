@@ -69,7 +69,7 @@ export class PartnersService {
 
   async findPartnersByType(partnerType: PartnerType) {
     return this.prisma.partner.findMany({
-      where: { partnerType },
+      where: { partnerType: partnerType as any },
       include: {
         articles: true,
         services: true,
@@ -85,7 +85,7 @@ export class PartnersService {
 
     return this.prisma.partner.update({
       where: { id },
-      data: updatePartnerDto,
+      data: updatePartnerDto as any,
       include: {
         articles: true,
         services: true,
