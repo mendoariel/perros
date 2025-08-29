@@ -4,7 +4,7 @@
 set -e
 
 echo "Waiting for database..."
-until PGPASSWORD=casadesara psql -h postgres -U mendoariel -d peludosclick -c '\q'; do
+until PGPASSWORD=iendlshLANDHG423423480 psql -h postgres -U Silvestre1993 -d peludosclick -c '\q'; do
   >&2 echo "Postgres is unavailable - sleeping"
   sleep 1
 done

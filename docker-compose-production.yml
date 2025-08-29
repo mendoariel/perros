@@ -48,7 +48,7 @@ services:
     volumes:
       - ./backend-vlad/dist:/alberto/backend/src/app/dist
       - ./backend-vlad/public:/alberto/backend/src/app/public
-    command: node dist/src/main.js
+    command: ./scripts/wait-for-db.sh node dist/src/main.js
     ports:
       - '3335:3335'
     depends_on: 
