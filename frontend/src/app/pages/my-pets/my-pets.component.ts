@@ -1,7 +1,5 @@
 import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MaterialModule } from 'src/app/material/material.module';
-// import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { Router } from '@angular/router';
 import { PetsService } from 'src/app/services/pets.services';
 import { Subscription } from 'rxjs';
@@ -14,9 +12,7 @@ import { Pet } from 'src/app/models/pet.model';
   selector: 'app-my-pets',
   standalone: true,
   imports: [
-    CommonModule,
-    MaterialModule
-    // FirstNavbarComponent
+    CommonModule
   ],
   templateUrl: './my-pets.component.html',
   styleUrls: ['./my-pets.component.scss']
@@ -29,6 +25,19 @@ export class MyPetsComponent implements OnInit, OnDestroy {
   spinner = false;
   error: string | null = null;
 
+  // Getters for statistics
+  get totalPets(): number {
+    return this.myPets.length;
+  }
+
+  get enabledPets(): number {
+    return this.myPets.filter(pet => pet.status === 'ENABLED').length;
+  }
+
+  get incompletePets(): number {
+    return this.myPets.filter(pet => pet.status === 'INCOMPLETE').length;
+  }
+
   constructor(
     private router: Router,
     private petsServices: PetsService,
@@ -38,15 +47,21 @@ export class MyPetsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.authSubscription = this.authService.isAuthenticatedObservable.subscribe(
-      isAuthenticated => {
-        if (!isAuthenticated) {
-          this.navigationService.goToLogin();
-        } else {
-          this.getOnlyMyPets();
+    // Verificar autenticación de forma más robusta
+    if (this.authService.isAuthenticated()) {
+      this.getOnlyMyPets();
+    } else {
+      // Suscribirse a cambios de autenticación
+      this.authSubscription = this.authService.isAuthenticatedObservable.subscribe(
+        isAuthenticated => {
+          if (!isAuthenticated) {
+            this.navigationService.goToLogin();
+          } else {
+            this.getOnlyMyPets();
+          }
         }
-      }
-    );
+      );
+    }
   }
 
   getOnlyMyPets() {

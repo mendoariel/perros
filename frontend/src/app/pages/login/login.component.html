@@ -1,27 +1,122 @@
-<main>
-    <section>
-        <form [formGroup]="loginForm" (ngSubmit)="login()" #loginFormDirective="ngForm">
-            <h2>Ingresar</h2>
-            <mat-form-field class="example-full-width">
-                <mat-label>Email:</mat-label>
-                <input matInput placeholder="Ingresar email" formControlName="email">
-                <mat-error *ngIf="email?.hasError('email')">Ingrese email válido</mat-error>
-                <mat-error *ngIf="email?.hasError('required')">Ingrese email</mat-error>
-            </mat-form-field>
-            <mat-form-field class="example-full-width">
-                <mat-label>Password:</mat-label>
-                <button type="button" mat-icon-button matSuffix (click)="visibilityToggle()">
-                    <mat-icon>{{getVisibility()}}</mat-icon>
-                </button>
-                <input [type]="getIputType()" matInput placeholder="Ingresar password" formControlName="password">
-                <mat-error *ngIf="password?.hasError('minlength')">Mínimo 8 caracteres</mat-error>
-                <mat-error *ngIf="password?.hasError('required')">Ingrese contraseña</mat-error>
-            </mat-form-field>
-            
-            <button [disabled]="loginForm.invalid" type="submit" mat-raised-button>Ingresar</button>
+<div class="login-container">
+  <!-- Background with gradient -->
+  <div class="login-background">
+    <div class="background-pattern"></div>
+  </div>
 
-            <p (click)="recoveryPassword()" class="recovery-password">Recuperar contraseña</p>
-        </form>
-    </section>
-</main>
+  <!-- Main Content -->
+  <div class="login-content">
+    <!-- Navigation -->
+    <div class="login-navigation">
+      <button 
+        (click)="goHome()"
+        class="back-button"
+        type="button">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Volver al Inicio
+      </button>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card">
+      <!-- Logo and Brand -->
+      <div class="brand-section">
+        <div class="logo-container">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+          </svg>
+        </div>
+        <h1 class="brand-title">PeludosClick</h1>
+        <p class="brand-subtitle">Conectando mascotas con sus familias</p>
+      </div>
+
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
+        <h2 class="form-title">Iniciar Sesión</h2>
+        
+        <!-- Email Field -->
+        <div class="form-field">
+          <label class="field-label">Email</label>
+          <div class="input-container">
+            <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+            </svg>
+            <input 
+              type="email" 
+              formControlName="email"
+              placeholder="tu@email.com"
+              class="form-input"
+              [class.error]="email?.invalid && email?.touched">
+          </div>
+          <div class="error-message" *ngIf="email?.invalid && email?.touched">
+            <span *ngIf="email?.hasError('required')">El email es requerido</span>
+            <span *ngIf="email?.hasError('email')">Ingresa un email válido</span>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-field">
+          <label class="field-label">Contraseña</label>
+          <div class="input-container">
+            <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+            <input 
+              [type]="getIputType()"
+              formControlName="password"
+              placeholder="Tu contraseña"
+              class="form-input"
+              [class.error]="password?.invalid && password?.touched">
+            <button 
+              type="button" 
+              (click)="visibilityToggle()"
+              class="visibility-toggle">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path *ngIf="pwdHide" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path *ngIf="pwdHide" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                <path *ngIf="!pwdHide" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="error-message" *ngIf="password?.invalid && password?.touched">
+            <span *ngIf="password?.hasError('required')">La contraseña es requerida</span>
+            <span *ngIf="password?.hasError('minlength')">Mínimo 8 caracteres</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit"
+          [disabled]="loginForm.invalid || isLoading"
+          class="submit-button"
+          [class.loading]="isLoading">
+          <svg *ngIf="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
+        </button>
+
+        <!-- Recovery Password Link -->
+        <div class="recovery-section">
+          <button 
+            type="button"
+            (click)="recoveryPassword()"
+            class="recovery-link">
+            ¿Olvidaste tu contraseña?
+          </button>
+        </div>
+      </form>
+
+      <!-- Decorative Elements -->
+      <div class="decorative-elements">
+        <div class="pet-icon pet-1">🐕</div>
+        <div class="pet-icon pet-2">🐱</div>
+        <div class="pet-icon pet-3">🐾</div>
+      </div>
+    </div>
+  </div>
+</div>
 

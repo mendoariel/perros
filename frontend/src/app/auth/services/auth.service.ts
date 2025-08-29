@@ -51,6 +51,7 @@ export class AuthService {
     this.authenticated.next(false);
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
     }
   }
 
@@ -77,5 +78,9 @@ export class AuthService {
 
   newPassword(newPassord: NewPasswordInterface) {
     return this.http.post(`${environment.perrosQrApi}auth/new-password`, newPassord);
+  }
+
+  refreshTokens(refreshRequest: any) {
+    return this.http.post(`${environment.perrosQrApi}auth/refresh`, {}, refreshRequest);
   }
 }

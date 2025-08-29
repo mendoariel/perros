@@ -1,19 +1,6 @@
 <div class="pet-container">
-  <!-- Loading State -->
-  <div class="loading-overlay" *ngIf="spinner">
-    <div class="loading-content">
-      <div class="loading-spinner">
-        <svg class="spinner" viewBox="0 0 50 50">
-          <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
-        </svg>
-      </div>
-      <h3>Cargando mascota...</h3>
-      <p class="loading-subtitle">{{ spinnerMessage }}</p>
-    </div>
-  </div>
-
   <!-- Main Content -->
-  <div class="main-content" *ngIf="!spinner && pet">
+  <div class="main-content" *ngIf="pet">
     <!-- Header Section -->
     <div class="header-section">
       <div class="header-background">
@@ -21,6 +8,7 @@
           [src]="petImageUrl" 
           [alt]="pet?.petName || 'Mascota'"
           class="header-image"
+          (error)="onImageError($event)"
         />
       </div>
       <div class="header-overlay">
@@ -40,6 +28,7 @@
             [src]="petImageUrl" 
             [alt]="pet?.petName || 'Mascota'"
             class="pet-image-content"
+            (error)="onImageError($event)"
           />
           <div class="image-overlay">
             <div class="pet-status">
@@ -99,16 +88,7 @@
           <h3>Compartir</h3>
         </div>
         
-        <div *ngIf="spinner" class="share-loading">
-          <div class="loading-spinner">
-            <svg class="spinner" viewBox="0 0 50 50">
-              <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
-            </svg>
-          </div>
-          <p>Cargando opciones para compartir...</p>
-        </div>
-        
-        <share-buttons *ngIf="!spinner"
+        <share-buttons
           theme="circles-dark"
           [include]="['copy', 'facebook','telegram', 'whatsapp']"
           [showIcon]="true" 
@@ -116,7 +96,7 @@
           [url]="'https://peludosclick.com/mascota/' + medalString" 
           [title]="(pet?.petName || 'Sin nombre') + ' - PeludosClick'"
           [description]="pet.description"
-          [image]="petImageUrl"
+          [image]="shareImageUrl"
           class="share-buttons-container">
         </share-buttons>
       </div>

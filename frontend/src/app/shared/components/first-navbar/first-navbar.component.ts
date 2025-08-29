@@ -1,6 +1,5 @@
 import { Component, afterRender, AfterRenderRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MaterialModule } from 'src/app/material/material.module';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -14,7 +13,6 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   standalone: true,
   imports: [
     CommonModule,
-    MaterialModule,
     HttpClientModule,
     MatMenuModule
   ],

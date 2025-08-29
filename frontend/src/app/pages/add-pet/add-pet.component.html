@@ -1,120 +1,277 @@
-<section class="main-container">
-    <main>
-        <section class="spinner" *ngIf="spinner">
-            <h1>{{ spinnerMessage }}</h1>
-            <mat-spinner></mat-spinner>
-        </section>
-        <section *ngIf="!spinner">
-            <section *ngIf="!addPet" class="form-container">
+<div class="min-h-screen bg-gradient-to-br from-[#FFFDD0] to-[#FFE55C]">
+  <!-- Loading Spinner -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" *ngIf="spinner">
+    <div class="bg-white rounded-2xl p-8 shadow-2xl text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#006455] mx-auto mb-4"></div>
+      <h2 class="text-lg font-semibold text-[#006455]">{{ spinnerMessage }}</h2>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-4 py-8" *ngIf="!spinner">
+    
+    <!-- Registration Form -->
+    <div class="max-w-2xl mx-auto" *ngIf="!addPet && !registeredMedal">
+      <!-- Header Section -->
+      <div class="text-center mb-8">
+        <div class="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <svg class="w-10 h-10 text-[#006455]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+        </div>
+        <h1 class="text-3xl font-bold text-[#006455] mb-2">Registrar Medalla</h1>
+        <p class="text-[#36454F] text-lg">Protege a tu mascota con PeludosClick</p>
+      </div>
+
+      <!-- Form Card -->
+      <div class="bg-white rounded-2xl shadow-xl p-8">
                 <form [formGroup]="registerForm">
-                    <section class="form-elements-container">
-                        <h2>Resgistrar Medalla</h2>
-                        <article *ngIf="validationDoIt">
-                            <p>Vas a registrar tu medalla en la cuenta {{ ownerEmail?.value }}</p>
-                        </article>
-                        <article class="fields-box-container" *ngIf="!validationDoIt">
-                            <p>Ingresar email para registrar su cuenta</p>
-                            <mat-form-field>
-                                <mat-label>Email:</mat-label>
-                                <input matInput placeholder="Ingresar email" formControlName="ownerEmail">
-                                <mat-error *ngIf="ownerEmail?.hasError('email') && (ownerEmail?.dirty || ownerEmail?.touched)">Ingrese email válido</mat-error>
-                                <mat-error *ngIf="ownerEmail?.hasError('required')">Ingrese email</mat-error>
-                            </mat-form-field>
-
-                            <div class="email-button-container" *ngIf="!validationDoIt">
-                                <button [disabled]="ownerEmail && ownerEmail.invalid" (click)="emailValidate()" mat-raised-button>Validar</button>
+          
+          <!-- Email Validation Step -->
+          <div *ngIf="!validationDoIt" class="space-y-6">
+            <div class="text-center mb-6">
+              <h2 class="text-xl font-semibold text-[#006455] mb-2">Paso 1: Validar Email</h2>
+              <p class="text-[#36454F]">Ingresa tu email para verificar tu cuenta</p>
                             </div>
-                        </article>
 
-                        <article *ngIf="validationDoIt" class="fields-box-container">
-                            <mat-form-field>
-                                <mat-label>Nombre de la mascota:</mat-label>
-                                <input matInput placeholder="Nombre de la mascota" formControlName="petName">
-                                <mat-error *ngIf="petName?.hasError('required')">Ingres el nombe de la mascota</mat-error>
-                                <mat-error *ngIf="petName?.hasError('minlength')">Mínimo de 3 caracteres</mat-error>
-                                <mat-error *ngIf="petName?.hasError('maxlength')">Máximo de 35 caracteres</mat-error>
-                            </mat-form-field>
-                            
-                            <mat-form-field *ngIf="newClient">
-                                <mat-label>Password:</mat-label>
-                                <button mat-icon-button matSuffix (click)="visibilityToggle()">
-                                    <mat-icon>{{getVisibility()}}</mat-icon>
-                                </button>
-                                <input [type]="getInputType()" matInput placeholder="Ingresar password" formControlName="password">
-                            </mat-form-field>
-    
-                            <section class="validation" *ngIf="newClient">
-                                <p [ngClass]="
-                                    password?.value.length === 0 ? 'information' : password?.hasError('minlength') ? 'fail' : 'success'" >
-                                    <mat-icon style="margin-bottom: -7px; margin-right: 7px;">
-                                       {{  getIconToMinLength() }}
-                                    </mat-icon>
-                                    Mínmio 8 caractares
-                                </p>
-                                <p [ngClass]="
-                                    this.password?.value.length === 0 ? 'information' : this.password?.hasError('maxlength') ? 'fail' : 'success'" >
-                                    <mat-icon style="margin-bottom: -7px; margin-right: 7px;">
-                                       {{  getIconToMaxLength() }}
-                                    </mat-icon>
-                                    Máximo 50 caracteres
-                                </p>
-                                <p [ngClass]="
-                                    this.password?.value.length === 0 ? 'information' : this.password?.hasError('capitalLetterError') ? 'fail' : 'success'" >
-                                    <mat-icon style="margin-bottom: -7px; margin-right: 7px;">
-                                       {{  getIconUpperCase() }}
-                                    </mat-icon>
-                                    Debe contener mayúscula
-                                </p>
-                                <p [ngClass]="
-                                    this.password?.value.length === 0 ? 'information' : this.password?.hasError('lowerCaseError') ? 'fail' : 'success'" >
-                                    <mat-icon style="margin-bottom: -7px; margin-right: 7px;">
-                                       {{  getIconLowerCase() }}
-                                    </mat-icon>
-                                    Debe contener minúscula
-                                </p>
-                                <p [ngClass]="
-                                    this.password?.value.length === 0 ? 'information' : this.password?.hasError('numberError') ? 'fail' : 'success'" >
-                                    <mat-icon style="margin-bottom: -7px; margin-right: 7px;">
-                                       {{  getIconNumber() }}
-                                    </mat-icon>
-                                    Debe contenern al menos un número
-                                </p>
-                            </section>
-    
-                            <mat-form-field class="example-full-width" *ngIf="newClient">
-                                <mat-label>Confirmación de password:</mat-label>
-                                <button mat-icon-button matSuffix (click)="visibilityTogglePasswordConfirm()">
-                                    <mat-icon>{{getVisibilityPasswordConfirm()}}</mat-icon>
-                                </button>
-                                <input matInput placeholder="Confirmar password" formControlName="passwordConfirm" [type]="getInputTypePasswordConfirm()">
-                            </mat-form-field>
-    
-                            <section class="validation" *ngIf="newClient">
-                                <p *ngIf="this.passwordConfirm?.value.length > 0 && this.registerForm.hasError('passwordConfirmedError') ? 'fail' : null" class="fail">
-                                    <mat-icon style="margin-bottom: -7px; margin-right: 7px;">
-                                       cancel
-                                    </mat-icon>
-                                    Los password no coinciden
-                                </p>
-                            </section>
-    
-                            <button [disabled]="registerForm.invalid" mat-raised-button (click)="register()">Guardar</button>
-                        </article>
+            <div class="form-group">
+              <label for="email" class="block text-sm font-medium text-[#006455] mb-2">Email</label>
+              <div class="input-container">
+                <div class="input-icon">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/>
+                  </svg>
+                </div>
+                <input 
+                  id="email"
+                  type="email" 
+                  formControlName="ownerEmail"
+                  placeholder="tu@email.com"
+                  class="form-input"
+                  [class.error]="ownerEmail?.invalid && ownerEmail?.touched"
+                >
+              </div>
+              <div class="error-message" *ngIf="ownerEmail?.invalid && ownerEmail?.touched">
+                <span *ngIf="ownerEmail?.hasError('email')">Ingresa un email válido</span>
+                <span *ngIf="ownerEmail?.hasError('required')">El email es requerido</span>
+              </div>
+            </div>
 
-                        <button style="margin-top: 1em;" (click)="cancelMethod()" *ngIf="validationDoIt" color="warn" mat-raised-button>Cancelar</button>
-                    </section>
-                   
+            <button 
+              type="button"
+              (click)="emailValidate()" 
+              [disabled]="ownerEmail?.invalid"
+              class="w-full btn-primary"
+              [class.disabled]="ownerEmail?.invalid"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Validar Email
+                                </button>
+          </div>
+
+          <!-- Registration Step -->
+          <div *ngIf="validationDoIt" class="space-y-6">
+            <div class="text-center mb-6">
+              <h2 class="text-xl font-semibold text-[#006455] mb-2">Paso 2: Completar Registro</h2>
+              <p class="text-[#36454F]">Vas a registrar tu medalla en la cuenta <strong>{{ ownerEmail?.value }}</strong></p>
+            </div>
+
+            <!-- Pet Name -->
+            <div class="form-group">
+              <label for="petName" class="block text-sm font-medium text-[#006455] mb-2">Nombre de la Mascota</label>
+              <div class="input-container">
+                <div class="input-icon">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M4.5,9.5m-2.5,0a2.5,2.5 0 1,1 5,0a2.5,2.5 0 1,1 -5,0"/>
+                    <path d="M9,5.5m-2.5,0a2.5,2.5 0 1,1 5,0a2.5,2.5 0 1,1 -5,0"/>
+                    <path d="M15,5.5m-2.5,0a2.5,2.5 0 1,1 5,0a2.5,2.5 0 1,1 -5,0"/>
+                    <path d="M19.5,9.5m-2.5,0a2.5,2.5 0 1,1 5,0a2.5,2.5 0 1,1 -5,0"/>
+                    <path d="M17.34,14.86c-.87-1.02-1.6-1.89-2.48-2.91-.46-.54-1.05-1.08-1.75-1.32-.11-.04-.22-.07-.33-.09-.25-.04-.52-.04-.78-.04s-.53 0-.79.05c-.11.02-.22.05-.33.09-.7.24-1.28.78-1.75 1.32-.87 1.02-1.6 1.89-2.48 2.91-1.31 1.31-2.92 2.76-2.62 4.79.29 1.02 1.02 2.03 2.33 2.32.73.15 3.06-.44 5.54-.44h.18c2.48 0 4.81.58 5.54.44 1.31-.29 2.04-1.31 2.33-2.32.31-2.04-1.3-3.49-2.61-4.8z"/>
+                  </svg>
+                </div>
+                <input 
+                  id="petName"
+                  type="text" 
+                  formControlName="petName"
+                  placeholder="Nombre de tu mascota"
+                  class="form-input"
+                  [class.error]="petName?.invalid && petName?.touched"
+                >
+              </div>
+              <div class="error-message" *ngIf="petName?.invalid && petName?.touched">
+                <span *ngIf="petName?.hasError('required')">El nombre es requerido</span>
+                <span *ngIf="petName?.hasError('minlength')">Mínimo 3 caracteres</span>
+                <span *ngIf="petName?.hasError('maxlength')">Máximo 35 caracteres</span>
+              </div>
+            </div>
+
+            <!-- Password Fields (only for new clients) -->
+            <div *ngIf="newClient" class="space-y-6">
+              <!-- Password -->
+              <div class="form-group">
+                <label for="password" class="block text-sm font-medium text-[#006455] mb-2">Contraseña</label>
+                <div class="input-container">
+                  <div class="input-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+                    </svg>
+                  </div>
+                  <input 
+                    id="password"
+                    [type]="getInputType()" 
+                    formControlName="password"
+                    placeholder="Tu contraseña"
+                    class="form-input"
+                    [class.error]="password?.invalid && password?.touched"
+                  >
+                  <button 
+                    type="button"
+                    (click)="visibilityToggle()" 
+                    class="input-suffix"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path *ngIf="getInputType() === 'password'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path *ngIf="getInputType() === 'password'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                      <path *ngIf="getInputType() === 'text'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                    </svg>
+                                </button>
+                </div>
+              </div>
+
+              <!-- Password Validation -->
+              <div class="bg-gray-50 rounded-lg p-4 space-y-2">
+                <h4 class="text-sm font-medium text-[#006455] mb-3">Requisitos de la contraseña:</h4>
+                <div class="grid grid-cols-1 gap-2">
+                  <div class="flex items-center" [ngClass]="getPasswordValidationClass('minlength')">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path *ngIf="getPasswordValidationIcon('minlength') === 'check'" fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                      <path *ngIf="getPasswordValidationIcon('minlength') === 'close'" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-sm">Mínimo 8 caracteres</span>
+                  </div>
+                  <div class="flex items-center" [ngClass]="getPasswordValidationClass('maxlength')">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path *ngIf="getPasswordValidationIcon('maxlength') === 'check'" fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                      <path *ngIf="getPasswordValidationIcon('maxlength') === 'close'" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-sm">Máximo 50 caracteres</span>
+                  </div>
+                  <div class="flex items-center" [ngClass]="getPasswordValidationClass('capitalLetterError')">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path *ngIf="getPasswordValidationIcon('capitalLetterError') === 'check'" fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                      <path *ngIf="getPasswordValidationIcon('capitalLetterError') === 'close'" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-sm">Al menos una mayúscula</span>
+                  </div>
+                  <div class="flex items-center" [ngClass]="getPasswordValidationClass('lowerCaseError')">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path *ngIf="getPasswordValidationIcon('lowerCaseError') === 'check'" fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                      <path *ngIf="getPasswordValidationIcon('lowerCaseError') === 'close'" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-sm">Al menos una minúscula</span>
+                  </div>
+                  <div class="flex items-center" [ngClass]="getPasswordValidationClass('numberError')">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path *ngIf="getPasswordValidationIcon('numberError') === 'check'" fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                      <path *ngIf="getPasswordValidationIcon('numberError') === 'close'" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-sm">Al menos un número</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Confirm Password -->
+              <div class="form-group">
+                <label for="passwordConfirm" class="block text-sm font-medium text-[#006455] mb-2">Confirmar Contraseña</label>
+                <div class="input-container">
+                  <div class="input-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+                    </svg>
+                  </div>
+                  <input 
+                    id="passwordConfirm"
+                    [type]="getInputTypePasswordConfirm()" 
+                    formControlName="passwordConfirm"
+                    placeholder="Confirma tu contraseña"
+                    class="form-input"
+                    [class.error]="passwordConfirm?.invalid && passwordConfirm?.touched"
+                  >
+                  <button 
+                    type="button"
+                    (click)="visibilityTogglePasswordConfirm()" 
+                    class="input-suffix"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path *ngIf="getInputTypePasswordConfirm() === 'password'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path *ngIf="getInputTypePasswordConfirm() === 'password'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                      <path *ngIf="getInputTypePasswordConfirm() === 'text'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                    </svg>
+                  </button>
+                </div>
+                <div class="error-message" *ngIf="passwordConfirm?.invalid && passwordConfirm?.touched">
+                  <span *ngIf="passwordConfirm?.hasError('required')">La confirmación es requerida</span>
+                </div>
+                <div class="error-message" *ngIf="registerForm.hasError('passwordConfirmedError') && passwordConfirm?.touched">
+                  <span>Las contraseñas no coinciden</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-4">
+              <button 
+                type="button"
+                (click)="register()" 
+                [disabled]="registerForm.invalid"
+                class="flex-1 btn-primary"
+                [class.disabled]="registerForm.invalid"
+              >
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Registrar Mascota
+              </button>
+              <button 
+                type="button"
+                (click)="cancelMethod()" 
+                class="flex-1 btn-secondary"
+              >
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                Cancelar
+              </button>
+            </div>
+          </div>
                 </form>
-            </section>
-            <section *ngIf="registeredMedal" class="confirm-container">
-                <section class="info-container">
-                    <h2>Cuenta penditente
-                    </h2>
-                    <p>{{ registeredMedal.text }}</p>
-                   
-                </section>
-            </section>
-        </section>
-    </main>
-</section>
+      </div>
+    </div>
+
+    <!-- Success Message -->
+    <div class="max-w-2xl mx-auto" *ngIf="registeredMedal">
+      <div class="bg-white rounded-2xl shadow-xl p-8 text-center">
+        <div class="bg-green-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-[#006455] mb-4">Cuenta Pendiente</h2>
+        <p class="text-[#36454F] text-lg mb-6">{{ registeredMedal.text }}</p>
+        <button 
+          type="button"
+          (click)="navigationService.goToWelcome()" 
+          class="btn-primary"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+          Ir al Inicio
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 

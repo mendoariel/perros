@@ -1,41 +1,23 @@
 import { Component, OnDestroy, OnInit, afterRender } from '@angular/core';
-import { CommonModule, NgIf } from '@angular/common';
-import { MaterialModule } from 'src/app/material/material.module';
+import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormControl, FormGroup, FormGroupDirective, FormsModule, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { CookieService } from 'ngx-cookie-service';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import {ErrorStateMatcher} from '@angular/material/core';
-import {MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
 import { LoginInterface } from 'src/app/interface/login.interface';
-import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 
-/** Error when invalid control is dirty, touched, or submitted. */
-export class MyErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-    const isSubmitted = form && form.submitted;
-    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
-  }
-}
+
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
     CommonModule,
-    MaterialModule,
-    FormsModule,
-    ReactiveFormsModule,
-    FormsModule, 
-    MatFormFieldModule, 
-    MatInputModule, 
-    ReactiveFormsModule,
-    FirstNavbarComponent
+    ReactiveFormsModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
@@ -46,7 +28,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     email: new FormControl('', [Validators.email, Validators.required]),
     password: new FormControl('', [Validators.required, Validators.minLength(8)])
   });
-  matcher = new MyErrorStateMatcher();
+
   pwdHide = true;
   isLoading = false;
 
@@ -99,6 +81,10 @@ export class LoginComponent implements OnInit, OnDestroy {
       next: (res: any)=> {
         if (res && res.access_token) {
           localStorage.setItem('access_token', res.access_token);
+          // Guardar también el refresh token
+          if (res.refresh_token) {
+            localStorage.setItem('refresh_token', res.refresh_token);
+          }
           this.authService.putAuthenticatedTrue();
           this.router.navigate(['/mis-mascotas']);
         } else {

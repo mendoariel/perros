@@ -5,14 +5,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, finalize, take } from 'rxjs';
 import { PetsService } from 'src/app/services/pets.services';
 import { AuthService } from 'src/app/auth/services/auth.service';
-import { MaterialModule } from 'src/app/material/material.module';
-// import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { UploadFileService } from 'src/app/services/upload-file.service';
 import { environment } from 'src/environments/environment';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
@@ -24,8 +20,6 @@ import { Pet } from 'src/app/models/pet.model';
   standalone: true,
   imports: [
     CommonModule,
-    MaterialModule,
-    // FirstNavbarComponent,
     FormsModule,
     ReactiveFormsModule
   ],
@@ -80,7 +74,6 @@ export class PetFormComponent implements OnDestroy {
     this.error = null;
     this.isLoading = true;
     this.spinnerMessage = 'Cargando...';
-    // Continuar con la lógica existente
 
     if (!this.medalString) {
       this.error = 'No se encontró el identificador de la mascota';
@@ -89,28 +82,33 @@ export class PetFormComponent implements OnDestroy {
       return;
     }
 
-    this.isLoginSubscription = this.authService.isAuthenticatedObservable
-      .pipe(
-        take(1),
-        finalize(() => {
-        })
-      )
-      .subscribe({
-        next: (res: boolean) => {
-          if (res) {
-            this.getOnlyMyPet(this.medalString!);
-            this.subscribeValidationPhone();
-          } else {
+    // Verificar autenticación de forma más robusta
+    if (this.authService.isAuthenticated()) {
+      this.getOnlyMyPet(this.medalString!);
+      this.subscribeValidationPhone();
+    } else {
+      // Suscribirse a cambios de autenticación
+      this.isLoginSubscription = this.authService.isAuthenticatedObservable
+        .pipe(
+          take(1)
+        )
+        .subscribe({
+          next: (res: boolean) => {
+            if (res) {
+              this.getOnlyMyPet(this.medalString!);
+              this.subscribeValidationPhone();
+            } else {
+              this.isLoading = false;
+              this.navigationService.goToLogin();
+            }
+          },
+          error: (error: any) => {
+            console.error('Auth error:', error);
+            this.error = 'Error al verificar la autenticación';
             this.isLoading = false;
-            this.navigationService.goToLogin();
           }
-        },
-        error: (error: any) => {
-          console.error('Auth error:', error);
-          this.error = 'Error al verificar la autenticación';
-          this.isLoading = false;
-        }
-      });
+        });
+    }
   }
 
   subscribeValidationPhone() {

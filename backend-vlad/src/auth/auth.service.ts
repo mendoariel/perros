@@ -3,14 +3,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './dto';
 import { Message, Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
-import { PasswordRecoveryDto } from './dto/password-recovery.dto';
+import { PasswordRecoveryDto, NewPasswordDto, ConfirmAccountDto, ConfirmMedalto, AuthSignInDto } from './dto';
 import { MailService } from 'src/mail/mail.service';
 import { UtilService } from 'src/services/util.service';
-import { NewPasswordDto } from './dto/new-password.dto';
-import { ConfirmAccountDto } from './dto/confirm-account.dto';
 import { Prisma, UserStatus, MedalState, Role } from '@prisma/client';
-import { ConfirmMedalto } from './dto/confirm-medal.dto';
-import { AuthSignInDto } from './dto/auth-signin.dto';
 
 var bcrypt = require('bcryptjs');
 @Injectable()
@@ -229,6 +225,10 @@ export class AuthService {
     }
 
     async getToken(userId: number, email: string, role: Role): Promise<Tokens> {
+        // Obtener tiempos de expiración desde variables de entorno
+        const accessTokenExpiresIn = process.env.ACCESS_TOKEN_EXPIRES_IN || '900'; // 15 minutos por defecto
+        const refreshTokenExpiresIn = process.env.REFRESH_TOKEN_EXPIRES_IN || '2592000'; // 30 días por defecto
+
         const [at, rt] = await Promise.all([
             this.jwtService.signAsync({
                 sub: userId,
@@ -236,14 +236,14 @@ export class AuthService {
                 role: role
              },{
                 secret: 'at-secret',
-                expiresIn: 60 * 60,
+                expiresIn: parseInt(accessTokenExpiresIn),
              }),
              this.jwtService.signAsync({
                 sub: userId,
                 email: email 
              },{
                 secret: 'rt-secret',
-                expiresIn: 60 * 60 * 24 * 7,
+                expiresIn: parseInt(refreshTokenExpiresIn),
              })
         ]);
         

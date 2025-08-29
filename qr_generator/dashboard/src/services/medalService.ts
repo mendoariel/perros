@@ -2,7 +2,15 @@ import axios from 'axios';
 import { Medal, MedalStats, CreateMedalsRequest } from '../types/dashboard';
 import { authService } from './authService';
 
+<<<<<<< HEAD
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
+=======
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333/api';
+
+// Debug: Verificar la URL base
+console.log('medalService - API_BASE_URL:', API_BASE_URL);
+console.log('medalService - process.env.REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+>>>>>>> gary
 
 // Crear instancia de axios con interceptor para manejar autenticación
 const api = axios.create({

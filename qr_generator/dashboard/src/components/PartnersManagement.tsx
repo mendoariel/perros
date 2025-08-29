@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { Partner, PartnerStats, CreatePartnerRequest, UpdatePartnerRequest, PartnerType, PartnerStatus } from '../types/dashboard';
+=======
+import { useNavigate } from 'react-router-dom';
+import { Partner, PartnerStats, UpdatePartnerRequest, PartnerType, PartnerStatus } from '../types/dashboard';
+>>>>>>> gary
 import { partnerService } from '../services/partnerService';
 import { SampleDataLoader } from '../utils/sampleDataLoader';
 
 const PartnersManagement: React.FC = () => {
+<<<<<<< HEAD
+=======
+  const navigate = useNavigate();
+>>>>>>> gary
   const [partners, setPartners] = useState<Partner[]>([]);
   const [stats, setStats] = useState<PartnerStats>({
     total: 0,
@@ -13,17 +22,26 @@ const PartnersManagement: React.FC = () => {
     restaurants: 0,
     veterinarians: 0,
     petShops: 0,
+<<<<<<< HEAD
+=======
+    petFriendly: 0,
+>>>>>>> gary
     others: 0
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+<<<<<<< HEAD
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingPartner, setEditingPartner] = useState<Partner | null>(null);
+=======
+
+>>>>>>> gary
   const [filterType, setFilterType] = useState<PartnerType | 'ALL'>('ALL');
   const [filterStatus, setFilterStatus] = useState<PartnerStatus | 'ALL'>('ALL');
   const [loadingSampleData, setLoadingSampleData] = useState(false);
 
+<<<<<<< HEAD
   const [formData, setFormData] = useState<CreatePartnerRequest>({
     name: '',
     address: '',
@@ -33,6 +51,9 @@ const PartnersManagement: React.FC = () => {
     website: '',
     partnerType: 'RESTAURANT'
   });
+=======
+
+>>>>>>> gary
 
   const loadData = async () => {
     try {
@@ -42,9 +63,18 @@ const PartnersManagement: React.FC = () => {
         partnerService.getAllPartners(),
         partnerService.getPartnerStats()
       ]);
+<<<<<<< HEAD
       setPartners(partnersData);
       setStats(statsData);
     } catch (err) {
+=======
+      console.log('Partners loaded:', partnersData);
+      console.log('Partners count:', partnersData.length);
+      setPartners(partnersData);
+      setStats(statsData);
+    } catch (err) {
+      console.error('Error loading data:', err);
+>>>>>>> gary
       setError('Error al cargar los datos: ' + (err as Error).message);
     } finally {
       setLoading(false);
@@ -72,6 +102,7 @@ const PartnersManagement: React.FC = () => {
     }
   };
 
+<<<<<<< HEAD
   const handleCreatePartner = async () => {
     try {
       await partnerService.createPartner(formData);
@@ -99,6 +130,16 @@ const PartnersManagement: React.FC = () => {
     } catch (err) {
       setError('Error al actualizar partner: ' + (err as Error).message);
     }
+=======
+
+
+  const handleCreatePartner = () => {
+    navigate('/partners/create');
+  };
+
+  const handleEditPartner = (partner: Partner) => {
+    navigate(`/partners/${partner.id}/edit`);
+>>>>>>> gary
   };
 
   const handleDeletePartner = async (id: number) => {
@@ -136,6 +177,10 @@ const PartnersManagement: React.FC = () => {
       RESTAURANT: 'bg-orange-100 text-orange-800',
       VETERINARIAN: 'bg-blue-100 text-blue-800',
       PET_SHOP: 'bg-green-100 text-green-800',
+<<<<<<< HEAD
+=======
+      PET_FRIENDLY: 'bg-purple-100 text-purple-800',
+>>>>>>> gary
       OTHER: 'bg-gray-100 text-gray-800'
     };
     return colors[type] || 'bg-gray-100 text-gray-800';
@@ -156,6 +201,12 @@ const PartnersManagement: React.FC = () => {
     return matchesType && matchesStatus;
   });
 
+<<<<<<< HEAD
+=======
+  console.log('Filtered partners:', filteredPartners);
+  console.log('Filtered partners count:', filteredPartners.length);
+
+>>>>>>> gary
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-96">
@@ -174,7 +225,11 @@ const PartnersManagement: React.FC = () => {
         <div className="flex space-x-3">
           <button
             className="btn-primary flex items-center space-x-2"
+<<<<<<< HEAD
             onClick={() => setShowCreateDialog(true)}
+=======
+            onClick={handleCreatePartner}
+>>>>>>> gary
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -205,7 +260,11 @@ const PartnersManagement: React.FC = () => {
       )}
 
       {/* Stats Cards */}
+<<<<<<< HEAD
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+=======
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+>>>>>>> gary
         <div className="card">
           <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
             Total Partners
@@ -238,9 +297,24 @@ const PartnersManagement: React.FC = () => {
             {stats.veterinarians}
           </p>
         </div>
+<<<<<<< HEAD
       </div>
 
       {/* Filters and Search */}
+=======
+        <div className="card">
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+            Pet Friendly
+          </h3>
+          <p className="mt-2 text-3xl font-bold text-purple-600">
+            {stats.petFriendly}
+          </p>
+        </div>
+      </div>
+
+      {/* Filters and Search - TEMPORARILY COMMENTED OUT */}
+      {/* 
+>>>>>>> gary
       <div className="card">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
@@ -281,6 +355,10 @@ const PartnersManagement: React.FC = () => {
           </select>
         </div>
       </div>
+<<<<<<< HEAD
+=======
+      */}
+>>>>>>> gary
 
       {/* Partners Table */}
       <div className="card">
@@ -300,7 +378,11 @@ const PartnersManagement: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Contacto
                 </th>
+<<<<<<< HEAD
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+=======
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">
+>>>>>>> gary
                   Acciones
                 </th>
               </tr>
@@ -309,12 +391,33 @@ const PartnersManagement: React.FC = () => {
               {filteredPartners.map((partner) => (
                 <tr key={partner.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
+<<<<<<< HEAD
                     <div>
                       <div className="text-sm font-medium text-gray-900">
                         {partner.name}
                       </div>
                       <div className="text-sm text-gray-500">
                         {partner.address}
+=======
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-10 w-10 mr-3">
+                        <img
+                          className="h-10 w-10 rounded-lg object-cover border-2 border-gray-200"
+                          src={partner.profileImage || 'http://localhost:3333/images/partners/profile_bd776d119f9de4fa98a10c39c4acd9d4e.jpg'}
+                          alt={partner.name}
+                          onError={(e) => {
+                            e.currentTarget.src = 'http://localhost:3333/images/partners/profile_bd776d119f9de4fa98a10c39c4acd9d4e.jpg';
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {partner.name}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {partner.address}
+                        </div>
+>>>>>>> gary
                       </div>
                     </div>
                   </td>
@@ -334,6 +437,7 @@ const PartnersManagement: React.FC = () => {
                       {partner.whatsapp && <div>📱 {partner.whatsapp}</div>}
                     </div>
                   </td>
+<<<<<<< HEAD
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
                       onClick={() => setEditingPartner(partner)}
@@ -347,6 +451,29 @@ const PartnersManagement: React.FC = () => {
                     >
                       Eliminar
                     </button>
+=======
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium w-48">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEditPartner(partner)}
+                        className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => handleDeletePartner(partner.id)}
+                        className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                      >
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Eliminar
+                      </button>
+                    </div>
+>>>>>>> gary
                   </td>
                 </tr>
               ))}
@@ -355,6 +482,7 @@ const PartnersManagement: React.FC = () => {
         </div>
       </div>
 
+<<<<<<< HEAD
       {/* Create Partner Dialog */}
       {showCreateDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -529,6 +657,9 @@ const PartnersManagement: React.FC = () => {
           </div>
         </div>
       )}
+=======
+
+>>>>>>> gary
     </div>
   );
 };

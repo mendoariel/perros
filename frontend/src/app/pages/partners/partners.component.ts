@@ -6,7 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { Subscription, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { PartnersService, Partner } from '../../services/partners.service';
-import { PeludosclickFooterComponent } from '../../shared/components/peludosclick-footer/peludosclick-footer.component';
+import { FooterComponent } from '../../shared/components/footer/footer.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-partners',
@@ -15,7 +16,7 @@ import { PeludosclickFooterComponent } from '../../shared/components/peludosclic
     CommonModule,
     HttpClientModule,
     FormsModule,
-    PeludosclickFooterComponent
+    FooterComponent
   ],
   templateUrl: './partners.component.html',
   styleUrls: ['./partners.component.scss']
@@ -171,14 +172,59 @@ export class PartnersComponent implements OnInit, OnDestroy {
     }
   }
 
-  openMaps(address: string) {
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+  openMaps(partner: Partner) {
+    console.log('=== DATOS DEL PARTNER PARA MAPS (PARTNERS PAGE) ===');
+    console.log('Partner completo:', partner);
+    console.log('Latitude:', partner.latitude);
+    console.log('Longitude:', partner.longitude);
+    console.log('Address:', partner.address);
+    console.log('Name:', partner.name);
+    
+    let mapsUrl: string;
+    
+    // Si tenemos coordenadas, usarlas para mayor precisión
+    if (partner.latitude && partner.longitude) {
+      // URL mejorada con zoom y etiqueta
+      const label = partner.name ? encodeURIComponent(partner.name) : '';
+      mapsUrl = `https://www.google.com/maps?q=${partner.latitude},${partner.longitude}&z=16${label ? `&t=m&z=16&q=${partner.latitude},${partner.longitude}(${label})` : ''}`;
+      console.log('Usando coordenadas:', mapsUrl);
+    } else if (partner.address) {
+      // Si no hay coordenadas, usar la dirección con zoom
+      mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(partner.address)}&zoom=15`;
+      console.log('Usando dirección:', mapsUrl);
+    } else {
+      // Fallback: buscar por nombre del partner
+      mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(partner.name)}&zoom=15`;
+      console.log('Usando nombre:', mapsUrl);
+    }
+    
+    console.log('URL final del mapa:', mapsUrl);
     window.open(mapsUrl, '_blank');
   }
 
   getShortDescription(description: string): string {
     if (!description) return '';
     return description.length > 150 ? description.substring(0, 150) + '...' : description;
+  }
+
+  onImageError(event: Event, fallbackImage: string) {
+    const img = event.target as HTMLImageElement;
+    if (img) {
+      img.src = fallbackImage;
+    }
+  }
+
+  getImageUrl(imageUrl: string | undefined): string {
+    if (!imageUrl) return '';
+    if (imageUrl.startsWith('http')) {
+      return imageUrl;
+    }
+    // Si estamos en el servidor (SSR), usar URL completa
+    if (environment.isServer) {
+      return `http://localhost:3333${imageUrl}`;
+    }
+    // Si estamos en el navegador, usar URL relativa
+    return environment.production ? imageUrl : `${environment.perrosQrApi.replace('/api/', '')}${imageUrl}`;
   }
 
   viewPartner(partner: Partner) {
@@ -193,5 +239,9 @@ export class PartnersComponent implements OnInit, OnDestroy {
     const restaurants = this.partners.filter(p => p.partnerType === 'RESTAURANT').length;
 
     return { total, active, veterinarians, petShops, restaurants };
+  }
+
+  createNewPartner() {
+    this.router.navigate(['/partner-create']);
   }
 } 

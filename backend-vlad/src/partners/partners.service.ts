@@ -6,9 +6,10 @@ import {
   CreateArticleDto, 
   CreateServiceDto, 
   CreateOfferDto, 
-  CreateCommentDto 
+  CreateCommentDto,
+  CreatePartnerImageDto
 } from './dto';
-import { PartnerType, PartnerStatus } from './types/partner.types';
+import { PartnerType, PartnerStatus } from '@prisma/client';
 
 @Injectable()
 export class PartnersService {
@@ -36,6 +37,7 @@ export class PartnersService {
         offers: true,
         comments: true,
         catalog: true,
+        partner_images: true,
         _count: {
           select: {
             articles: true,
@@ -57,6 +59,7 @@ export class PartnersService {
         offers: true,
         comments: true,
         catalog: true,
+        partner_images: true,
       },
     });
 
@@ -69,13 +72,14 @@ export class PartnersService {
 
   async findPartnersByType(partnerType: PartnerType) {
     return this.prisma.partner.findMany({
-      where: { partnerType: partnerType as any },
+      where: { partnerType },
       include: {
         articles: true,
         services: true,
         offers: true,
         comments: true,
         catalog: true,
+        partner_images: true,
       },
     });
   }
@@ -85,13 +89,14 @@ export class PartnersService {
 
     return this.prisma.partner.update({
       where: { id },
-      data: updatePartnerDto as any,
+      data: updatePartnerDto,
       include: {
         articles: true,
         services: true,
         offers: true,
         comments: true,
         catalog: true,
+        partner_images: true,
       },
     });
   }
@@ -108,6 +113,7 @@ export class PartnersService {
         offers: true,
         comments: true,
         catalog: true,
+        partner_images: true,
       },
     });
   }
@@ -444,5 +450,42 @@ export class PartnersService {
       comments,
       averageRating: averageRating._avg.rating || 0,
     };
+  }
+
+  // Gallery operations
+  async addGalleryImage(partnerId: number, createImageDto: CreatePartnerImageDto) {
+    await this.findPartnerById(partnerId);
+
+    return this.prisma.partnerImage.create({
+      data: {
+        ...createImageDto,
+        partnerId,
+      },
+    });
+  }
+
+  async getPartnerGallery(partnerId: number) {
+    await this.findPartnerById(partnerId);
+
+    return this.prisma.partnerImage.findMany({
+      where: { partnerId },
+      orderBy: { order: 'asc' },
+    });
+  }
+
+  async removeGalleryImage(partnerId: number, imageId: number) {
+    await this.findPartnerById(partnerId);
+
+    const image = await this.prisma.partnerImage.findFirst({
+      where: { id: imageId, partnerId },
+    });
+
+    if (!image) {
+      throw new NotFoundException(`Gallery image with ID ${imageId} not found for partner ${partnerId}`);
+    }
+
+    return this.prisma.partnerImage.delete({
+      where: { id: imageId },
+    });
   }
 } 

@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 import { Observable, map, of, catchError, Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { NavigationService } from 'src/app/core/services/navigation.service';
-import { PeludosclickFooterComponent } from 'src/app/shared/components/peludosclick-footer/peludosclick-footer.component';
+import { FooterComponent } from 'src/app/shared/components/footer/footer.component';
 
 interface Pet {
   petName: string;
@@ -27,7 +27,7 @@ interface Pet {
     CommonModule,
     MaterialModule,
     HttpClientModule,
-    PeludosclickFooterComponent
+    FooterComponent
   ],
   templateUrl: './pets.component.html',
   styleUrls: ['./pets.component.scss']
@@ -42,7 +42,7 @@ export class PetsComponent implements OnDestroy {
   loading = true;
   error: string | null = null;
   
-  imagePath = `${environment.perrosQrApi}pets/files/`;
+  imagePath = environment.production ? `/pets/files/` : `${environment.perrosQrApi}pets/files/`;
   env = environment;
 
   constructor(
@@ -70,11 +70,11 @@ export class PetsComponent implements OnDestroy {
       map(pets => {
         return pets.filter(pet => pet.status === 'ENABLED');
       }),
-      map(pets => pets.map(pet => ({
-        ...pet,
-        background: `${environment.perrosQrApi}pets/files/${pet.image}`,
-        link: `mascota/${pet.medalString}`
-      }))),
+              map(pets => pets.map(pet => ({
+          ...pet,
+          background: pet.image ? (environment.production ? `/pets/files/${pet.image}` : `${environment.perrosQrApi}pets/files/${pet.image}`) : 'assets/main/default-pet-social.jpg',
+          link: `mascota/${pet.medalString}`
+        }))),
       catchError(error => {
         console.error('Error al cargar todas las mascotas:', error);
         this.error = 'Error al cargar las mascotas. Por favor, intenta de nuevo más tarde.';

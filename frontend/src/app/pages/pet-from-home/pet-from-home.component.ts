@@ -10,9 +10,11 @@ import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
 import { ShareIconsModule } from 'ngx-sharebuttons/icons';
 import { MetaService } from 'src/app/services/meta.service';
+import { ServerMetaService } from 'src/app/services/server-meta.service';
 import { PetsService } from 'src/app/services/pets.services';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { NavigationService } from 'src/app/core/services/navigation.service';
+
 
 // Default social sharing image if pet image is not available
 const DEFAULT_SOCIAL_IMAGE = 'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
@@ -39,9 +41,10 @@ export class PetFromHomeComponent implements OnDestroy {
   spinnerMessage = 'Cargando...';
   textButton = 'Agregar foto';
   env = environment;
-  background = `url(${environment.perrosQrApi}pets/files/secrectIMG-20250301-WA0000.jpg)`;
+  background = `url(/pets/files/secrectIMG-20250301-WA0000.jpg)`;
   isImageLoaded = false;
   petImageUrl = ''; // New property for direct image URL
+  shareImageUrl = ''; // Absolute URL for social sharing
   metaDataSet = false; // Flag to prevent multiple meta data calls
     
   constructor(
@@ -49,9 +52,11 @@ export class PetFromHomeComponent implements OnDestroy {
     private qrCheckingService: QrChekingService,
     private router: Router,
     private metaService: MetaService,
+    private serverMetaService: ServerMetaService,
     private petsServices: PetsService,
     private authService: AuthService,
     private navigationService: NavigationService,
+
     private cdr: ChangeDetectorRef
   ) {
     afterRender(() => {
@@ -63,6 +68,7 @@ export class PetFromHomeComponent implements OnDestroy {
     this.routeSubscription = this.route.params.subscribe(params => {
       const medalString = params['medalString'];
       if (medalString) {
+        this.medalString = medalString; // Assign to class property
         this.getPet(medalString);
       } else {
         this.navigationService.goToHome();
@@ -78,7 +84,7 @@ export class PetFromHomeComponent implements OnDestroy {
     
     // Construct absolute URLs
     const petImageUrl = this.isImageLoaded ? 
-      `pets/files/${this.pet.image}` : 
+      (this.pet.image ? `pets/files/${this.pet.image}` : 'assets/default-pet-social.jpg') : 
       'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
     
     const description = this.pet.description || 'Conoce más sobre esta mascota en PeludosClick';
@@ -108,19 +114,27 @@ export class PetFromHomeComponent implements OnDestroy {
       this.metaDataSet = true;
     };
     img.src = this.isImageLoaded ? 
-      `https://api.peludosclick.com/pets/files/${this.pet.image}` : 
+      (this.pet.image ? `https://peludosclick.com/pets/files/${this.pet.image}` : 'https://peludosclick.com/assets/default-pet-social.jpg') : 
       `https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
   }
 
   checkImageExists(imageUrl: string): Promise<boolean> {
     return new Promise((resolve) => {
+      // Check if we're in the browser environment
+      if (typeof window === 'undefined') {
+        // We're in SSR, assume image exists
+        this.cdr.detectChanges();
+        resolve(true);
+        return;
+      }
+
       const img = new Image();
       img.onload = () => {
-        this.isImageLoaded = true;
+        this.cdr.detectChanges();
         resolve(true);
       };
       img.onerror = () => {
-        this.isImageLoaded = false;
+        this.cdr.detectChanges();
         resolve(false);
       };
       img.src = imageUrl;
@@ -128,26 +142,28 @@ export class PetFromHomeComponent implements OnDestroy {
   }
   
   getPet(medalString: string) {
-    this.spinner = true;
     this.petSubscription = this.qrCheckingService.getPet(medalString).subscribe({
       next: async (pet: any) => {
-        this.spinner = false;
         this.pet = pet;
         
-        // Check if the pet image exists
-        const imageUrl = `${this.env.perrosQrApi}pets/files/${pet.image}`;
-        await this.checkImageExists(imageUrl);
+        // Set the image URL directly
+        this.petImageUrl = pet.image ? 
+          `${environment.perrosQrApi}pets/files/${pet.image}` : 
+          '/assets/default-pet-social.jpg';
+        
+        // Set absolute URL for social sharing
+        this.shareImageUrl = pet.image ? 
+          `https://api.peludosclick.com/pets/files/${pet.image}` : 
+          'https://peludosclick.com/assets/default-pet-social.jpg';
         
         this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;
         this.pet.tel = `tel: ${this.pet.phone}`;
         
-        // Set the direct image URL for img tags
-        this.petImageUrl = this.isImageLoaded ? 
-          imageUrl : 
-          `${environment.frontend}/${DEFAULT_SOCIAL_IMAGE}`;
-        
         // Keep background for backward compatibility (if needed)
         this.pet.background = this.petImageUrl;
+        
+        // Update server-side meta tags
+        this.serverMetaService.updateMetaTagsForPet(pet, medalString);
         
         this.setMetaData();
         this.cdr.detectChanges();
@@ -171,6 +187,11 @@ export class PetFromHomeComponent implements OnDestroy {
       console.log('Unsubscribing from route subscription');
       this.routeSubscription.unsubscribe();
     }
+  }
+
+  onImageError(event: any) {
+    // Si la imagen falla, usar una imagen por defecto
+    event.target.src = '/assets/default-pet-social.jpg';
   }
 
   handleError(error: any) {

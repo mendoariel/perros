@@ -45,11 +45,19 @@ ssh $PRODUCTION_HOST "docker exec perros_postgres_1 pg_dump -U postgres peludosc
 scp $PRODUCTION_HOST:/tmp/peludosclick_backup_*.sql "$BACKUP_DIR/"
 ssh $PRODUCTION_HOST "rm /tmp/peludosclick_backup_*.sql"
 
+<<<<<<< HEAD
 # Backup de archivos
 log "📁 Haciendo backup de archivos..."
 ssh $PRODUCTION_HOST "cd $PRODUCTION_PATH && tar -czf /tmp/peludosclick_files_$(date +%Y%m%d_%H%M%S).tar.gz public/files"
 scp $PRODUCTION_HOST:/tmp/peludosclick_files_*.tar.gz "$BACKUP_DIR/"
 ssh $PRODUCTION_HOST "rm /tmp/peludosclick_files_*.tar.gz"
+=======
+# Backup de toda la carpeta public
+log "📁 Haciendo backup de toda la carpeta public..."
+ssh $PRODUCTION_HOST "cd $PRODUCTION_PATH && tar -czf /tmp/peludosclick_public_$(date +%Y%m%d_%H%M%S).tar.gz public"
+scp $PRODUCTION_HOST:/tmp/peludosclick_public_*.tar.gz "$BACKUP_DIR/"
+ssh $PRODUCTION_HOST "rm /tmp/peludosclick_public_*.tar.gz"
+>>>>>>> gary
 
 log "✅ Backup completado en: $BACKUP_DIR"
 

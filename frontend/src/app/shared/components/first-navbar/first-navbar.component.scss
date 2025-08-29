@@ -1,177 +1,393 @@
-// PeludosClick FirstNavbar Styles
-:root {
-  --peludos-primary: #006455;
-  --peludos-teal: #008080;
-  --peludos-mustard: #FFD700;
-  --peludos-charcoal: #36454F;
-  --peludos-cream: #FFFDD0;
-  --peludos-mustard-light: #FFE55C;
-  --peludos-mustard-dark: #DAA520;
-  --peludos-teal-dark: #006666;
+// Modern Navbar Styles
+.navbar-container {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  overflow: hidden;
 }
 
-// Logo container improvements
+.navbar-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #006455 0%, #005a4a 50%, #004d3d 100%);
+  z-index: -2;
+}
+
+.navbar-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  z-index: -1;
+}
+
+.navbar-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.navbar-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+// Logo Section
+.logo-section {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
 .logo-container {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  align-items: center !important;
-  justify-content: flex-start !important;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 128, 128, 0.15);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
   }
 }
 
-// Logo image specific styling
+.logo-icon {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .logo-image {
-  object-fit: contain !important;
-  background: transparent !important;
-  
-  // Scale the mustard logo properly
-  transform: scale(1.2);
-  
-  // Add subtle shadow for depth
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-}
-
-// Logo styling without container
-.logo-image {
-  object-fit: contain !important;
-  background: transparent !important;
-  
-  // Scale the mustard logo properly
-  transform: scale(1.2);
-  
-  // Add subtle shadow for depth
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-  
-  // Perfect alignment with text
-  align-self: center;
-  margin-top: 5px;
-  margin-right: -14px;
-}
-
-// Personalizaciones específicas del mat-menu
-::ng-deep .mat-menu-panel {
-  border-radius: 16px !important;
-  box-shadow: 0 10px 25px rgba(0, 128, 128, 0.15) !important;
-  border: 1px solid rgba(0, 128, 128, 0.1) !important;
-  background: white !important;
-}
-
-// Asegurar que los iconos de Material tengan el tamaño correcto
-mat-icon {
-  font-size: 20px !important;
-  width: 20px !important;
-  height: 20px !important;
-  line-height: 20px !important;
-}
-
-// Button hover animations
-.nav-button {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s ease;
   
   &:hover {
-    transform: translateY(-2px);
+    transform: scale(1.05);
   }
 }
 
-// Specific styles for menu button to override Material Design
-::ng-deep button[mat-button][matMenuTriggerFor] {
-  background-color: #FFD700 !important;
-  color: #006455 !important;
-  border-color: #006455 !important;
-  
-  &:hover {
-    background-color: #FFE55C !important;
-    color: #006455 !important;
-  }
-  
-  mat-icon {
-    color: #006455 !important;
-  }
-  
-  span {
-    color: #006455 !important;
-  }
+.logo-fallback {
+  width: 32px;
+  height: 32px;
+  color: #FFD700;
+  stroke-width: 2;
 }
 
-// Alternative approach with more specific selectors
-::ng-deep .mat-button.mat-menu-trigger {
-  background-color: #FFD700 !important;
-  color: #006455 !important;
-  border-color: #006455 !important;
-  
-  &:hover {
-    background-color: #FFE55C !important;
-    color: #006455 !important;
-  }
-  
-  mat-icon {
-    color: #006455 !important;
-  }
-  
-  span {
-    color: #006455 !important;
-  }
-}
-
-// Menu item hover effects
-.menu-item {
-  transition: all 0.2s ease;
-  
-  &:hover {
-    background: rgba(0, 128, 128, 0.05) !important;
-    transform: translateX(4px);
-  }
-}
-
-// Logo text alignment
 .logo-text {
   display: flex;
   align-items: center;
-  line-height: 1;
-  margin-top: -2px;
+  gap: 0.25rem;
+}
+
+.logo-brand {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #FFD700;
+  letter-spacing: -0.025em;
+}
+
+.logo-brand-secondary {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.025em;
+}
+
+// Navigation Section
+.nav-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.login-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #FFD700, #FFE55C);
+  color: #006455;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
   
-  .text-2xl {
-    display: flex;
-    align-items: center;
-    height: 100%;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
   }
 }
 
-// Responsive adjustments
-@media (max-width: 640px) {
+.button-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 2;
+}
+
+.button-text {
+  font-weight: 600;
+}
+
+// User Menu
+.user-menu {
+  display: flex;
+  align-items: center;
+}
+
+.menu-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #FFD700, #FFE55C);
+  color: #006455;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.dropdown-icon {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 2;
+  transition: transform 0.3s ease;
+}
+
+// Modern Menu Styles
+::ng-deep .modern-menu {
+  .mat-menu-panel {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    min-width: 280px;
+  }
+}
+
+.menu-header {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #006455, #005a4a);
+  color: white;
+}
+
+.menu-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.menu-brand-icon {
+  width: 2rem;
+  height: 2rem;
+  color: #FFD700;
+  stroke-width: 2;
+}
+
+.menu-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-brand-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+}
+
+.menu-brand-subtitle {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.menu-items {
+  padding: 0.75rem;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(0, 100, 85, 0.05);
+    transform: translateX(4px);
+  }
+  
+  &.logout-item {
+    color: #DC2626;
+    
+    &:hover {
+      background: rgba(220, 38, 38, 0.05);
+    }
+    
+    .menu-item-icon {
+      color: #DC2626;
+    }
+  }
+}
+
+.menu-item-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #006455;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+.menu-item-text {
+  font-weight: 500;
+  flex: 1;
+}
+
+.menu-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 100, 85, 0.1), transparent);
+  margin: 0.5rem 0;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .navbar-content {
+    padding: 0 1rem;
+  }
+  
   .logo-text {
     display: none;
   }
   
-  .nav-button {
+  .logo-container {
+    padding: 0.5rem;
+  }
+  
+  .login-button,
+  .menu-button {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .button-text {
+    display: none;
+  }
+  
+  .menu-header {
+    padding: 1rem;
+  }
+  
+  .menu-brand-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  .menu-brand-title {
+    font-size: 1rem;
+  }
+  
+  .menu-brand-subtitle {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-container {
+    height: 70px;
+  }
+  
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .login-button,
+  .menu-button {
     padding: 0.5rem 1rem;
+  }
+  
+  .button-icon {
+    width: 1.125rem;
+    height: 1.125rem;
   }
 }
 
 // Focus states for accessibility
 button:focus,
 a:focus {
-  outline: 2px solid var(--peludos-mustard);
+  outline: 2px solid #FFD700;
   outline-offset: 2px;
 }
 
-// Custom scrollbar for webkit browsers
-::-webkit-scrollbar {
-  width: 6px;
+// Animation for menu open
+::ng-deep .mat-menu-panel {
+  animation: menuSlideIn 0.3s ease-out;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--peludos-cream);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--peludos-teal);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--peludos-teal-dark);
+@keyframes menuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

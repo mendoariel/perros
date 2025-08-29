@@ -1,0 +1,281 @@
+<!-- Hero Section -->
+<section class="bg-gradient-to-br from-blue-50 to-green-50 py-16">
+  <div class="container mx-auto px-4">
+    <!-- Banner Promocional -->
+    <div class="bg-gradient-to-r from-pink-100 via-orange-100 to-yellow-100 rounded-3xl p-8 mb-12 shadow-xl relative overflow-hidden">
+      <!-- Elementos decorativos de fondo -->
+      <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-200 to-orange-200 rounded-full opacity-30 transform translate-x-8 -translate-y-8"></div>
+      <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-pink-200 to-red-200 rounded-full opacity-30 transform -translate-x-6 translate-y-6"></div>
+      
+      <div class="flex flex-col lg:flex-row items-center justify-between relative z-10">
+        <div class="flex items-center mb-6 lg:mb-0">
+          <div class="mr-6 relative">
+            <div class="text-6xl font-bold text-yellow-500 mb-2 animate-pulse">✨</div>
+            <div class="text-3xl font-bold text-red-600 bg-white px-3 py-1 rounded-full shadow-lg">NUEVO</div>
+            <div class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+              <span class="text-white text-xs font-bold">!</span>
+            </div>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">
+              ¡Crear Nuevo Partner!
+            </h1>
+            <p class="text-lg text-gray-600">
+              Agrega tu establecimiento a nuestra red de partners pet-friendly
+            </p>
+            <div class="flex items-center mt-3 space-x-2">
+              <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">✅ Verificado</span>
+              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">🌟 Premium</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center space-x-6">
+          <div class="text-center group">
+            <div class="text-5xl group-hover:scale-110 transition-transform duration-300">🏢</div>
+            <div class="text-sm text-gray-600 font-medium">Establecimiento</div>
+            <div class="text-xs text-gray-500">Nuevo</div>
+          </div>
+          <div class="text-center group">
+            <div class="text-5xl group-hover:scale-110 transition-transform duration-300">📸</div>
+            <div class="text-sm text-gray-600 font-medium">Galería</div>
+            <div class="text-xs text-gray-500">Imágenes</div>
+          </div>
+          <div class="text-center group">
+            <div class="text-5xl group-hover:scale-110 transition-transform duration-300">📍</div>
+            <div class="text-sm text-gray-600 font-medium">Ubicación</div>
+            <div class="text-xs text-gray-500">GPS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Título Principal -->
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center mb-4">
+        <span class="text-4xl mr-3">🎯</span>
+        <h2 class="text-4xl font-bold text-[#006455]">
+          Crear Nuevo Partner
+        </h2>
+        <span class="text-4xl ml-3">🎯</span>
+      </div>
+      <p class="text-xl text-[#36454F] max-w-2xl mx-auto mb-6">
+        Completa el formulario para agregar tu establecimiento a nuestra red
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Formulario -->
+<section class="py-16 bg-white">
+  <div class="container mx-auto px-4">
+    <div class="max-w-4xl mx-auto">
+      
+      <!-- Mensajes de estado -->
+      <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+        {{ error }}
+      </div>
+
+      <div *ngIf="success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+        ¡Partner creado exitosamente! Redirigiendo...
+      </div>
+
+      <!-- Formulario -->
+      <form (ngSubmit)="onSubmit()" class="space-y-8">
+        
+        <!-- Información Básica -->
+        <div class="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
+          <h3 class="text-2xl font-bold text-[#006455] mb-6 flex items-center">
+            <span class="text-3xl mr-3">📋</span>
+            Información Básica
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del Establecimiento *</label>
+              <input 
+                type="text" 
+                [(ngModel)]="partner.name" 
+                name="name"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006455] focus:border-transparent"
+                placeholder="Ej: Hakuna Matata Pet Shop">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Establecimiento *</label>
+              <select 
+                [(ngModel)]="partner.partnerType" 
+                name="partnerType"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006455] focus:border-transparent">
+                <option *ngFor="let type of partnerTypes" [value]="type.value">
+                  {{ type.label }}
+                </option>
+              </select>
+            </div>
+            
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+              <textarea 
+                [(ngModel)]="partner.description" 
+                name="description"
+                rows="4"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006455] focus:border-transparent"
+                placeholder="Describe tu establecimiento, servicios, especialidades..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información de Contacto -->
+        <div class="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
+          <h3 class="text-2xl font-bold text-[#006455] mb-6 flex items-center">
+            <span class="text-3xl mr-3">📞</span>
+            Información de Contacto
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Dirección *</label>
+              <input 
+                type="text" 
+                [(ngModel)]="partner.address" 
+                name="address"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006455] focus:border-transparent"
+                placeholder="Ej: Montevideo 209, Mendoza">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Teléfono</label>
+              <input 
+                type="tel" 
+                [(ngModel)]="partner.phone" 
+                name="phone"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006455] focus:border-transparent"
+                placeholder="Ej: +54 261 123-4567">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">WhatsApp</label>
+              <input 
+                type="tel" 
+                [(ngModel)]="partner.whatsapp" 
+                name="whatsapp"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006455] focus:border-transparent"
+                placeholder="Ej: +54 9 261 123-4567">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Sitio Web</label>
+              <input 
+                type="url" 
+                [(ngModel)]="partner.website" 
+                name="website"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006455] focus:border-transparent"
+                placeholder="Ej: https://www.miempresa.com">
+            </div>
+          </div>
+        </div>
+
+        <!-- Ubicación GPS -->
+        <div class="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
+          <h3 class="text-2xl font-bold text-[#006455] mb-6 flex items-center">
+            <span class="text-3xl mr-3">📍</span>
+            Ubicación GPS
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Latitud</label>
+              <input 
+                type="number" 
+                [(ngModel)]="partner.latitude" 
+                name="latitude"
+                step="any"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006455] focus:border-transparent"
+                placeholder="Ej: -32.8922082">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Longitud</label>
+              <input 
+                type="number" 
+                [(ngModel)]="partner.longitude" 
+                name="longitude"
+                step="any"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006455] focus:border-transparent"
+                placeholder="Ej: -68.8426918">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Posicionamiento</label>
+              <input 
+                type="number" 
+                [(ngModel)]="partner.positioning" 
+                name="positioning"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006455] focus:border-transparent"
+                placeholder="Ej: 1">
+            </div>
+          </div>
+          
+          <div class="mt-4 p-4 bg-blue-50 rounded-xl">
+            <p class="text-sm text-blue-700">
+              💡 <strong>Consejo:</strong> Puedes obtener las coordenadas desde Google Maps. Haz clic derecho en tu ubicación y selecciona "¿Qué hay aquí?" para ver las coordenadas.
+            </p>
+          </div>
+        </div>
+
+        <!-- Galería de Imágenes -->
+        <div class="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
+          <h3 class="text-2xl font-bold text-[#006455] mb-6 flex items-center">
+            <span class="text-3xl mr-3">📸</span>
+            Galería de Imágenes
+          </h3>
+          
+          <div class="space-y-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Seleccionar Imágenes</label>
+              <input 
+                type="file" 
+                multiple 
+                accept="image/*"
+                (change)="onGalleryImagesSelected($event)"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006455] focus:border-transparent">
+              <p class="text-sm text-gray-500 mt-2">Puedes seleccionar múltiples imágenes. Formatos: JPG, PNG, GIF. Máximo 5MB por imagen.</p>
+            </div>
+            
+            <!-- Preview de imágenes -->
+            <div *ngIf="galleryImageUrls.length > 0" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div *ngFor="let url of galleryImageUrls; let i = index" class="relative group">
+                <img [src]="url" alt="Preview" class="w-full h-32 object-cover rounded-xl">
+                <button 
+                  type="button"
+                  (click)="removeGalleryImage(i)"
+                  class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  ×
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="flex justify-end space-x-4">
+          <button 
+            type="button"
+            (click)="onCancel()"
+            class="px-8 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-xl font-medium transition-colors">
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            [disabled]="loading"
+            class="px-8 py-3 bg-[#006455] hover:bg-[#005544] text-white rounded-xl font-medium transition-colors disabled:opacity-50">
+            <span *ngIf="loading" class="flex items-center">
+              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              Creando...
+            </span>
+            <span *ngIf="!loading">Crear Partner</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

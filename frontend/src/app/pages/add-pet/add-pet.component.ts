@@ -2,7 +2,6 @@ import { ROUTES } from 'src/app/core/constants/routes.constants';
 import { Component, OnDestroy, afterRender } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MaterialModule } from 'src/app/material/material.module';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { leastOneCapitalLetterValidator } from 'src/app/shared/custom-validators/least-one-capital-letter.directive';
@@ -11,8 +10,6 @@ import { leastOneNumberValidator } from 'src/app/shared/custom-validators/least-
 import { confirmedValidator } from 'src/app/shared/custom-validators/confirmed-validator.directive';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
 import { QrChekingService } from 'src/app/services/qr-checking.service';
 import { MedalInterface, RegisteredMedalInterface } from 'src/app/interface/medals.interfae';
 import { PLATFORM_ID, Inject } from '@angular/core';
@@ -24,7 +21,6 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   standalone: true,
   imports: [
     CommonModule,
-    MaterialModule,
     FormsModule,
     ReactiveFormsModule,
     FirstNavbarComponent
@@ -49,6 +45,7 @@ export class AddPetComponent implements OnDestroy {
     ]),
     passwordConfirm: new FormControl('', [Validators.required]),
   }, { validators: confirmedValidator('password', 'passwordConfirm') });
+  
   subscription: Subscription[] = [];
   pwdHide = true;
   pwdConfirmHide = true;
@@ -61,17 +58,16 @@ export class AddPetComponent implements OnDestroy {
   emailValue = '';
   emailTaken: any;
   addPetSubscription!: Subscription;
-  addPetBody: any; // Define the type according to your needs
+  addPetBody: any;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private petsServices: PetsService,
     private authService: AuthService,
-    private _snackBar: MatSnackBar,
     private qrService: QrChekingService,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private navigationService: NavigationService
+    public navigationService: NavigationService
   ) {
     afterRender(() => {
       this.initializeComponent();
@@ -95,35 +91,18 @@ export class AddPetComponent implements OnDestroy {
     body.medalString = this.medalString;
     delete body.passwordConfirm;
     this.spinner = true;
-    this.spinnerMessage = 'procesando información...';
+    this.spinnerMessage = 'Procesando información...';
 
     let authSubscription: Subscription = this.qrService.medalRegister(body).subscribe(
       (res: any) => {
         this.spinner = false;
         this.registeredMedal = res;
-        this._snackBar.openFromComponent(MessageSnackBarComponent, {
-          duration: 6000,
-          verticalPosition: 'top',
-          data: `${res.text}`
-        });
         this.addPet = true;
       }, error => {
         this.spinner = false;
         console.error(error);
-        if (error.error && error.status === 500) {
-          this._snackBar.openFromComponent(MessageSnackBarComponent, {
-            duration: 5000,
-            verticalPosition: 'top',
-            data: 'No se pudo registrar su medalla'
-          });
-        }
-        if (error.error && error.status === 400) {
-          this._snackBar.openFromComponent(MessageSnackBarComponent, {
-            duration: 5000,
-            verticalPosition: 'top',
-            data: error.error.message[0]
-          });
-        }
+        // Aquí podrías mostrar un mensaje de error usando un toast o alert
+        alert('Error al registrar la medalla. Por favor, intenta de nuevo.');
       }
     );
     this.addSubscription(authSubscription);
@@ -158,6 +137,7 @@ export class AddPetComponent implements OnDestroy {
       error: (error: any)=>{
         console.error(error);
         this.spinner = false;
+        alert('Error al validar el email. Por favor, intenta de nuevo.');
       }
     });
   }
@@ -174,6 +154,50 @@ export class AddPetComponent implements OnDestroy {
     this.pwdHide = !this.pwdHide;
   }
 
+  // Nuevos métodos para el diseño moderno
+  getPasswordValidationClass(field: string): string {
+    if (this.password?.value.length === 0) {
+      return 'text-gray-400';
+    }
+    
+    switch (field) {
+      case 'minlength':
+        return this.password?.hasError('minlength') ? 'text-red-500' : 'text-green-500';
+      case 'maxlength':
+        return this.password?.hasError('maxlength') ? 'text-red-500' : 'text-green-500';
+      case 'capitalLetterError':
+        return this.password?.hasError('capitalLetterError') ? 'text-red-500' : 'text-green-500';
+      case 'lowerCaseError':
+        return this.password?.hasError('lowerCaseError') ? 'text-red-500' : 'text-green-500';
+      case 'numberError':
+        return this.password?.hasError('numberError') ? 'text-red-500' : 'text-green-500';
+      default:
+        return 'text-gray-400';
+    }
+  }
+
+  getPasswordValidationIcon(field: string): string {
+    if (this.password?.value.length === 0) {
+      return 'none';
+    }
+    
+    switch (field) {
+      case 'minlength':
+        return this.password?.hasError('minlength') ? 'close' : 'check';
+      case 'maxlength':
+        return this.password?.hasError('maxlength') ? 'close' : 'check';
+      case 'capitalLetterError':
+        return this.password?.hasError('capitalLetterError') ? 'close' : 'check';
+      case 'lowerCaseError':
+        return this.password?.hasError('lowerCaseError') ? 'close' : 'check';
+      case 'numberError':
+        return this.password?.hasError('numberError') ? 'close' : 'check';
+      default:
+        return 'none';
+    }
+  }
+
+  // Métodos legacy para compatibilidad
   getIconToMinLength(): string {
     return this.password?.value.length === 0 ? 'radio_button_unchecked' : this.password?.hasError('minlength') ? 'cancel' : 'check';
   }

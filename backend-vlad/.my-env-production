@@ -1,21 +1,18 @@
-# Environment variables declared in this file are automatically made available to Prisma.
-# See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
-
-# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
-# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
-
+# Environment variables for Production
 DATABASE_URL="postgres://Silvestre1993:iendlshLANDHG423423480@postgres:5432/peludosclick?schema=public"
-
-
-FRONTEND_URL="https://peludosclick.com" 
+FRONTEND_URL="https://www.peludosclick.com"
 
 BACKPORT=3335
 
 MODULE_MAIL_USER=info@peludosclick.com
 MODULE_MAIL_PASS=Yamaha600
 
-ENVIRONMET=production
+ENVIRONMENT=production
 
 # Dashboard credentials
 DASHBOARD_USERNAME=admin
 DASHBOARD_PASSWORD=admin123
+
+# JWT Token Configuration - Production Environment
+ACCESS_TOKEN_EXPIRES_IN=900
+REFRESH_TOKEN_EXPIRES_IN=2592000

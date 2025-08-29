@@ -14,8 +14,18 @@ export class QRCheckingController {
     @Public()
     @Post('checking')
     @HttpCode(HttpStatus.CREATED)
-    chekingMedal(@Body() dto: QRCheckingDto): Promise<MedalStatus | string> {
-        return this.qrService.QRCheking(dto);
+    async chekingMedal(@Body() dto: QRCheckingDto): Promise<MedalStatus | string> {
+        const startTime = Date.now();
+        try {
+            const result = await this.qrService.QRCheking(dto);
+            const endTime = Date.now();
+            console.log(`QR Check completed in ${endTime - startTime}ms for medal: ${dto.medalString}`);
+            return result;
+        } catch (error) {
+            const endTime = Date.now();
+            console.error(`QR Check failed in ${endTime - startTime}ms for medal: ${dto.medalString}`, error);
+            throw error;
+        }
     }
 
     // create a medal and a user
@@ -30,8 +40,18 @@ export class QRCheckingController {
     @Public()
     @Get('pet/:medalString')
     @HttpCode(HttpStatus.OK)
-    getPet(@Param('medalString') medalString: string): Promise<any> {
-        return this.qrService.getPet(medalString);
+    async getPet(@Param('medalString') medalString: string): Promise<any> {
+        const startTime = Date.now();
+        try {
+            const result = await this.qrService.getPet(medalString);
+            const endTime = Date.now();
+            console.log(`GetPet completed in ${endTime - startTime}ms for medal: ${medalString}`);
+            return result;
+        } catch (error) {
+            const endTime = Date.now();
+            console.error(`GetPet failed in ${endTime - startTime}ms for medal: ${medalString}`, error);
+            throw error;
+        }
     }
 
     @Public()
@@ -81,6 +101,74 @@ export class QRCheckingController {
     @HttpCode(HttpStatus.OK)
     getUserStatus(@Param('email') email: string) {
         return this.qrService.getUserStatus(email);
+    }
+
+    @Public()
+    @Post('reset-request')
+    @HttpCode(HttpStatus.OK)
+    async requestMedalReset(@Body() dto: { medalString: string; reason: string; email: string }): Promise<any> {
+        const startTime = Date.now();
+        try {
+            const result = await this.qrService.requestMedalReset(dto.medalString, dto.reason, dto.email);
+            const endTime = Date.now();
+            console.log(`Reset request completed in ${endTime - startTime}ms for medal: ${dto.medalString}`);
+            return result;
+        } catch (error) {
+            const endTime = Date.now();
+            console.error(`Reset request failed in ${endTime - startTime}ms for medal: ${dto.medalString}`, error);
+            throw error;
+        }
+    }
+
+    @Public()
+    @Post('process-reset')
+    @HttpCode(HttpStatus.OK)
+    async processMedalReset(@Body() dto: { medalString: string; userEmail: string }): Promise<any> {
+        const startTime = Date.now();
+        try {
+            const result = await this.qrService.processMedalReset(dto.medalString, dto.userEmail);
+            const endTime = Date.now();
+            console.log(`Process reset completed in ${endTime - startTime}ms for medal: ${dto.medalString}`);
+            return result;
+        } catch (error) {
+            const endTime = Date.now();
+            console.error(`Process reset failed in ${endTime - startTime}ms for medal: ${dto.medalString}`, error);
+            throw error;
+        }
+    }
+
+    @Public()
+    @Post('send-unlock-apology')
+    @HttpCode(HttpStatus.OK)
+    async sendUnlockApology(@Body() dto: { medalString: string; userEmail: string; userName: string }): Promise<any> {
+        const startTime = Date.now();
+        try {
+            const result = await this.qrService.sendUnlockApology(dto.medalString, dto.userEmail, dto.userName);
+            const endTime = Date.now();
+            console.log(`Send unlock apology completed in ${endTime - startTime}ms for medal: ${dto.medalString}`);
+            return result;
+        } catch (error) {
+            const endTime = Date.now();
+            console.error(`Send unlock apology failed in ${endTime - startTime}ms for medal: ${dto.medalString}`, error);
+            throw error;
+        }
+    }
+
+    @Public()
+    @Get('preview-unlock-apology/:medalString/:userEmail/:userName')
+    @HttpCode(HttpStatus.OK)
+    async previewUnlockApology(
+        @Param('medalString') medalString: string,
+        @Param('userEmail') userEmail: string,
+        @Param('userName') userName: string
+    ): Promise<any> {
+        try {
+            const result = await this.qrService.previewUnlockApology(medalString, userEmail, userName);
+            return result;
+        } catch (error) {
+            console.error(`Preview unlock apology failed for medal: ${medalString}`, error);
+            throw error;
+        }
     }
 
 

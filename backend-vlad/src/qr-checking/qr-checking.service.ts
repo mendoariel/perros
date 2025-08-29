@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
-import { PostMedalDto, QRCheckingDto } from './dto/qr-checking.dto';
+import { PostMedalDto, QRCheckingDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, Role, MedalState, UserStatus, User, Medal, VirginMedal } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';
@@ -9,6 +9,20 @@ var createHash = require('hash-generator');
 
 @Injectable()
 export class QrService {
+    // Cache en memoria para medallas consultadas frecuentemente
+    private medalCache = new Map<string, { status: MedalState; medalString: string; registerHash: string; timestamp: number }>();
+    private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+    
+    // Cache para datos de mascotas
+    private petCache = new Map<string, { 
+        petName: string; 
+        phone: string | null; 
+        image: string | null; 
+        description: string | null; 
+        timestamp: number 
+    }>();
+    private readonly PET_CACHE_TTL = 10 * 60 * 1000; // 10 minutos
+
     constructor(
         private prisma: PrismaService,
         private mailService: MailService
@@ -19,12 +33,40 @@ export class QrService {
         medalString: string;
         registerHash: string;
     }> {
+        // Limpiar cache expirado cada 100 consultas (aproximadamente)
+        if (this.medalCache.size > 100) {
+            this.cleanExpiredCache();
+        }
+
+        // Verificar cache primero
+        const cached = this.medalCache.get(dto.medalString);
+        if (cached && (Date.now() - cached.timestamp) < this.CACHE_TTL) {
+            return {
+                status: cached.status,
+                medalString: cached.medalString,
+                registerHash: cached.registerHash
+            };
+        }
+
+        // Optimización: usar select específico para reducir datos transferidos
         const medal = await this.prisma.virginMedal.findFirst({
             where: {
                 medalString: dto.medalString
+            },
+            select: {
+                status: true,
+                medalString: true,
+                registerHash: true
             }
         });
+        
         if (!medal) throw new NotFoundException('No se encontro la medalla');
+        
+        // Guardar en cache
+        this.medalCache.set(dto.medalString, {
+            ...medal,
+            timestamp: Date.now()
+        });
         
         return {
             status: medal.status, 
@@ -189,24 +231,56 @@ export class QrService {
         image: string | null;
         description: string | null;
     }> {
+        // Limpiar cache expirado cada 100 consultas (aproximadamente)
+        if (this.petCache.size > 100) {
+            this.cleanExpiredPetCache();
+        }
+
+        // Verificar cache primero
+        const cached = this.petCache.get(medalString);
+        if (cached && (Date.now() - cached.timestamp) < this.PET_CACHE_TTL) {
+            return {
+                petName: cached.petName,
+                phone: cached.phone,
+                image: cached.image,
+                description: cached.description
+            };
+        }
+
+        // Optimización: usar select específico en lugar de include para reducir datos transferidos
         const medal = await this.prisma.medal.findFirst({
             where: {
                 medalString: medalString
             },
-            include: {
-                owner: true
+            select: {
+                petName: true,
+                image: true,
+                description: true,
+                owner: {
+                    select: {
+                        phonenumber: true
+                    }
+                }
             }
         });
 
         if(!medal) throw new NotFoundException('No records for this medal');
         if(!medal.owner) throw new NotFoundException('No user for this medal');
 
-        return {
+        const result = {
             petName: medal.petName,
             phone: medal.owner.phonenumber,
             image: medal.image,
             description: medal.description
         };
+
+        // Guardar en cache
+        this.petCache.set(medalString, {
+            ...result,
+            timestamp: Date.now()
+        });
+
+        return result;
     }
 
     async isThisEmailTaken(email: string): Promise<{ emailIsTaken: boolean }> {
@@ -331,6 +405,157 @@ export class QrService {
         }
     }
 
+    // Método para limpiar cache expirado
+    private cleanExpiredCache(): void {
+        const now = Date.now();
+        for (const [key, value] of this.medalCache.entries()) {
+            if (now - value.timestamp > this.CACHE_TTL) {
+                this.medalCache.delete(key);
+            }
+        }
+    }
+
+      // Método para limpiar cache de mascotas expirado
+  private cleanExpiredPetCache(): void {
+    const now = Date.now();
+    for (const [key, value] of this.petCache.entries()) {
+      if (now - value.timestamp > this.PET_CACHE_TTL) {
+        this.petCache.delete(key);
+      }
+    }
+  }
+
+  // Método para solicitar reset de medalla
+  async requestMedalReset(medalString: string, reason: string, email: string): Promise<{ message: string; code: string }> {
+    try {
+      // Verificar que la medalla existe
+      const medal = await this.prisma.virginMedal.findFirst({
+        where: { medalString }
+      });
+
+      if (!medal) {
+        throw new NotFoundException('Medalla no encontrada');
+      }
+
+      // Verificar que el estado permite reset
+      const allowedStates = ['REGISTER_PROCESS', 'PENDING_CONFIRMATION', 'INCOMPLETE'];
+      if (!allowedStates.includes(medal.status)) {
+        throw new BadRequestException('El estado actual de la medalla no permite reset');
+      }
+
+      // Enviar email de notificación al administrador
+      try {
+        await this.mailService.sendMedalResetRequest({
+          medalString,
+          reason,
+          userEmail: email,
+          currentStatus: medal.status
+        });
+      } catch (error) {
+        console.error('Error enviando email de solicitud de reset:', error);
+        // No lanzamos error aquí para no afectar el proceso
+      }
+
+      return {
+        message: 'Solicitud de reset enviada correctamente. Te contactaremos pronto.',
+        code: 'reset_requested'
+      };
+    } catch (error) {
+      console.error('Error en requestMedalReset:', error);
+      throw error;
+    }
+  }
+
+  // Método para procesar el reset de medalla
+  async processMedalReset(medalString: string, userEmail: string): Promise<{ message: string; code: string }> {
+    const startTime = Date.now();
+    
+    try {
+      // Verificar que la medalla existe
+      const virginMedal = await this.prisma.virginMedal.findFirst({
+        where: { medalString }
+      });
+
+      if (!virginMedal) {
+        throw new NotFoundException('Medalla no encontrada');
+      }
+
+      // Verificar que el estado permite reset
+      const allowedStates = ['REGISTER_PROCESS', 'PENDING_CONFIRMATION', 'INCOMPLETE'];
+      if (!allowedStates.includes(virginMedal.status)) {
+        throw new BadRequestException('El estado actual de la medalla no permite reset');
+      }
+
+      // Buscar si existe una medalla registrada con este medalString
+      const registeredMedal = await this.prisma.medal.findFirst({
+        where: { medalString },
+        include: {
+          owner: true
+        }
+      });
+
+      // Iniciar transacción para asegurar consistencia
+      const result = await this.prisma.$transaction(async (prisma) => {
+        // 1. Cambiar el estado de la virgin medalla a VIRGIN
+        await prisma.virginMedal.update({
+          where: { medalString },
+          data: { 
+            status: 'VIRGIN',
+            registerHash: 'genesis'
+          }
+        });
+
+        // 2. Si existe una medalla registrada, eliminarla
+        if (registeredMedal) {
+          await prisma.medal.delete({
+            where: { medalString }
+          });
+
+          // 3. Verificar si el usuario tiene otras medallas
+          const userMedals = await prisma.medal.findMany({
+            where: { ownerId: registeredMedal.ownerId }
+          });
+
+          // Si es la única medalla del usuario, eliminar el usuario
+          if (userMedals.length === 1) {
+            await prisma.user.delete({
+              where: { id: registeredMedal.ownerId }
+            });
+          }
+        }
+
+        // 4. Limpiar cache
+        this.medalCache.delete(medalString);
+        this.petCache.delete(medalString);
+
+        return { success: true };
+      });
+
+      // Enviar email de confirmación al usuario
+      try {
+        await this.mailService.sendMedalResetConfirmation({
+          medalString,
+          userEmail,
+          resetDate: new Date().toLocaleString('es-ES')
+        });
+      } catch (error) {
+        console.error('Error enviando email de confirmación de reset:', error);
+        // No lanzamos error aquí para no afectar el proceso
+      }
+
+      const endTime = Date.now();
+      console.log(`Medal reset completed in ${endTime - startTime}ms for medal: ${medalString}`);
+
+      return {
+        message: 'Medalla reseteada correctamente. Se ha enviado un email de confirmación.',
+        code: 'reset_completed'
+      };
+    } catch (error) {
+      console.error('Error en processMedalReset:', error);
+      throw error;
+    }
+  }
+
     // Método para verificar el estado de un usuario y sus medallas
     async getUserStatus(email: string): Promise<{
         userStatus: UserStatus;
@@ -367,5 +592,78 @@ export class QrService {
             })),
             needsConfirmation: user.userStatus === UserStatus.PENDING && pendingMedals.length > 0
         };
+    }
+
+    // Método para enviar email de disculpas por medalla bloqueada
+    async sendUnlockApology(medalString: string, userEmail: string, userName: string): Promise<{
+        message: string;
+        code: string;
+    }> {
+        try {
+            // Verificar que la medalla existe y está en estado REGISTER_PROCESS
+            const medal = await this.prisma.medal.findFirst({
+                where: {
+                    medalString: medalString
+                }
+            });
+
+            if (!medal) {
+                throw new NotFoundException('Medalla no encontrada');
+            }
+
+            if (medal.status !== MedalState.REGISTER_PROCESS) {
+                throw new BadRequestException('La medalla no está en estado de proceso de registro');
+            }
+
+            // Enviar email de disculpas
+            await this.mailService.sendMedalUnlockApology({
+                medalString,
+                userEmail,
+                userName
+            });
+
+            return {
+                message: 'Email de disculpas enviado correctamente',
+                code: 'apology_sent'
+            };
+        } catch (error) {
+            console.error('Error enviando email de disculpas:', error);
+            throw error;
+        }
+    }
+
+    // Método para previsualizar el email de disculpas
+    async previewUnlockApology(medalString: string, userEmail: string, userName: string): Promise<{
+        html: string;
+        subject: string;
+    }> {
+        try {
+            // Generar el HTML del email usando el template
+            const fs = require('fs');
+            const path = require('path');
+            const handlebars = require('handlebars');
+
+            // Leer el template
+            const templatePath = path.join(__dirname, '../../mail/templates/medal-unlock-apology.hbs');
+            const templateContent = fs.readFileSync(templatePath, 'utf8');
+
+            // Compilar el template
+            const template = handlebars.compile(templateContent);
+
+            // Generar el HTML con los datos
+            const html = template({
+                medalString,
+                userEmail,
+                userName
+            });
+
+            return {
+                html,
+                subject: 'Desbloquear tu medalla - PeludosClick'
+            };
+        } catch (error) {
+            console.error('Error generando preview del email:', error);
+            throw error;
+        }
     }
 }

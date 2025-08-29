@@ -10,8 +10,15 @@ import {
   UseGuards,
   ParseIntPipe,
   HttpStatus,
-  HttpCode
+  HttpCode,
+  UseInterceptors,
+  UploadedFile,
+  Res
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { Response } from 'express';
 import { PartnersService } from './partners.service';
 import { 
   CreatePartnerDto, 
@@ -19,10 +26,11 @@ import {
   CreateArticleDto, 
   CreateServiceDto, 
   CreateOfferDto, 
-  CreateCommentDto 
+  CreateCommentDto,
+  CreatePartnerImageDto
 } from './dto';
 import { AtGuard } from '../common/guards/at.guard';
-import { PartnerType, PartnerStatus } from './types/partner.types';
+import { PartnerType, PartnerStatus } from '@prisma/client';
 import { Public } from '../common/decorators';
 
 @Controller('partners')
@@ -246,5 +254,145 @@ export class PartnersController {
     @Body() body: { name: string; description?: string }
   ) {
     return this.partnersService.updateCatalog(partnerId, body.name, body.description);
+  }
+
+  // Image upload endpoints
+  @Post(':id/upload-profile-image')
+  @UseGuards(AtGuard)
+  @UseInterceptors(FileInterceptor('image', {
+    storage: diskStorage({
+      destination: '/alberto/backend/src/app/public/images/partners',
+      filename: (req, file, cb) => {
+        const randomName = Array(32).fill(null)
+          .map(() => Math.round(Math.random() * 16).toString(16)).join('');
+        return cb(null, `profile_${randomName}${extname(file.originalname)}`);
+      }
+    }),
+    fileFilter: (req, file, cb) => {
+      if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+        return cb(new Error('Only image files are allowed!'), false);
+      }
+      cb(null, true);
+    },
+    limits: {
+      fileSize: 5 * 1024 * 1024 // 5MB limit
+    }
+  }))
+  async uploadProfileImage(
+    @Param('id', ParseIntPipe) partnerId: number,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    console.log('Upload profile image - partnerId:', partnerId);
+    console.log('Upload profile image - file:', file);
+    
+    if (!file) {
+      throw new Error('No file uploaded');
+    }
+    
+    const imagePath = `/images/partners/${file.filename}`;
+    console.log('Upload profile image - imagePath:', imagePath);
+    
+    return this.partnersService.updatePartner(partnerId, { profileImage: imagePath });
+  }
+
+  @Post(':id/upload-cover-image')
+  @UseGuards(AtGuard)
+  @UseInterceptors(FileInterceptor('image', {
+    storage: diskStorage({
+      destination: '/alberto/backend/src/app/public/images/partners',
+      filename: (req, file, cb) => {
+        const randomName = Array(32).fill(null)
+          .map(() => Math.round(Math.random() * 16).toString(16)).join('');
+        return cb(null, `cover_${randomName}${extname(file.originalname)}`);
+      }
+    }),
+    fileFilter: (req, file, cb) => {
+      if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+        return cb(new Error('Only image files are allowed!'), false);
+      }
+      cb(null, true);
+    },
+    limits: {
+      fileSize: 5 * 1024 * 1024 // 5MB limit
+    }
+  }))
+  async uploadCoverImage(
+    @Param('id', ParseIntPipe) partnerId: number,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    console.log('Upload cover image - partnerId:', partnerId);
+    console.log('Upload cover image - file:', file);
+    
+    if (!file) {
+      throw new Error('No file uploaded');
+    }
+    
+    const imagePath = `/images/partners/${file.filename}`;
+    console.log('Upload cover image - imagePath:', imagePath);
+    
+    return this.partnersService.updatePartner(partnerId, { coverImage: imagePath });
+  }
+
+  @Get('images/:filename')
+  @Public()
+  serveImage(@Param('filename') filename: string, @Res() res: Response) {
+    return res.sendFile(filename, { root: '/alberto/backend/src/app/public/images/partners' });
+  }
+
+  // Gallery endpoints
+  @Post(':id/gallery')
+  @UseGuards(AtGuard)
+  @UseInterceptors(FileInterceptor('image', {
+    storage: diskStorage({
+      destination: '/alberto/backend/src/app/public/images/partners/gallery',
+      filename: (req, file, cb) => {
+        const randomName = Array(32).fill(null)
+          .map(() => Math.round(Math.random() * 16).toString(16)).join('');
+        return cb(null, `gallery_${randomName}${extname(file.originalname)}`);
+      }
+    }),
+    fileFilter: (req, file, cb) => {
+      if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+        return cb(new Error('Only image files are allowed!'), false);
+      }
+      cb(null, true);
+    },
+    limits: {
+      fileSize: 5 * 1024 * 1024 // 5MB limit
+    }
+  }))
+  async uploadGalleryImage(
+    @Param('id', ParseIntPipe) partnerId: number,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: { altText?: string; order?: number }
+  ) {
+    if (!file) {
+      throw new Error('No file uploaded');
+    }
+    
+    const imagePath = `/images/partners/gallery/${file.filename}`;
+    const createImageDto: CreatePartnerImageDto = {
+      imageUrl: imagePath,
+      altText: body.altText,
+      order: body.order ? parseInt(body.order.toString()) : 0
+    };
+    
+    return this.partnersService.addGalleryImage(partnerId, createImageDto);
+  }
+
+  @Get(':id/gallery')
+  @Public()
+  getGallery(@Param('id', ParseIntPipe) partnerId: number) {
+    return this.partnersService.getPartnerGallery(partnerId);
+  }
+
+  @Delete(':id/gallery/:imageId')
+  @UseGuards(AtGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeGalleryImage(
+    @Param('id', ParseIntPipe) partnerId: number,
+    @Param('imageId', ParseIntPipe) imageId: number
+  ) {
+    return this.partnersService.removeGalleryImage(partnerId, imageId);
   }
 } 

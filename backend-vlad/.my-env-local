@@ -20,3 +20,7 @@ ENVIRONMENT=local
 # Dashboard credentials
 DASHBOARD_USERNAME=admin
 DASHBOARD_PASSWORD=admin123
+
+# JWT Token Configuration - Local Environment
+ACCESS_TOKEN_EXPIRES_IN=3600
+REFRESH_TOKEN_EXPIRES_IN=604800
