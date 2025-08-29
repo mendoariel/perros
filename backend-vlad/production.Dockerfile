@@ -1,5 +1,5 @@
 # build
-FROM node:18.12.0 AS development
+FROM node:20-alpine AS development
 
 WORKDIR /alberto/backend/src/app
 
@@ -17,7 +17,7 @@ RUN npm run build
 
 EXPOSE 3335
 
-FROM node:18.12.0 AS production
+FROM node:20-alpine AS production
 
 WORKDIR /alberto/backend/src/app
 
