@@ -96,6 +96,41 @@ export function app(): express.Express {
     req.pipe(proxyReq, { end: true });
   });
 
+  // Proxy pet images from backend
+  server.use('/api/pets/files', (req, res, next) => {
+    const http = require('http');
+    const url = require('url');
+    
+    const parsedUrl = url.parse(req.url);
+    
+    // Configuración del backend según el entorno
+    const backendHost = process.env['BACKEND_HOST'] || 'peludosclickbackend';
+    const backendPort = process.env['BACKEND_PORT'] || '3335';
+    
+    const options = {
+      hostname: backendHost,
+      port: backendPort,
+      path: `/pets/files${parsedUrl.path}`,
+      method: req.method,
+      headers: {
+        ...req.headers,
+        host: `${backendHost}:${backendPort}`
+      }
+    };
+
+    const proxyReq = http.request(options, (proxyRes: any) => {
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res, { end: true });
+    });
+
+    proxyReq.on('error', (err: any) => {
+      console.error('Pet images proxy error:', err);
+      res.status(404).send('Image not found');
+    });
+
+    req.pipe(proxyReq, { end: true });
+  });
+
   // Proxy images from backend
   server.use('/images/partners', (req, res, next) => {
     const http = require('http');
@@ -130,6 +165,8 @@ export function app(): express.Express {
 
     req.pipe(proxyReq, { end: true });
   });
+
+
 
   // Serve static files from /browser
   server.get('*.*', express.static(distFolder, {
@@ -177,14 +214,19 @@ export function app(): express.Express {
   }
 
   // Function to update meta tags in HTML
-  function updateMetaTags(html: string, pet: any, medalString: string, isPublicPage: boolean = true): string {
+  function updateMetaTags(html: string, pet: any, medalString: string, isPublicPage: boolean = true, userAgent: string = ''): string {
     const metaBaseUrl = 'https://peludosclick.com';
     const apiBaseUrl = 'https://api.peludosclick.com';
     
-    // Construct absolute URLs
+    // Construct absolute URLs - always use social images for better compatibility
+    const isWhatsApp = userAgent.includes('WhatsApp') || userAgent.includes('whatsapp') || userAgent.includes('WhatsAppWeb');
+    // More aggressive cache busting for WhatsApp
+    const timestamp = isWhatsApp ? `?v=${Date.now()}&cb=${Math.random().toString(36).substr(2, 9)}` : '';
+    
+    // Use WhatsApp-specific endpoint with unique URL per pet
     const petImageUrl = pet.image ? 
-      `${apiBaseUrl}/pets/files/${pet.image}` : 
-      `${metaBaseUrl}/assets/default-pet-social.jpg`;
+      `${apiBaseUrl}/pets/files/${pet.image}/whatsapp?pet=${medalString}${timestamp}` : 
+      `${metaBaseUrl}/assets/default-pet-social.jpg${timestamp}`;
     
     const description = pet.description || 'Conoce más sobre esta mascota en PeludosClick';
     const title = `${pet.petName} - PeludosClick`;
@@ -221,6 +263,10 @@ export function app(): express.Express {
     
     <!-- WhatsApp specific -->
     <meta property="og:image:secure_url" content="${petImageUrl}">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="PeludosClick">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     `;
 
     // Replace the comment with actual meta tags
@@ -274,6 +320,10 @@ export function app(): express.Express {
     
     <!-- WhatsApp specific -->
     <meta property="og:image:secure_url" content="${defaultImage}">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="PeludosClick">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     `;
 
     // Replace the comment with default meta tags
@@ -291,9 +341,35 @@ export function app(): express.Express {
     return updatedHtml;
   }
 
+  // WhatsApp cache clearing endpoint
+  server.get('/whatsapp-cache-clear', (req, res) => {
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Content-Type': 'text/plain'
+    });
+    res.send('Cache cleared');
+  });
+
   // All regular routes use the Angular engine
   server.get('*', async (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
+
+    // Add cache control headers for social media crawlers
+    const userAgent = headers['user-agent'] || '';
+    const isSocialMediaBot = userAgent.includes('facebookexternalhit') || 
+                            userAgent.includes('WhatsApp') || 
+                            userAgent.includes('Twitterbot') || 
+                            userAgent.includes('LinkedInBot');
+
+    if (isSocialMediaBot) {
+      res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
+    }
 
     // Check if this is a pet page
     const petMatch = originalUrl.match(/\/mascota(?:-publica)?\/([^\/\?]+)/);
@@ -319,7 +395,7 @@ export function app(): express.Express {
         });
 
         // Update meta tags with pet data
-        const updatedHtml = updateMetaTags(html, pet, medalString, isPublicPage);
+        const updatedHtml = updateMetaTags(html, pet, medalString, isPublicPage, userAgent);
         
         res.send(updatedHtml);
       } catch (error) {

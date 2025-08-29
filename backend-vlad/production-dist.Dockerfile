@@ -3,14 +3,14 @@ FROM node:20-alpine AS production
 
 WORKDIR /alberto/backend/src/app
 
-# Install PostgreSQL client and OpenSSL
-RUN apk add --no-cache postgresql-client openssl
+# Install PostgreSQL client, OpenSSL, and build dependencies for sharp
+RUN apk add --no-cache postgresql-client openssl build-base python3
 
 # Copy package files
 COPY package*.json ./
 
-# Install only production dependencies
-RUN npm ci --only=production
+# Install dependencies including sharp
+RUN npm ci
 
 # Copy the dist folder (will be uploaded via rsync)
 COPY dist ./dist

@@ -43,7 +43,7 @@ echo -e "${GREEN}✅ Carpeta dist subida exitosamente${NC}"
 
 # Ejecutar el deploy en el servidor (reconstruir y levantar el contenedor backend)
 echo -e "${YELLOW}🔄 Ejecutando deploy en el servidor...${NC}"
-ssh $SERVER_USER@$SERVER_IP "cd $DOCKER_COMPOSE_PATH && docker-compose -f $DOCKER_COMPOSE_FILE up -d --build $BACKEND_SERVICE"
+ssh $SERVER_USER@$SERVER_IP "cd $DOCKER_COMPOSE_PATH && docker-compose -f $DOCKER_COMPOSE_FILE build --no-cache $BACKEND_SERVICE && docker-compose -f $DOCKER_COMPOSE_FILE up -d $BACKEND_SERVICE"
 
 echo -e "${GREEN}✅ Deploy completado exitosamente${NC}"
 

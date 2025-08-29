@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Logger, NotFoundException, Param, Post, Put, Response, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Logger, NotFoundException, Param, Post, Put, Query, Response, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { PetsServicie } from "./pets.service";
 import { GetCurrentUser, Public } from "src/common/decorators";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -60,6 +60,25 @@ export class PetsController {
         @Response() res
     ) {
         return this.petService.getFileByFileName(fileName, res)
+    }
+
+    @Get('files/:fileName/social')
+    @Public()
+    getSocialFile(
+        @Param('fileName') fileName: string,
+        @Response() res
+    ) {
+        return this.petService.getSocialFileByFileName(fileName, res)
+    }
+
+    @Get('files/:fileName/whatsapp')
+    @Public()
+    getWhatsAppFile(
+        @Param('fileName') fileName: string,
+        @Query('pet') petId: string,
+        @Response() res
+    ) {
+        return this.petService.getWhatsAppFileByFileName(fileName, petId, res)
     }
 
     @Put('update-medal')

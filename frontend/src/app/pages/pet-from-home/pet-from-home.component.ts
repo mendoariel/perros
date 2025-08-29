@@ -15,6 +15,7 @@ import { PetsService } from 'src/app/services/pets.services';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 
+
 // Default social sharing image if pet image is not available
 const DEFAULT_SOCIAL_IMAGE = 'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
 
@@ -55,6 +56,7 @@ export class PetFromHomeComponent implements OnDestroy {
     private petsServices: PetsService,
     private authService: AuthService,
     private navigationService: NavigationService,
+
     private cdr: ChangeDetectorRef
   ) {
     afterRender(() => {
