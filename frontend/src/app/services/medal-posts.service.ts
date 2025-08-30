@@ -49,12 +49,126 @@ export class MedalPostsService {
 
   // Obtener publicaciones activas (público)
   getActivePosts(): Observable<MedalPost[]> {
-    return this.http.get<MedalPost[]>(`${this.getApiUrl()}medal-posts/public`);
+    // Datos de ejemplo mientras no tenemos la base de datos
+    const examplePosts: MedalPost[] = [
+      {
+        id: 1,
+        title: "Nueva Medalla Dorada",
+        description: "Descubre nuestra nueva medalla en color dorado, perfecta para mascotas elegantes.",
+        image: "/images/medal-posts/medal-gold.jpg",
+        isActive: true,
+        order: 1,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: 2,
+        title: "Medalla Resistente al Agua",
+        description: "Nuestra medalla está diseñada para resistir el agua y las condiciones climáticas más extremas.",
+        image: "/images/medal-posts/medal-waterproof.jpg",
+        isActive: true,
+        order: 2,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    ];
+    
+    return new Observable(observer => {
+      setTimeout(() => {
+        observer.next(examplePosts);
+        observer.complete();
+      }, 500);
+    });
+    
+    // return this.http.get<MedalPost[]>(`${this.getApiUrl()}medal-posts/public`);
   }
 
   // Obtener frentes de medallas (colores disponibles)
   getMedalFronts(): Observable<MedalFront[]> {
-    return this.http.get<MedalFront[]>(`${this.getApiUrl()}medal-posts/public/medal-fronts`);
+    // Datos de ejemplo mientras no tenemos la base de datos
+    const exampleFronts: MedalFront[] = [
+      {
+        id: "1",
+        name: "Dorado Clásico",
+        description: "Medalla en color dorado clásico, elegante y resistente",
+        type: "classic",
+        size: 25,
+        width: 25,
+        height: 25,
+        backgroundColor: "#FFD700",
+        logoColor: "#006455",
+        logoSize: 15,
+        logoX: 12.5,
+        logoY: 12.5,
+        borderRadius: 12.5,
+        useBackgroundImage: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: "2",
+        name: "Plata Moderna",
+        description: "Medalla en color plata, moderna y sofisticada",
+        type: "modern",
+        size: 25,
+        width: 25,
+        height: 25,
+        backgroundColor: "#C0C0C0",
+        logoColor: "#006455",
+        logoSize: 15,
+        logoX: 12.5,
+        logoY: 12.5,
+        borderRadius: 12.5,
+        useBackgroundImage: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: "3",
+        name: "Negro Elegante",
+        description: "Medalla en color negro, elegante y discreta",
+        type: "elegant",
+        size: 25,
+        width: 25,
+        height: 25,
+        backgroundColor: "#2C2C2C",
+        logoColor: "#FFD700",
+        logoSize: 15,
+        logoX: 12.5,
+        logoY: 12.5,
+        borderRadius: 12.5,
+        useBackgroundImage: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: "4",
+        name: "Azul Marino",
+        description: "Medalla en color azul marino, profesional y confiable",
+        type: "professional",
+        size: 25,
+        width: 25,
+        height: 25,
+        backgroundColor: "#1E3A8A",
+        logoColor: "#FFFFFF",
+        logoSize: 15,
+        logoX: 12.5,
+        logoY: 12.5,
+        borderRadius: 12.5,
+        useBackgroundImage: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    ];
+    
+    return new Observable(observer => {
+      setTimeout(() => {
+        observer.next(exampleFronts);
+        observer.complete();
+      }, 300);
+    });
+    
+    // return this.http.get<MedalFront[]>(`${this.getApiUrl()}medal-posts/public/medal-fronts`);
   }
 
   // Obtener todas las publicaciones (admin)
