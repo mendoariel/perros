@@ -75,7 +75,7 @@ export class MyPetComponent implements OnInit, OnDestroy {
         this.myPet = myPet;
         this.myPet.wame = `https://wa.me/${this.myPet.phone}/?text=Estoy con tu mascota ${this.myPet.petName}`;
         this.myPet.tel = `tel: ${this.myPet.phone}`;
-        this.myPet.background = myPet.image ? `url(${environment.perrosQrApi}pets/files/${myPet.image})` : 'url(assets/main/default-pet-social.jpg)';
+        this.myPet.background = myPet.image ? `url(${environment.perrosQrApi}pets/files/${myPet.image})` : 'url(assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg)';
         
       },
       error: (error: any) => {

@@ -75,7 +75,7 @@ export function app(): express.Express {
     const options = {
       hostname: backendHost,
       port: backendPort,
-      path: `/pets/files${parsedUrl.path}`,
+      path: `/api/pets/files${parsedUrl.path}`,
       method: req.method,
       headers: {
         ...req.headers,
@@ -216,7 +216,6 @@ export function app(): express.Express {
   // Function to update meta tags in HTML
   function updateMetaTags(html: string, pet: any, medalString: string, isPublicPage: boolean = true, userAgent: string = ''): string {
     const metaBaseUrl = 'https://peludosclick.com';
-    const apiBaseUrl = 'https://api.peludosclick.com';
     
     // Construct absolute URLs - always use social images for better compatibility
     const isWhatsApp = userAgent.includes('WhatsApp') || userAgent.includes('whatsapp') || userAgent.includes('WhatsAppWeb');
@@ -225,8 +224,8 @@ export function app(): express.Express {
     
     // Use WhatsApp-specific endpoint with unique URL per pet
     const petImageUrl = pet.image ? 
-      `${apiBaseUrl}/pets/files/${pet.image}/whatsapp?pet=${medalString}${timestamp}` : 
-      `${metaBaseUrl}/assets/default-pet-social.jpg${timestamp}`;
+      `${metaBaseUrl}/pets/files/${pet.image}/whatsapp?pet=${medalString}${timestamp}` : 
+      `${metaBaseUrl}/assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg${timestamp}`;
     
     const description = pet.description || 'Conoce más sobre esta mascota en PeludosClick';
     const title = `${pet.petName} - PeludosClick`;

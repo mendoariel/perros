@@ -72,7 +72,7 @@ export class PetsComponent implements OnDestroy {
       }),
               map(pets => pets.map(pet => ({
           ...pet,
-          background: pet.image ? (environment.production ? `/pets/files/${pet.image}` : `${environment.perrosQrApi}pets/files/${pet.image}`) : 'assets/main/default-pet-social.jpg',
+          background: pet.image ? (environment.production ? `/pets/files/${pet.image}` : `${environment.perrosQrApi}pets/files/${pet.image}`) : 'assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg',
           link: `mascota/${pet.medalString}`
         }))),
       catchError(error => {
@@ -101,6 +101,6 @@ export class PetsComponent implements OnDestroy {
 
   onImageError(event: any) {
     // Si la imagen falla, usar una imagen por defecto
-    event.target.src = 'assets/main/default-pet-social.jpg';
+    event.target.src = 'assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg';
   }
 }

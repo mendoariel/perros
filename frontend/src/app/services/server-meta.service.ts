@@ -22,7 +22,7 @@ export class ServerMetaService {
     // Construct absolute URLs
     const petImageUrl = pet.image ? 
       `${this.apiBaseUrl}/pets/files/${pet.image}` : 
-      `${this.metaBaseUrl}/assets/default-pet-social.jpg`;
+      `${this.metaBaseUrl}/assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg`;
     
     const description = pet.description || 'Conoce más sobre esta mascota en PeludosClick';
     const title = `${pet.petName} - PeludosClick`;

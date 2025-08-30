@@ -68,7 +68,7 @@ export class PetComponent implements OnDestroy {
     // Construct absolute URLs
     const petImageUrl = this.pet.image ? 
       `pets/files/${this.pet.image}` : 
-      'assets/default-pet-social.jpg';
+      'assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg';
     
     const description = this.pet.description || 'Conoce más sobre esta mascota en PeludosClick';
     
@@ -98,7 +98,7 @@ export class PetComponent implements OnDestroy {
     };
     img.src = this.pet.image ? 
       `https://peludosclick.com/pets/files/${this.pet.image}` : 
-      'https://peludosclick.com/assets/default-pet-social.jpg';
+      'https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg';
   }
 
 
@@ -111,12 +111,12 @@ export class PetComponent implements OnDestroy {
         // Set the image URL directly
         this.petImageUrl = pet.image ? 
           `${environment.perrosQrApi}pets/files/${pet.image}` : 
-          '/assets/default-pet-social.jpg';
+          '/assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg';
         
         // Set absolute URL for social sharing
         this.shareImageUrl = pet.image ? 
           `https://api.peludosclick.com/pets/files/${pet.image}` : 
-          'https://peludosclick.com/assets/default-pet-social.jpg';
+          'https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg';
         
         this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;
         this.pet.tel = `tel: ${this.pet.phone}`;
@@ -152,7 +152,7 @@ export class PetComponent implements OnDestroy {
 
   onImageError(event: any) {
     // Si la imagen falla, usar una imagen por defecto
-    event.target.src = '/assets/default-pet-social.jpg';
+    event.target.src = '/assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg';
   }
 
   handleError(error: any) {
