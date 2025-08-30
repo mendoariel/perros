@@ -84,7 +84,7 @@ export class PetFromHomeComponent implements OnDestroy {
     
     // Construct absolute URLs
     const petImageUrl = this.isImageLoaded ? 
-      (this.pet.image ? `pets/files/${this.pet.image}` : 'assets/default-pet-social.jpg') : 
+      (this.pet.image ? `pets/files/${this.pet.image}` : 'assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg') : 
       'assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg';
     
     const description = this.pet.description || 'Conoce más sobre esta mascota en PeludosClick';
@@ -114,7 +114,7 @@ export class PetFromHomeComponent implements OnDestroy {
       this.metaDataSet = true;
     };
     img.src = this.isImageLoaded ? 
-      (this.pet.image ? `https://peludosclick.com/pets/files/${this.pet.image}` : 'https://peludosclick.com/assets/default-pet-social.jpg') : 
+      (this.pet.image ? `https://peludosclick.com/pets/files/${this.pet.image}` : 'https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg') : 
       `https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick-into-buenos-aires.jpeg`;
   }
 
@@ -149,12 +149,12 @@ export class PetFromHomeComponent implements OnDestroy {
         // Set the image URL directly
         this.petImageUrl = pet.image ? 
           `${environment.perrosQrApi}pets/files/${pet.image}` : 
-          '/assets/default-pet-social.jpg';
+          '/assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg';
         
         // Set absolute URL for social sharing
         this.shareImageUrl = pet.image ? 
           `https://api.peludosclick.com/pets/files/${pet.image}` : 
-          'https://peludosclick.com/assets/default-pet-social.jpg';
+          'https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg';
         
         this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;
         this.pet.tel = `tel: ${this.pet.phone}`;
@@ -191,7 +191,7 @@ export class PetFromHomeComponent implements OnDestroy {
 
   onImageError(event: any) {
     // Si la imagen falla, usar una imagen por defecto
-    event.target.src = '/assets/default-pet-social.jpg';
+    event.target.src = '/assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg';
   }
 
   handleError(error: any) {

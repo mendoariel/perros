@@ -186,10 +186,10 @@
         <!-- Imagen de portada -->
         <div class="relative mb-6 -mx-6 -mt-6 h-32 bg-gradient-to-r from-blue-100 to-green-100 rounded-t-3xl overflow-hidden">
           <img 
-            [src]="getImageUrl(partner.coverImage) || getImageUrl('/images/partners/cover_21959b110c74f81910da2d237c2b8d99a6.jpg')"
+            [src]="getImageUrl(partner.coverImage) || 'assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg'"
             [alt]="'Portada de ' + partner.name"
             class="w-full h-full object-cover"
-            (error)="onImageError($event, getImageUrl('/images/partners/cover_21959b110c74f81910da2d237c2b8d99a6.jpg'))">
+            (error)="onImageError($event, 'assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg')">
           <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
         </div>
         
@@ -199,10 +199,10 @@
           <div class="relative mr-3">
             <div class="w-12 h-12 rounded-xl overflow-hidden shadow-lg border-2 border-white">
               <img 
-                [src]="getImageUrl(partner.profileImage) || getImageUrl('/images/partners/profile_bd776d119f9de4fa98a10c39c4acd9d4e.jpg')"
+                [src]="getImageUrl(partner.profileImage) || 'assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg'"
                 [alt]="'Perfil de ' + partner.name"
                 class="w-full h-full object-cover"
-                (error)="onImageError($event, getImageUrl('/images/partners/profile_bd776d119f9de4fa98a10c39c4acd9d4e.jpg'))">
+                (error)="onImageError($event, 'assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg')">
             </div>
             <!-- Badge de tipo en la esquina -->
             <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-[#006455] rounded-full flex items-center justify-center shadow-lg">

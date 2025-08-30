@@ -30,7 +30,7 @@ export class PartnersService {
   }
 
   async findAllPartners() {
-    return this.prisma.partner.findMany({
+    const partners = await this.prisma.partner.findMany({
       include: {
         articles: true,
         services: true,
@@ -48,6 +48,23 @@ export class PartnersService {
         },
       },
     });
+
+    // Transform snake_case to camelCase for image fields
+    return partners.map(partner => ({
+      ...partner,
+      coverImage: partner.cover_image,
+      profileImage: partner.profile_image,
+      escaparateImage: partner.escaparate_image,
+      gallery: partner.partner_images?.map(img => ({
+        id: img.id,
+        imageUrl: img.image_url,
+        altText: img.alt_text,
+        order: img.order,
+        partnerId: img.partner_id,
+        createdAt: img.created_at,
+        updatedAt: img.updated_at
+      })) || []
+    }));
   }
 
   async findPartnerById(id: number) {
@@ -67,11 +84,26 @@ export class PartnersService {
       throw new NotFoundException(`Partner with ID ${id} not found`);
     }
 
-    return partner;
+    // Transform snake_case to camelCase for image fields
+    return {
+      ...partner,
+      coverImage: partner.cover_image,
+      profileImage: partner.profile_image,
+      escaparateImage: partner.escaparate_image,
+      gallery: partner.partner_images?.map(img => ({
+        id: img.id,
+        imageUrl: img.image_url,
+        altText: img.alt_text,
+        order: img.order,
+        partnerId: img.partner_id,
+        createdAt: img.created_at,
+        updatedAt: img.updated_at
+      })) || []
+    };
   }
 
   async findPartnersByType(partnerType: PartnerType) {
-    return this.prisma.partner.findMany({
+    const partners = await this.prisma.partner.findMany({
       where: { partnerType },
       include: {
         articles: true,
@@ -82,12 +114,29 @@ export class PartnersService {
         partner_images: true,
       },
     });
+
+    // Transform snake_case to camelCase for image fields
+    return partners.map(partner => ({
+      ...partner,
+      coverImage: partner.cover_image,
+      profileImage: partner.profile_image,
+      escaparateImage: partner.escaparate_image,
+      gallery: partner.partner_images?.map(img => ({
+        id: img.id,
+        imageUrl: img.image_url,
+        altText: img.alt_text,
+        order: img.order,
+        partnerId: img.partner_id,
+        createdAt: img.created_at,
+        updatedAt: img.updated_at
+      })) || []
+    }));
   }
 
   async updatePartner(id: number, updatePartnerDto: UpdatePartnerDto) {
     await this.findPartnerById(id);
 
-    return this.prisma.partner.update({
+    const partner = await this.prisma.partner.update({
       where: { id },
       data: updatePartnerDto,
       include: {
@@ -99,12 +148,29 @@ export class PartnersService {
         partner_images: true,
       },
     });
+
+    // Transform snake_case to camelCase for image fields
+    return {
+      ...partner,
+      coverImage: partner.cover_image,
+      profileImage: partner.profile_image,
+      escaparateImage: partner.escaparate_image,
+      gallery: partner.partner_images?.map(img => ({
+        id: img.id,
+        imageUrl: img.image_url,
+        altText: img.alt_text,
+        order: img.order,
+        partnerId: img.partner_id,
+        createdAt: img.created_at,
+        updatedAt: img.updated_at
+      })) || []
+    };
   }
 
   async updatePartnerStatus(id: number, status: PartnerStatus) {
     await this.findPartnerById(id);
 
-    return this.prisma.partner.update({
+    const partner = await this.prisma.partner.update({
       where: { id },
       data: { status },
       include: {
@@ -116,6 +182,23 @@ export class PartnersService {
         partner_images: true,
       },
     });
+
+    // Transform snake_case to camelCase for image fields
+    return {
+      ...partner,
+      coverImage: partner.cover_image,
+      profileImage: partner.profile_image,
+      escaparateImage: partner.escaparate_image,
+      gallery: partner.partner_images?.map(img => ({
+        id: img.id,
+        imageUrl: img.image_url,
+        altText: img.alt_text,
+        order: img.order,
+        partnerId: img.partner_id,
+        createdAt: img.created_at,
+        updatedAt: img.updated_at
+      })) || []
+    };
   }
 
   async deletePartner(id: number) {
@@ -409,7 +492,7 @@ export class PartnersService {
 
   // Search and filtering
   async searchPartners(query: string) {
-    return this.prisma.partner.findMany({
+    const partners = await this.prisma.partner.findMany({
       where: {
         OR: [
           { name: { contains: query, mode: 'insensitive' } },
@@ -424,8 +507,26 @@ export class PartnersService {
         offers: true,
         comments: true,
         catalog: true,
+        partner_images: true,
       },
     });
+
+    // Transform snake_case to camelCase for image fields
+    return partners.map(partner => ({
+      ...partner,
+      coverImage: partner.cover_image,
+      profileImage: partner.profile_image,
+      escaparateImage: partner.escaparate_image,
+      gallery: partner.partner_images?.map(img => ({
+        id: img.id,
+        imageUrl: img.image_url,
+        altText: img.alt_text,
+        order: img.order,
+        partnerId: img.partner_id,
+        createdAt: img.created_at,
+        updatedAt: img.updated_at
+      })) || []
+    }));
   }
 
   async getPartnerStats(partnerId: number) {
