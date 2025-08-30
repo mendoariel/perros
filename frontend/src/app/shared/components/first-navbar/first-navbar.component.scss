@@ -391,3 +391,62 @@ a:focus {
     transform: translateY(0) scale(1);
   }
 }
+
+// Chapitas Button Styles
+.chapitas-button {
+  margin-right: 1rem;
+}
+
+.chapitas-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #FFD700 0%, #FFE55C 100%);
+  color: #006455;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+  
+  &:hover {
+    background: linear-gradient(135deg, #FFE55C 0%, #FFD700 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.chapitas-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.chapitas-text {
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+// Responsive adjustments for Chapitas button
+@media (max-width: 768px) {
+  .chapitas-text {
+    display: none;
+  }
+  
+  .chapitas-btn {
+    padding: 0.75rem;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .chapitas-btn {
+    padding: 0.5rem 0.75rem;
+  }
+}

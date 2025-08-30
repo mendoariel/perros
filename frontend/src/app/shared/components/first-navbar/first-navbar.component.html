@@ -32,6 +32,17 @@
       <!-- Navigation Section -->
       <div class="nav-section">
         
+        <!-- Chapitas Button - Always Visible -->
+        <div class="chapitas-button">
+          <button 
+            (click)="goTo('chapitas')" 
+            class="chapitas-btn"
+          >
+            <span class="chapitas-icon">🏆</span>
+            <span class="chapitas-text">Chapitas</span>
+          </button>
+        </div>
+        
         <!-- Unauthenticated State -->
         <div *ngIf="!authenticated" class="auth-buttons">
           <button 

@@ -9,6 +9,7 @@ import { QrCheckingModule } from './qr-checking/qr-checking.module';
 import { PetsModule } from './pets/pets.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { PartnersModule } from './partners/partners.module';
+import { MedalPostsModule } from './medal-posts/medal-posts.module';
 
 import { MulterModule } from '@nestjs/platform-express';
 import { FILE_UPLOAD_DIR } from './constans';
@@ -28,6 +29,7 @@ import { AppService } from './app.service';
     PetsModule,
     DashboardModule,
     PartnersModule,
+    MedalPostsModule,
     PrismaModule, 
     MailModule,
     ConfigModule.forRoot({

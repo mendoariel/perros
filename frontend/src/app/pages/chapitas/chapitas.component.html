@@ -1,0 +1,163 @@
+<main class="min-h-screen">
+  <!-- Hero Section -->
+  <section class="hero-section bg-gradient-to-br from-[#FFD700] via-[#FFE55C] to-[#FFF8DC] py-20">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-[#006455] mb-6 leading-tight">
+          🏆 Nuestras Chapitas
+        </h1>
+        <p class="text-xl text-[#36454F] mb-8 leading-relaxed max-w-3xl mx-auto">
+          Descubre la medalla PeludosClick: resistente, elegante y con tecnología QR para proteger a tu mascota
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex justify-center items-center py-16">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#006455]"></div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="text-center py-16">
+    <div class="text-red-500 text-6xl mb-4">
+      <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+      </svg>
+    </div>
+    <p class="text-red-600 text-lg mb-4">{{ error }}</p>
+    <button 
+      (click)="retry()"
+      class="bg-[#006455] hover:bg-[#005544] text-white px-6 py-2 rounded-lg font-medium transition-colors">
+      Reintentar
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && !error">
+    <!-- Publicaciones Dinámicas -->
+    <section *ngIf="posts.length > 0" class="py-16 bg-white">
+      <div class="max-w-6xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-[#006455] mb-8 text-center">
+          Últimas Novedades
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div 
+            *ngFor="let post of posts" 
+            class="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border-0 overflow-hidden">
+            
+            <!-- Imagen de la publicación -->
+            <div *ngIf="post.image" class="relative mb-6 -mx-6 -mt-6 h-48 bg-gradient-to-r from-blue-100 to-green-100 rounded-t-2xl overflow-hidden">
+              <img 
+                [src]="getImageUrl(post.image)"
+                [alt]="post.title"
+                class="w-full h-full object-cover"
+                (error)="onImageError($event, 'assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg')">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
+            
+            <!-- Contenido -->
+            <div class="relative z-10">
+              <h3 class="text-xl font-bold text-[#006455] mb-3">{{ post.title }}</h3>
+              <p *ngIf="post.description" class="text-[#36454F] mb-4 leading-relaxed">
+                {{ post.description }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Galería de Colores -->
+    <section *ngIf="medalFronts.length > 0" class="py-16 bg-gradient-to-br from-[#E8F5E8] via-[#F0F8F0] to-[#E0F0E0]">
+      <div class="max-w-6xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-[#006455] mb-8 text-center">
+          Colores Disponibles
+        </h2>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div 
+            *ngFor="let front of medalFronts" 
+            class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center">
+            
+            <!-- Preview de la medalla -->
+            <div class="w-24 h-24 mx-auto mb-4 rounded-full shadow-lg border-4 border-white"
+                 [style.background-color]="front.backgroundColor">
+              <div class="w-full h-full rounded-full flex items-center justify-center"
+                   [style.background-color]="front.logoColor">
+                <span class="text-white font-bold text-lg">PC</span>
+              </div>
+            </div>
+            
+            <h3 class="text-lg font-semibold text-[#006455] mb-2">{{ front.name }}</h3>
+            <p *ngIf="front.description" class="text-sm text-[#36454F]">{{ front.description }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Características de la Medalla -->
+    <section class="py-16 bg-gradient-to-br from-[#FFF8DC] via-[#FDF5E6] to-[#FAF0E6]">
+      <div class="max-w-6xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-[#006455] mb-12 text-center">
+          ¿Por qué elegir nuestra medalla?
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Resistente -->
+          <div class="bg-white rounded-2xl p-8 shadow-lg text-center">
+            <div class="w-16 h-16 bg-gradient-to-br from-[#006455]/20 to-[#006455]/30 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-[#006455]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-[#006455] mb-4">Resistente</h3>
+            <p class="text-[#36454F] leading-relaxed">Material duradero que resiste el agua, el sol y el uso diario de tu mascota.</p>
+          </div>
+
+          <!-- Tecnología QR -->
+          <div class="bg-white rounded-2xl p-8 shadow-lg text-center">
+            <div class="w-16 h-16 bg-gradient-to-br from-[#FFD700]/20 to-[#FFD700]/30 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-[#FFD700]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-[#006455] mb-4">Tecnología QR</h3>
+            <p class="text-[#36454F] leading-relaxed">Código QR único que conecta directamente con tu información de contacto.</p>
+          </div>
+
+          <!-- Fácil de usar -->
+          <div class="bg-white rounded-2xl p-8 shadow-lg text-center">
+            <div class="w-16 h-16 bg-gradient-to-br from-[#006455]/20 to-[#006455]/30 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-[#006455]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-[#006455] mb-4">Fácil de usar</h3>
+            <p class="text-[#36454F] leading-relaxed">Cualquier persona puede escanear el QR y contactarte inmediatamente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section class="py-16 bg-gradient-to-r from-[#006455] to-[#FFD700]">
+      <div class="max-w-4xl mx-auto px-4 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+          ¡Protege a tu mascota hoy!
+        </h2>
+        <p class="text-xl text-white/90 mb-8 leading-relaxed">
+          Encuentra tu punto de venta más cercano y obtén tu medalla PeludosClick
+        </p>
+        <button 
+          class="bg-white hover:bg-gray-100 text-[#006455] font-semibold px-8 py-4 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+          Encontrar Punto de Venta
+        </button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- Footer -->
+<app-footer></app-footer>

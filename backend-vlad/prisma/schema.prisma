@@ -186,6 +186,19 @@ model MedalFront {
   @@map("medal_fronts")
 }
 
+model MedalPost {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  image       String?
+  isActive    Boolean  @default(true) @map("is_active")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  @@map("medal_posts")
+}
+
 model partner_images {
   id         Int      @id @default(autoincrement())
   image_url  String

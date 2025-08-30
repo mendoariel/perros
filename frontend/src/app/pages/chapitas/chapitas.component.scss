@@ -1,0 +1,34 @@
+// Estilos específicos para la página de Chapitas
+.hero-section {
+  background: linear-gradient(135deg, #FFD700 0%, #FFE55C 50%, #FFF8DC 100%);
+}
+
+// Animaciones suaves para las tarjetas
+.card-hover {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Estilos para la galería de colores
+.medal-preview {
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 3rem 1rem;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+  }
+}

@@ -24,6 +24,7 @@ import { TermsOfServiceComponent } from "../pages/terms-of-service/terms-of-serv
 import { TokenTestComponent } from "../pages/token-test/token-test.component";
 import { MedalAdministrationComponent } from "../pages/medal-administration/medal-administration.component";
 import { AdminResetComponent } from "../pages/admin-reset/admin-reset.component";
+import { ChapitasComponent } from "../pages/chapitas/chapitas.component";
 
 export const routes: Route[] = [
     {
@@ -95,6 +96,10 @@ export const routes: Route[] = [
     {
         path: 'partner-create',
         component: PartnerCreateComponent
+    },
+    {
+        path: 'chapitas',
+        component: ChapitasComponent
     },
     {
         path: 'login',

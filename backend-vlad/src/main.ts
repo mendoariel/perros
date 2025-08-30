@@ -20,6 +20,7 @@ async function bootstrap() {
   app.use('/pets/files', express.static(join(process.cwd(), 'public', 'files')));
   app.use('/images/partners', express.static(join(process.cwd(), 'public', 'images', 'partners')));
   app.use('/images/partners/gallery', express.static(join(process.cwd(), 'public', 'images', 'partners', 'gallery')));
+  app.use('/images/medal-posts', express.static(join(process.cwd(), 'public', 'images', 'medal-posts')));
   
   // Set global prefix for all routes (AFTER static files)
   app.setGlobalPrefix('api');
