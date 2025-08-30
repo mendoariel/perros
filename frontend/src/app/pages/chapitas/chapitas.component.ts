@@ -27,6 +27,7 @@ export class ChapitasComponent implements OnInit, OnDestroy {
   medalFronts: MedalFront[] = [];
   loading = true;
   error: string | null = null;
+  selectedMedal: MedalFront | null = null;
 
   ngOnInit() {
     this.loadData();
@@ -105,5 +106,18 @@ export class ChapitasComponent implements OnInit, OnDestroy {
 
   retry() {
     this.loadData();
+  }
+
+  selectMedal(medal: MedalFront) {
+    this.selectedMedal = medal;
+  }
+
+  confirmSelection() {
+    if (this.selectedMedal) {
+      // Aquí puedes agregar la lógica para confirmar la selección
+      console.log('Medalla seleccionada:', this.selectedMedal);
+      // Por ejemplo, navegar a otra página o enviar la selección
+      alert(`Has seleccionado: ${this.selectedMedal.name}`);
+    }
   }
 }

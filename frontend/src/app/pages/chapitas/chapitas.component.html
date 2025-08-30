@@ -72,27 +72,80 @@
     <!-- Galería de Colores -->
     <section *ngIf="medalFronts.length > 0" class="py-16 bg-gradient-to-br from-[#E8F5E8] via-[#F0F8F0] to-[#E0F0E0]">
       <div class="max-w-6xl mx-auto px-4">
-        <h2 class="text-3xl font-bold text-[#006455] mb-8 text-center">
-          Colores Disponibles
+        <h2 class="text-3xl font-bold text-[#006455] mb-4 text-center">
+          Selecciona tu Medalla
         </h2>
+        <p class="text-center text-[#36454F] mb-8">
+          👆 Toca la medalla que más te guste para seleccionarla
+        </p>
         
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <div 
             *ngFor="let front of medalFronts" 
-            class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center">
+            (click)="selectMedal(front)"
+            class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center cursor-pointer transform hover:scale-105"
+            [class.ring-4]="selectedMedal?.id === front.id"
+            [class.ring-[#FFD700]]="selectedMedal?.id === front.id"
+            [class.ring-offset-2]="selectedMedal?.id === front.id">
             
             <!-- Preview de la medalla -->
-            <div class="w-24 h-24 mx-auto mb-4 rounded-full shadow-lg border-4 border-white"
+            <div class="w-24 h-24 mx-auto mb-4 rounded-full shadow-lg border-4 border-white relative"
                  [style.background-color]="front.backgroundColor">
               <div class="w-full h-full rounded-full flex items-center justify-center"
                    [style.background-color]="front.logoColor">
                 <span class="text-white font-bold text-lg">PC</span>
               </div>
+              
+              <!-- Indicador de selección -->
+              <div *ngIf="selectedMedal?.id === front.id" 
+                   class="absolute -top-2 -right-2 w-8 h-8 bg-[#FFD700] rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-[#006455]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
             </div>
             
             <h3 class="text-lg font-semibold text-[#006455] mb-2">{{ front.name }}</h3>
-            <p *ngIf="front.description" class="text-sm text-[#36454F]">{{ front.description }}</p>
+            <p *ngIf="front.description" class="text-sm text-[#36454F] mb-4">{{ front.description }}</p>
+            
+            <!-- Botón de selección -->
+            <button 
+              class="w-full bg-[#006455] hover:bg-[#005544] text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              [class.bg-[#FFD700]]="selectedMedal?.id === front.id"
+              [class.text-[#006455]]="selectedMedal?.id === front.id"
+              [class.hover:bg-[#FFE55C]]="selectedMedal?.id === front.id">
+              {{ selectedMedal?.id === front.id ? '✓ Seleccionada' : 'Seleccionar' }}
+            </button>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Confirmación de Selección -->
+    <section *ngIf="selectedMedal" class="py-16 bg-gradient-to-br from-[#FFF8DC] via-[#FDF5E6] to-[#FAF0E6]">
+      <div class="max-w-4xl mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold text-[#006455] mb-8">
+          ¡Perfecto! Has seleccionado:
+        </h2>
+        
+        <div class="bg-white rounded-2xl p-8 shadow-xl max-w-md mx-auto">
+          <!-- Preview de la medalla seleccionada -->
+          <div class="w-24 h-24 mx-auto mb-6 rounded-full shadow-lg border-4 border-white"
+               [style.background-color]="selectedMedal.backgroundColor">
+            <div class="w-full h-full rounded-full flex items-center justify-center"
+                 [style.background-color]="selectedMedal.logoColor">
+              <span class="text-white font-bold text-lg">PC</span>
+            </div>
+          </div>
+          
+          <h3 class="text-2xl font-bold text-[#006455] mb-4">{{ selectedMedal.name }}</h3>
+          <p *ngIf="selectedMedal.description" class="text-[#36454F] mb-6">{{ selectedMedal.description }}</p>
+          
+          <button 
+            (click)="confirmSelection()"
+            class="bg-[#FFD700] hover:bg-[#FFE55C] text-[#006455] font-semibold px-8 py-4 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            Confirmar Selección
+          </button>
         </div>
       </div>
     </section>

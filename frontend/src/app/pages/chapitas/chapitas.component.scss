@@ -22,6 +22,32 @@
   }
 }
 
+// Estilos para la selección de medallas
+.medal-selection {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.selected-medal {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+  }
+}
+
 // Responsive adjustments
 @media (max-width: 768px) {
   .hero-section {
@@ -30,5 +56,17 @@
   
   h1 {
     font-size: 2.5rem;
+  }
+  
+  .medal-preview {
+    width: 6rem;
+    height: 6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .medal-preview {
+    width: 5rem;
+    height: 5rem;
   }
 }
