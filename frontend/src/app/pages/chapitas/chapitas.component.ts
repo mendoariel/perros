@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Subscription, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { MedalPostsService, MedalPost, MedalFront } from '../../services/medal-posts.service';
+import { MedalPostsService, MedalPost } from '../../services/medal-posts.service';
+import { MedalFront } from '../../models/medal-front.model';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
+import { MedalPreviewComponent } from '../../shared/components/medal-preview/medal-preview.component';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -13,7 +15,8 @@ import { environment } from 'src/environments/environment';
   imports: [
     CommonModule,
     HttpClientModule,
-    FooterComponent
+    FooterComponent,
+    MedalPreviewComponent
   ],
   templateUrl: './chapitas.component.html',
   styleUrls: ['./chapitas.component.scss']

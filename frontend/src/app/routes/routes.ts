@@ -102,10 +102,6 @@ export const routes: Route[] = [
         component: ChapitasComponent
     },
     {
-        path: 'medallas-predefinidas',
-        component: MedallasPredefinidasComponent
-    },
-    {
         path: 'login',
         component: LoginComponent
     },
