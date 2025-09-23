@@ -6,7 +6,101 @@ Este documento identifica y documenta los flujos principales del sistema, sus pr
 
 ## 🚨 Problemas Críticos Identificados
 
-### 1. **AuthService.confirmAccount() - CRÍTICO**
+### 1. **PetsService.updateMedal() - CRÍTICO - SOLUCIONADO ✅**
+**Ubicación**: `backend-vlad/src/pets/pets.service.ts:182-225`
+
+**Problema**: 
+- Permitía habilitar medallas (ENABLED) para usuarios con estado PENDING
+- No validaba el estado del usuario antes de habilitar la medalla
+
+**Flujo problemático**:
+```typescript
+// 1. Actualizar usuario (solo phoneNumber)
+const user = await tx.user.update({
+    where: { email },
+    data: { phonenumber: medalUpdate.phoneNumber }
+});
+
+// 2. Actualizar medalla a ENABLED (sin verificar userStatus)
+const medal = await tx.medal.update({
+    where: { medalString: medalUpdate.medalString },
+    data: { status: MedalState.ENABLED }  // ⚠️ PROBLEMA
+});
+```
+
+**Riesgo**: Usuarios PENDING con medallas ENABLED (inconsistencia de datos).
+
+**Solución implementada**:
+```typescript
+// 1. Verificar que el usuario existe y está ACTIVE
+const user = await tx.user.findUnique({
+    where: { email },
+    include: { medals: true }
+});
+
+// 2. Validar estado del usuario
+if(user.userStatus !== UserStatus.ACTIVE) {
+    throw new BadRequestException('Usuario debe estar activo para habilitar la medalla');
+}
+```
+
+**Estado**: ✅ **SOLUCIONADO** - 2025-01-27
+
+---
+
+### 2. **QrService.processMedalReset() - CRÍTICO - SOLUCIONADO ✅**
+**Ubicación**: `backend-vlad/src/qr-checking/qr-checking.service.ts:470-557`
+
+**Problema**: 
+- Bug lógico en el orden de operaciones durante el reset de medalla
+- Se eliminaba la medalla ANTES de verificar si el usuario tenía otras medallas
+- Esto causaba que usuarios con una sola medalla nunca se eliminaran (usuarios huérfanos)
+
+**Flujo problemático**:
+```typescript
+// 1. Eliminar medalla PRIMERO
+await prisma.medal.delete({
+    where: { medalString }
+});
+
+// 2. Consultar medallas del usuario DESPUÉS
+const userMedals = await prisma.medal.findMany({
+    where: { ownerId: registeredMedal.ownerId }  // ⚠️ Ya no hay medallas
+});
+
+// 3. Verificar si era la única medalla
+if (userMedals.length === 1) {  // ⚠️ NUNCA será 1, será 0
+    await prisma.user.delete({...});  // ⚠️ NUNCA se ejecuta
+}
+```
+
+**Riesgo**: Usuarios huérfanos en la base de datos (sin medallas pero con cuenta activa).
+
+**Solución implementada**:
+```typescript
+// 1. Consultar medallas del usuario ANTES de eliminar
+const userMedals = await prisma.medal.findMany({
+    where: { ownerId: registeredMedal.ownerId }
+});
+
+// 2. Eliminar la medalla
+await prisma.medal.delete({
+    where: { medalString }
+});
+
+// 3. Si era la única medalla, eliminar el usuario
+if (userMedals.length === 1) {
+    await prisma.user.delete({
+        where: { id: registeredMedal.ownerId }
+    });
+}
+```
+
+**Estado**: ✅ **SOLUCIONADO** - 2025-01-27
+
+---
+
+### 3. **AuthService.confirmAccount() - CRÍTICO**
 **Ubicación**: `backend-vlad/src/auth/auth.service.ts:85-120`
 
 **Problema**: 

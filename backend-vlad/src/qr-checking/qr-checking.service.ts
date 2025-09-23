@@ -505,18 +505,19 @@ export class QrService {
           }
         });
 
-        // 2. Si existe una medalla registrada, eliminarla
+        // 2. Si existe una medalla registrada, verificar si eliminar usuario
         if (registeredMedal) {
-          await prisma.medal.delete({
-            where: { medalString }
-          });
-
-          // 3. Verificar si el usuario tiene otras medallas
+          // 3. Verificar si el usuario tiene otras medallas ANTES de eliminar
           const userMedals = await prisma.medal.findMany({
             where: { ownerId: registeredMedal.ownerId }
           });
 
-          // Si es la única medalla del usuario, eliminar el usuario
+          // 4. Eliminar la medalla
+          await prisma.medal.delete({
+            where: { medalString }
+          });
+
+          // 5. Si era la única medalla del usuario, eliminar el usuario
           if (userMedals.length === 1) {
             await prisma.user.delete({
               where: { id: registeredMedal.ownerId }
@@ -524,7 +525,7 @@ export class QrService {
           }
         }
 
-        // 4. Limpiar cache
+        // 6. Limpiar cache
         this.medalCache.delete(medalString);
         this.petCache.delete(medalString);
 

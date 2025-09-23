@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { Prisma, MedalState } from "@prisma/client";
+import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
+import { Prisma, MedalState, UserStatus } from "@prisma/client";
 import { Response } from "express";
 import { join } from "path";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -181,14 +181,25 @@ export class PetsServicie {
 
     async updateMedal(email: string, medalUpdate: UpdateMedalDto) {
         const result = await this.prisma.$transaction(async (tx) => {
+            // Verificar que el usuario existe y está ACTIVE antes de habilitar la medalla
+            const user = await tx.user.findUnique({
+                where: { email },
+                include: { medals: true }
+            });
+            if(!user) throw new NotFoundException('User not found');
+            
+            // Validar que el usuario esté ACTIVE para poder habilitar la medalla
+            if(user.userStatus !== UserStatus.ACTIVE) {
+                throw new BadRequestException('Usuario debe estar activo para habilitar la medalla');
+            }
+
             // Actualizar usuario
-            const user = await tx.user.update({
+            const updatedUser = await tx.user.update({
                 where: { email },
                 data: {
                     phonenumber: medalUpdate.phoneNumber
                 }
             });
-            if(!user) throw new NotFoundException('User not found');
 
             // Actualizar medalla
             const medal = await tx.medal.update({
@@ -210,7 +221,7 @@ export class PetsServicie {
                 }
             });
 
-            return { user, medal };
+            return { user: updatedUser, medal };
         });
 
         // Enviar email fuera de la transacción
