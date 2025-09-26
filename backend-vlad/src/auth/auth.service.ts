@@ -1,11 +1,11 @@
 import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { AuthDto } from './dto';
 import { Message, Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { PasswordRecoveryDto, NewPasswordDto, ConfirmAccountDto, ConfirmMedalto, AuthSignInDto } from './dto';
-import { MailService } from 'src/mail/mail.service';
-import { UtilService } from 'src/services/util.service';
+import { MailService } from '../mail/mail.service';
+import { UtilService } from '../services/util.service';
 import { Prisma, UserStatus, MedalState, Role } from '@prisma/client';
 
 var bcrypt = require('bcryptjs');
@@ -103,13 +103,25 @@ export class AuthService {
                 }
             });
 
-            // Actualizar medalla
+            // Obtener la medalla para verificar si está completa
+            const medal = await tx.medal.findUnique({
+                where: {
+                    medalString: dto.medalString
+                }
+            });
+
+            if (!medal) throw new NotFoundException('Medalla no encontrada');
+
+            // Verificar si la medalla está completa
+            const isComplete = this.isMedalComplete(medal);
+            
+            // Actualizar medalla según su estado de completitud
             await tx.medal.update({
                 where: {
                     medalString: dto.medalString
                 },
                 data: {
-                    status: MedalState.INCOMPLETE
+                    status: isComplete ? MedalState.ENABLED : MedalState.INCOMPLETE
                 }
             });
 
@@ -119,12 +131,12 @@ export class AuthService {
                     medalString: dto.medalString
                 },
                 data: {
-                    status: MedalState.REGISTERED
+                    status: isComplete ? MedalState.ENABLED : MedalState.REGISTERED
                 }
             });
 
             return {
-                message: "user registered, medal incomplete",
+                message: isComplete ? "user registered, medal enabled" : "user registered, medal incomplete",
                 code: 5001
             };
         });
@@ -296,5 +308,21 @@ export class AuthService {
         });
         if(!user) throw new ForbiddenException("Access Denied"); 
         return user.role === 'FRIAS_EDITOR' ? true : false;
+    }
+
+    /**
+     * Verifica si una medalla tiene todos los datos necesarios para estar completamente funcional
+     * @param medal - Objeto de medalla a verificar
+     * @returns true si la medalla está completa, false en caso contrario
+     */
+    private isMedalComplete(medal: any): boolean {
+        return !!(
+            medal.petName && 
+            medal.description && 
+            medal.medalString && 
+            medal.registerHash &&
+            medal.petName.trim() !== '' &&
+            medal.description.trim() !== ''
+        );
     }
 }
