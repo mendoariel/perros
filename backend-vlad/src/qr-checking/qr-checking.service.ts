@@ -500,8 +500,8 @@ export class QrService {
         await prisma.virginMedal.update({
           where: { medalString },
           data: { 
-            status: 'VIRGIN',
-            registerHash: 'genesis'
+            status: 'VIRGIN'
+            // Mantener el registerHash original, no cambiarlo a 'genesis'
           }
         });
 
