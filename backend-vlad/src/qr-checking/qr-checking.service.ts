@@ -494,7 +494,8 @@ export class QrService {
         }
       });
 
-      // Iniciar transacción para asegurar consistencia
+      // Iniciar transacción para asegurar consistencia con timeout
+      const TRANSACTION_TIMEOUT = 30000; // 30 segundos
       const result = await this.prisma.$transaction(async (prisma) => {
         // 1. Cambiar el estado de la virgin medalla a VIRGIN
         await prisma.virginMedal.update({
@@ -530,19 +531,21 @@ export class QrService {
         this.petCache.delete(medalString);
 
         return { success: true };
+      }, {
+        timeout: TRANSACTION_TIMEOUT,
+        maxWait: TRANSACTION_TIMEOUT,
       });
 
-      // Enviar email de confirmación al usuario
-      try {
-        await this.mailService.sendMedalResetConfirmation({
-          medalString,
-          userEmail,
-          resetDate: new Date().toLocaleString('es-ES')
-        });
-      } catch (error) {
-        console.error('Error enviando email de confirmación de reset:', error);
+      // Enviar email de confirmación al usuario de forma asíncrona (no bloquea)
+      // Esto evita que el envío de email bloquee la respuesta si hay problemas con el servicio de email
+      this.mailService.sendMedalResetConfirmation({
+        medalString,
+        userEmail,
+        resetDate: new Date().toLocaleString('es-ES')
+      }).catch((error) => {
+        console.error('Error enviando email de confirmación de reset (no crítico):', error);
         // No lanzamos error aquí para no afectar el proceso
-      }
+      });
 
       const endTime = Date.now();
       console.log(`Medal reset completed in ${endTime - startTime}ms for medal: ${medalString}`);
