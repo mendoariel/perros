@@ -140,13 +140,12 @@ export class QrService {
             timeout: 20000 // 20 segundos de timeout
         });
 
-        // Enviar email FUERA de la transacción para evitar timeouts
-        try {
-            await this.sendEmailConfirmMedal(user.email, virginMedal.medalString);
-        } catch (error) {
-            console.error('Error enviando email de confirmación de medalla:', error);
+        // Enviar email FUERA de la transacción de forma asíncrona (no bloquea)
+        // Esto evita que el envío de email bloquee la respuesta si hay problemas con el servicio de email
+        this.sendEmailConfirmMedal(user.email, virginMedal.medalString).catch((error) => {
+            console.error('Error enviando email de confirmación de medalla (no crítico):', error);
             // No lanzamos error aquí para no afectar el proceso
-        }
+        });
         
         return { 
             text: 'Le hemos enviado un email, siga las intrucciones para activar su medalla.',
@@ -198,13 +197,12 @@ export class QrService {
             timeout: 20000 // 20 segundos de timeout
         });
 
-        // Enviar email FUERA de la transacción para evitar timeouts
-        try {
-            await this.sendEmailConfirmAccount(result.email, result.hashToRegister, virginMedal.medalString);
-        } catch (error) {
-            console.error('Error enviando email de confirmación de cuenta:', error);
+        // Enviar email FUERA de la transacción de forma asíncrona (no bloquea)
+        // Esto evita que el envío de email bloquee la respuesta si hay problemas con el servicio de email
+        this.sendEmailConfirmAccount(result.email, result.hashToRegister, virginMedal.medalString).catch((error) => {
+            console.error('Error enviando email de confirmación de cuenta (no crítico):', error);
             // No lanzamos error aquí para no afectar el proceso
-        }
+        });
         
         return { 
             text: 'Le hemos enviado un email, siga las intrucciones para la activación de su cuenta.',
