@@ -1,5 +1,5 @@
 # build
-FROM node:18.12.0 AS development
+FROM node:18.20.0 AS development
 
 WORKDIR /alberto/backend/src/app
 

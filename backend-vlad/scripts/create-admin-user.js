@@ -27,12 +27,13 @@ async function createAdminUser() {
     const hashToRegister = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
     // Create the admin user
+    // Note: Using FRIAS_EDITOR role as ADMIN doesn't exist in the Role enum
     const adminUser = await prisma.user.create({
       data: {
         email: 'admin',
         hash: hash,
         username: 'admin',
-        role: 'ADMIN',
+        role: 'FRIAS_EDITOR',
         hashToRegister: hashToRegister,
         userStatus: 'ACTIVE'
       }
@@ -41,7 +42,7 @@ async function createAdminUser() {
     console.log('Admin user created successfully with ID:', adminUser.id);
     console.log('Email: admin');
     console.log('Password: admin123');
-    console.log('Role: ADMIN');
+    console.log('Role: FRIAS_EDITOR (admin privileges)');
     
   } catch (error) {
     console.error('Error creating admin user:', error);
