@@ -535,15 +535,22 @@ export class QrService {
       });
 
       // Enviar email de confirmación al usuario de forma asíncrona (no bloquea)
-      // Esto evita que el envío de email bloquee la respuesta si hay problemas con el servicio de email
-      this.mailService.sendMedalResetConfirmation({
-        medalString,
-        userEmail,
-        resetDate: new Date().toLocaleString('es-ES')
-      }).catch((error) => {
-        console.error('Error enviando email de confirmación de reset (no crítico):', error);
-        // No lanzamos error aquí para no afectar el proceso
-      });
+      // Usar el email del usuario real si existe una medalla registrada, sino usar el email proporcionado
+      const emailToSend = registeredMedal?.owner?.email || userEmail;
+      
+      // Solo enviar email si no es el email genérico de reset
+      if (emailToSend && emailToSend !== 'reset@peludosclick.com') {
+        this.mailService.sendMedalResetConfirmation({
+          medalString,
+          userEmail: emailToSend,
+          resetDate: new Date().toLocaleString('es-ES')
+        }).catch((error) => {
+          console.error('Error enviando email de confirmación de reset (no crítico):', error);
+          // No lanzamos error aquí para no afectar el proceso
+        });
+      } else {
+        console.log(`No se envía email de reset: email genérico o no disponible (${emailToSend})`);
+      }
 
       const endTime = Date.now();
       console.log(`Medal reset completed in ${endTime - startTime}ms for medal: ${medalString}`);

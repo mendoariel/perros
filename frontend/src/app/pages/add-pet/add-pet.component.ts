@@ -93,18 +93,32 @@ export class AddPetComponent implements OnDestroy {
     this.spinner = true;
     this.spinnerMessage = 'Procesando información...';
 
-    let authSubscription: Subscription = this.qrService.medalRegister(body).subscribe(
-      (res: any) => {
+    let authSubscription: Subscription = this.qrService.medalRegister(body).subscribe({
+      next: (res: any) => {
         this.spinner = false;
         this.registeredMedal = res;
         this.addPet = true;
-      }, error => {
+      },
+      error: (error: any) => {
         this.spinner = false;
-        console.error(error);
-        // Aquí podrías mostrar un mensaje de error usando un toast o alert
-        alert('Error al registrar la medalla. Por favor, intenta de nuevo.');
+        console.error('Error al registrar medalla:', error);
+        
+        // Manejar diferentes tipos de errores
+        let errorMessage = 'Error al registrar la medalla. Por favor, intenta de nuevo.';
+        
+        if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        } else if (error.status === 408 || error.error?.error === 'TimeoutError') {
+          errorMessage = 'La petición tardó demasiado. Por favor, verifica tu conexión e intenta de nuevo.';
+        } else if (error.status === 0) {
+          errorMessage = 'No se pudo conectar con el servidor. Por favor, verifica tu conexión.';
+        }
+        
+        alert(errorMessage);
       }
-    );
+    });
     this.addSubscription(authSubscription);
   }
 

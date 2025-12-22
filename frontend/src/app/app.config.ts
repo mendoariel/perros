@@ -6,6 +6,7 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { JwtModule } from '@auth0/angular-jwt';
 import { environment } from 'src/environments/environment';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { TimeoutInterceptor } from './core/interceptors/timeout.interceptor';
 import { provideClientHydration } from '@angular/platform-browser';
 
 export function tokenGetter() {
@@ -37,7 +38,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(
       withFetch(),
-      withInterceptors([AuthInterceptor])
+      withInterceptors([TimeoutInterceptor, AuthInterceptor])
     )
   ]
 };
