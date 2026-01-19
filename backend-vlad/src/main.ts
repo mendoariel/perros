@@ -18,7 +18,7 @@ async function bootstrap() {
     skipNullProperties: false,
     skipUndefinedProperties: false
   }));
-  
+
   app.enableCors({
     origin: '*',
     methods: 'GET, PUT, POST, DELETE, PATCH',
@@ -29,7 +29,10 @@ async function bootstrap() {
   app.use('/pets/files', express.static(join(process.cwd(), 'public', 'files')));
   app.use('/images/partners', express.static(join(process.cwd(), 'public', 'images', 'partners')));
   app.use('/images/partners/gallery', express.static(join(process.cwd(), 'public', 'images', 'partners', 'gallery')));
-  
+
+  // Serve user avatars (needed because frontend API URL has /api prefix)
+  app.use('/api/users/avatars', express.static(join(process.cwd(), 'public', 'files', 'users', 'avatars')));
+
   // Set global prefix for all routes (AFTER static files)
   app.setGlobalPrefix('api');
 

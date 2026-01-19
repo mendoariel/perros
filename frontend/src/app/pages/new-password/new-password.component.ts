@@ -2,14 +2,11 @@ import { ROUTES } from 'src/app/core/constants/routes.constants';
 import { CommonModule } from "@angular/common";
 import { Component, OnDestroy, OnInit, afterRender } from "@angular/core";
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute, Router } from "@angular/router";
 import { CookieService } from "ngx-cookie-service";
 import { Subscription } from "rxjs";
 import { AuthService } from "src/app/auth/services/auth.service";
-import { MaterialModule } from "src/app/material/material.module";
 import { FirstNavbarComponent } from "src/app/shared/components/first-navbar/first-navbar.component";
 import { MessageSnackBarComponent } from "src/app/shared/components/sanck-bar/message-snack-bar.component";
 import { confirmedValidator } from "src/app/shared/custom-validators/confirmed-validator.directive";
@@ -25,39 +22,34 @@ export interface NewPasswordInterface {
 }
 
 @Component({
-    standalone: true,
-    imports: [
-        CommonModule,
-        MaterialModule,
-        FormsModule,
-        ReactiveFormsModule,
-        FormsModule, 
-        MatFormFieldModule, 
-        MatInputModule, 
-        ReactiveFormsModule,
-        FirstNavbarComponent
-    ],
-    templateUrl: './new-password.component.html',
-    styleUrls: ['./new-password.component.scss']
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    FirstNavbarComponent
+  ],
+  templateUrl: './new-password.component.html',
+  styleUrls: ['./new-password.component.scss']
 })
 export class NewPasswordComponent implements OnDestroy {
-    newPasswordSubscription!: Subscription;
-    newPasswordForm: FormGroup = new FormGroup({
-      password: new FormControl('', [
-                                      Validators.required, 
-                                      Validators.minLength(8), 
-                                      Validators.maxLength(50),
-                                      leastOneCapitalLetterValidator(),
-                                      leastOneLowerCaseValidator(),
-                                      leastOneNumberValidator()
-                                    ],),
-      passwordConfirm: new FormControl('', [Validators.required]),
-    }, { validators: confirmedValidator('password', 'passwordConfirm')});
+  newPasswordSubscription!: Subscription;
+  newPasswordForm: FormGroup = new FormGroup({
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(8),
+      Validators.maxLength(50),
+      leastOneCapitalLetterValidator(),
+      leastOneLowerCaseValidator(),
+      leastOneNumberValidator()
+    ],),
+    passwordConfirm: new FormControl('', [Validators.required]),
+  }, { validators: confirmedValidator('password', 'passwordConfirm') });
 
-    email: string = '';
-    hash: string = '';
-    pwdHide = true;
-    pwdConfirmHide = true;
+  email: string = '';
+  hash: string = '';
+  pwdHide = true;
+  pwdConfirmHide = true;
 
   constructor(
     private router: Router,
@@ -78,7 +70,7 @@ export class NewPasswordComponent implements OnDestroy {
       this.checkAuth();
     });
   }
-  
+
   goHome() {
     this.navigationService.goToHome();
   }
@@ -90,28 +82,28 @@ export class NewPasswordComponent implements OnDestroy {
     console.log('  Hash desde URL:', this.hash);
     console.log('  Hash length:', this.hash?.length);
     console.log('  Password length:', this.password?.value?.length);
-    
-    let newPassword: NewPasswordInterface = { email: this.email, hash: this.hash, password: this.password?.value};
+
+    let newPassword: NewPasswordInterface = { email: this.email, hash: this.hash, password: this.password?.value };
 
     this.newPasswordSubscription = this.authService.newPassword(newPassword).subscribe({
-      next: (res: any)=> {
-        this._snackBar.openFromComponent(MessageSnackBarComponent,{
-          duration: 5000, 
+      next: (res: any) => {
+        this._snackBar.openFromComponent(MessageSnackBarComponent, {
+          duration: 5000,
           verticalPosition: 'top',
           data: res.text
         });
         this.navigationService.goToLogin();
       },
-      error : (error)=> {
+      error: (error) => {
         console.error(error);
-        this._snackBar.openFromComponent(MessageSnackBarComponent,{
-            duration: 3000, 
-            verticalPosition: 'top',
-            data: 'Fuera de servicio'
-          })
+        this._snackBar.openFromComponent(MessageSnackBarComponent, {
+          duration: 3000,
+          verticalPosition: 'top',
+          data: 'Fuera de servicio'
+        })
       }
     });
-    
+
   }
 
   getIconToMinLength(): string {
@@ -159,19 +151,19 @@ export class NewPasswordComponent implements OnDestroy {
   }
 
   get password(): FormControl | undefined {
-    if(this.newPasswordForm.get('password')) {
+    if (this.newPasswordForm.get('password')) {
       return this.newPasswordForm.get('password') as FormControl;
     } else return undefined;
   }
 
   get passwordConfirm(): FormControl | undefined {
-    if(this.newPasswordForm.get('passwordConfirm')) {
+    if (this.newPasswordForm.get('passwordConfirm')) {
       return this.newPasswordForm.get('passwordConfirm') as FormControl;
     } else return undefined;
   }
 
   ngOnDestroy() {
-    if(this.newPasswordSubscription) this.newPasswordSubscription.unsubscribe();
+    if (this.newPasswordSubscription) this.newPasswordSubscription.unsubscribe();
   }
 
   checkAuth() {

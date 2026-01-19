@@ -18,29 +18,24 @@
       <div class="header-content">
         <div class="profile-avatar-section">
           <div class="avatar-container">
-            <img 
-              *ngIf="userProfile.avatar" 
-              [src]="getAvatarUrl(userProfile.avatar)" 
-              [alt]="getUserDisplayName()"
-              class="avatar-image"
-            >
+            <img *ngIf="userProfile.avatar" [src]="getAvatarUrl(userProfile.avatar)" [alt]="getUserDisplayName()"
+              class="avatar-image">
             <div *ngIf="!userProfile.avatar" class="avatar-placeholder">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
               </svg>
             </div>
             <div class="avatar-overlay">
-              <input 
-                type="file" 
-                id="avatar-input" 
-                accept="image/*" 
-                (change)="onFileSelected($event)"
-                [disabled]="isUploadingAvatar"
-              >
+              <input type="file" id="avatar-input" accept="image/*" (change)="onFileSelected($event)"
+                [disabled]="isUploadingAvatar">
               <label for="avatar-input" class="avatar-upload-btn">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
+                  </path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 </svg>
                 <span *ngIf="!isUploadingAvatar">Cambiar foto</span>
                 <span *ngIf="isUploadingAvatar">Subiendo...</span>
@@ -52,6 +47,10 @@
         <p class="welcome-text">
           Gestiona tu información personal y preferencias
         </p>
+        <button class="btn-edit-mode" *ngIf="!isEditing" (click)="toggleEditMode()">
+          <span class="material-symbols-outlined">edit</span>
+          Editar Perfil
+        </button>
       </div>
     </div>
 
@@ -61,20 +60,15 @@
         <!-- Información Personal -->
         <div class="form-section">
           <h2 class="section-title">Información Personal</h2>
-          
+
           <div class="form-row">
             <div class="form-group">
               <label for="firstName">
                 <span class="material-symbols-outlined label-icon">person</span>
                 Nombre
               </label>
-              <input 
-                type="text" 
-                id="firstName"
-                formControlName="firstName" 
-                placeholder="Tu nombre"
-                [class.error]="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched"
-              >
+              <input type="text" id="firstName" formControlName="firstName" placeholder="Tu nombre"
+                [class.error]="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched">
             </div>
 
             <div class="form-group">
@@ -82,13 +76,8 @@
                 <span class="material-symbols-outlined label-icon">person</span>
                 Apellido
               </label>
-              <input 
-                type="text" 
-                id="lastName"
-                formControlName="lastName" 
-                placeholder="Tu apellido"
-                [class.error]="profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched"
-              >
+              <input type="text" id="lastName" formControlName="lastName" placeholder="Tu apellido"
+                [class.error]="profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched">
             </div>
           </div>
 
@@ -97,13 +86,7 @@
               <span class="material-symbols-outlined label-icon">email</span>
               Email
             </label>
-            <input 
-              type="email" 
-              id="email"
-              [value]="userProfile.email" 
-              disabled
-              class="disabled-input"
-            >
+            <input type="email" id="email" [value]="userProfile.email" disabled class="disabled-input">
             <p class="field-hint">El email no se puede modificar</p>
           </div>
 
@@ -112,35 +95,26 @@
               <span class="material-symbols-outlined label-icon">phone</span>
               Teléfono de contacto
             </label>
-            <input 
-              type="tel" 
-              id="phoneNumber"
-              formControlName="phoneNumber" 
-              placeholder="Ej: 2615551515 (solo números)"
+            <input type="tel" id="phoneNumber" formControlName="phoneNumber" placeholder="Ej: 2615551515 (solo números)"
               maxlength="15"
-              [class.error]="profileForm.get('phoneNumber')?.invalid && profileForm.get('phoneNumber')?.touched"
-            >
-            <p class="field-hint">Este teléfono se usará para contactarte cuando alguien escanee el QR de tus mascotas</p>
+              [class.error]="profileForm.get('phoneNumber')?.invalid && profileForm.get('phoneNumber')?.touched">
+            <p class="field-hint">Este teléfono se usará para contactarte cuando alguien escanee el QR de tus mascotas
+            </p>
           </div>
         </div>
 
         <!-- Información Adicional -->
         <div class="form-section">
           <h2 class="section-title">Información Adicional (Opcional)</h2>
-          
+
           <div class="form-group">
             <label for="bio">
               <span class="material-symbols-outlined label-icon">description</span>
               Biografía
             </label>
-            <textarea 
-              id="bio"
-              formControlName="bio" 
-              placeholder="Cuéntanos un poco sobre ti..."
-              rows="4"
+            <textarea id="bio" formControlName="bio" placeholder="Cuéntanos un poco sobre ti..." rows="4"
               maxlength="500"
-              [class.error]="profileForm.get('bio')?.invalid && profileForm.get('bio')?.touched"
-            ></textarea>
+              [class.error]="profileForm.get('bio')?.invalid && profileForm.get('bio')?.touched"></textarea>
             <div class="char-counter" *ngIf="profileForm.get('bio')?.value">
               {{ profileForm.get('bio')?.value?.length || 0 }}/500
             </div>
@@ -151,13 +125,8 @@
               <span class="material-symbols-outlined label-icon">home</span>
               Dirección
             </label>
-            <input 
-              type="text" 
-              id="address"
-              formControlName="address" 
-              placeholder="Tu dirección (opcional)"
-              [class.error]="profileForm.get('address')?.invalid && profileForm.get('address')?.touched"
-            >
+            <input type="text" id="address" formControlName="address" placeholder="Tu dirección (opcional)"
+              [class.error]="profileForm.get('address')?.invalid && profileForm.get('address')?.touched">
           </div>
 
           <div class="form-row">
@@ -166,13 +135,8 @@
                 <span class="material-symbols-outlined label-icon">location_city</span>
                 Ciudad
               </label>
-              <input 
-                type="text" 
-                id="city"
-                formControlName="city" 
-                placeholder="Tu ciudad (opcional)"
-                [class.error]="profileForm.get('city')?.invalid && profileForm.get('city')?.touched"
-              >
+              <input type="text" id="city" formControlName="city" placeholder="Tu ciudad (opcional)"
+                [class.error]="profileForm.get('city')?.invalid && profileForm.get('city')?.touched">
             </div>
 
             <div class="form-group">
@@ -180,35 +144,24 @@
                 <span class="material-symbols-outlined label-icon">public</span>
                 País
               </label>
-              <input 
-                type="text" 
-                id="country"
-                formControlName="country" 
-                placeholder="Tu país (opcional)"
-                [class.error]="profileForm.get('country')?.invalid && profileForm.get('country')?.touched"
-              >
+              <input type="text" id="country" formControlName="country" placeholder="Tu país (opcional)"
+                [class.error]="profileForm.get('country')?.invalid && profileForm.get('country')?.touched">
             </div>
           </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="form-actions">
-          <button 
-            type="button"
-            class="btn-cancel" 
-            (click)="navigationService.goToMyPets()"
-          >
+        <div class="form-actions" *ngIf="isEditing">
+          <button type="button" class="btn-cancel" (click)="cancelEdit()">
             Cancelar
           </button>
-          <button 
-            type="button"
-            class="btn-save" 
-            [disabled]="profileForm.invalid || isSaving"
-            (click)="saveProfile()"
-          >
-            <svg *ngIf="isSaving" class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <button type="button" class="btn-save" [disabled]="profileForm.invalid || isSaving" (click)="saveProfile()">
+            <svg *ngIf="isSaving" class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
             </svg>
             {{ isSaving ? 'Guardando...' : 'Guardar Cambios' }}
           </button>

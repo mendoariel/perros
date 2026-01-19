@@ -9,12 +9,15 @@ import { CreateFileDto, UpdateMedalDto, CreateMedalForExistingUserDto } from "./
 
 @Controller('pets')
 export class PetsController {
-    constructor(private petService: PetsServicie) {}
+    constructor(private petService: PetsServicie) { }
 
     @Public()
-    @Get('') 
-    allPets() {
-        return this.petService.allPet();
+    @Get('')
+    allPets(
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 10
+    ) {
+        return this.petService.allPet(Number(page), Number(limit));
     }
 
     @Get('mine')
@@ -63,26 +66,26 @@ export class PetsController {
             Logger.log('[loadProfilePicture] Body type:', typeof body);
             Logger.log('[loadProfilePicture] Body keys:', body ? Object.keys(body) : 'no body');
             Logger.log('[loadProfilePicture] req.body:', req.body);
-            
-            if(!user) {
+
+            if (!user) {
                 Logger.error('[loadProfilePicture] Usuario no autenticado');
                 throw new NotFoundException('Usuario no autenticado');
             }
-            
-            if(!file) {
+
+            if (!file) {
                 Logger.error('[loadProfilePicture] No se recibió el archivo');
                 throw new NotFoundException('No se recibió el archivo');
             }
-            
-            if(!file.filename) {
+
+            if (!file.filename) {
                 Logger.error('[loadProfilePicture] El archivo no tiene filename. File object:', JSON.stringify(file, null, 2));
                 throw new NotFoundException('Error al procesar el archivo');
             }
-            
+
             // Con multipart/form-data, los campos pueden venir en body o en req.body
             // Intentar múltiples formas de obtener el medalString
             let medalString: string | undefined;
-            
+
             // Primero intentar desde body
             if (body && body.medalString) {
                 if (typeof body.medalString === 'string') {
@@ -95,7 +98,7 @@ export class PetsController {
                     medalString = String(body.medalString);
                 }
             }
-            
+
             // Si no se encontró en body, intentar desde req.body (puede estar parseado diferente)
             if ((!medalString || medalString.trim() === '') && req.body && req.body.medalString) {
                 if (typeof req.body.medalString === 'string') {
@@ -106,14 +109,14 @@ export class PetsController {
                     medalString = String(req.body.medalString);
                 }
             }
-            
-            if(!medalString || medalString.trim() === '') {
+
+            if (!medalString || medalString.trim() === '') {
                 Logger.error('[loadProfilePicture] No se recibió el medalString');
                 Logger.error('[loadProfilePicture] Body recibido:', JSON.stringify(body));
                 Logger.error('[loadProfilePicture] req.body recibido:', JSON.stringify(req.body));
                 throw new NotFoundException('No se recibió el medalString');
             }
-            
+
             Logger.log('[loadProfilePicture] Llamando loadImage con:', { filename: file.filename, medalString: medalString.trim() });
             return this.petService.loadImage(file.filename, medalString.trim());
         } catch (error) {
@@ -121,7 +124,7 @@ export class PetsController {
             Logger.error('[loadProfilePicture] Error message:', error?.message);
             Logger.error('[loadProfilePicture] Error stack:', error?.stack);
             console.error('[loadProfilePicture] Error completo:', error);
-            
+
             // Si el error ya es una excepción HTTP, relanzarlo
             if (error instanceof NotFoundException || (error && error.status)) {
                 throw error;

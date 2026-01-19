@@ -34,6 +34,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   userProfile: any = null;
   isLoading = true;
   isSaving = false;
+  isEditing = false;
   isUploadingAvatar = false;
   subscription: Subscription[] = [];
   env = environment;
@@ -46,7 +47,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     public navigationService: NavigationService,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) { }
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -65,6 +66,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       next: (profile: any) => {
         this.userProfile = profile;
         this.populateForm(profile);
+        this.profileForm.disable();
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -96,7 +98,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     }
 
     const file = event.target.files[0];
-    
+
     // Validar tamaño (máximo 5MB)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
@@ -133,6 +135,21 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.subscription.push(sub);
   }
 
+  toggleEditMode() {
+    this.isEditing = !this.isEditing;
+    if (this.isEditing) {
+      this.profileForm.enable();
+    } else {
+      this.profileForm.disable();
+    }
+  }
+
+  cancelEdit() {
+    this.isEditing = false;
+    this.populateForm(this.userProfile);
+    this.profileForm.disable();
+  }
+
   saveProfile() {
     if (this.profileForm.invalid || this.isSaving) {
       return;
@@ -144,6 +161,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         this.userProfile = { ...this.userProfile, ...updatedProfile };
         this.openSnackBar('Perfil actualizado correctamente');
         this.isSaving = false;
+        this.isEditing = false;
+        this.profileForm.disable();
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -164,7 +183,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   getUserDisplayName(): string {
     if (!this.userProfile) return 'Usuario';
-    
+
     if (this.userProfile.firstName && this.userProfile.lastName) {
       return `${this.userProfile.firstName} ${this.userProfile.lastName}`;
     }

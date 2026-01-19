@@ -19,13 +19,20 @@ export class PetsServicie {
         private imageResizeService: ImageResizeService,
         @Inject(forwardRef(() => QrService))
         private qrService: QrService
-    ) {}
+    ) { }
 
-    async allPet() {
+    async allPet(page: number = 1, limit: number = 10) {
         try {
+            const skip = (page - 1) * limit;
+
             const medals = await this.prisma.medal.findMany({
                 where: {
                     status: MedalState.ENABLED
+                },
+                skip: skip,
+                take: limit,
+                orderBy: {
+                    createAt: 'desc'
                 },
                 select: {
                     medalString: true,
@@ -33,10 +40,9 @@ export class PetsServicie {
                     petName: true,
                     image: true,
                     description: true
-                    // phoneNumber removido - ahora se usa del User
                 }
             });
-            
+
             return medals.map(medal => ({
                 petName: medal.petName,
                 image: medal.image,
@@ -101,7 +107,7 @@ export class PetsServicie {
                 scannedAt: 'desc'
             }
         });
-        
+
         return scannedMedals.map(scannedMedal => ({
             medalString: scannedMedal.medalString,
             scannedAt: scannedMedal.scannedAt
@@ -215,7 +221,7 @@ export class PetsServicie {
 
     async getFileByFileName(fileName: string, res: Response) {
         const filePath = join(process.cwd(), 'public', 'files', fileName);
-        
+
         // Verificar si el archivo existe antes de intentar enviarlo
         if (!fs.existsSync(filePath)) {
             console.error(`[getFileByFileName] Archivo no encontrado: ${filePath}`);
@@ -225,14 +231,14 @@ export class PetsServicie {
                 statusCode: 404
             });
         }
-        
+
         return res.sendFile(filePath);
     }
 
     async getSocialFileByFileName(fileName: string, res: Response) {
         const socialFileName = this.imageResizeService.getSocialImageFilename(fileName);
         const socialFilePath = join(process.cwd(), 'public', 'files', socialFileName);
-        
+
         // Check if social image exists, if not create it
         if (!this.imageResizeService.socialImageExists(fileName)) {
             try {
@@ -253,7 +259,7 @@ export class PetsServicie {
                 }
             }
         }
-        
+
         // Verificar si el archivo social existe antes de enviarlo
         if (!fs.existsSync(socialFilePath)) {
             console.error(`[getSocialFileByFileName] Archivo social no encontrado: ${socialFilePath}`);
@@ -269,7 +275,7 @@ export class PetsServicie {
                 });
             }
         }
-        
+
         // Add aggressive cache control headers for social media
         res.set({
             'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate, max-age=0',
@@ -278,14 +284,14 @@ export class PetsServicie {
             'Surrogate-Control': 'no-store',
             'Vary': 'User-Agent'
         });
-        
+
         return res.sendFile(socialFilePath);
     }
 
     async getWhatsAppFileByFileName(fileName: string, petId: string, res: Response) {
         const socialFileName = this.imageResizeService.getSocialImageFilename(fileName);
         const socialFilePath = join(process.cwd(), 'public', 'files', socialFileName);
-        
+
         // Check if social image exists, if not create it
         if (!this.imageResizeService.socialImageExists(fileName)) {
             try {
@@ -306,7 +312,7 @@ export class PetsServicie {
                 }
             }
         }
-        
+
         // Verificar si el archivo social existe antes de enviarlo
         if (!fs.existsSync(socialFilePath)) {
             console.error(`[getWhatsAppFileByFileName] Archivo social no encontrado: ${socialFilePath}`);
@@ -322,7 +328,7 @@ export class PetsServicie {
                 });
             }
         }
-        
+
         // Ultra aggressive cache control headers for WhatsApp with pet-specific ETag
         const petSpecificETag = `"${petId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}"`;
         res.set({
@@ -334,7 +340,7 @@ export class PetsServicie {
             'Last-Modified': new Date().toUTCString(),
             'ETag': petSpecificETag
         });
-        
+
         return res.sendFile(socialFilePath);
     }
 
@@ -376,11 +382,11 @@ export class PetsServicie {
                 if (oldImage) {
                     const oldPath = `${FILE_UPLOAD_DIR}/${oldImage}`;
                     if (fs.existsSync(oldPath)) {
-                        fs.unlink(oldPath, (error) => { 
-                            if(error) console.error('[loadImage] Error eliminando imagen anterior:', error);
+                        fs.unlink(oldPath, (error) => {
+                            if (error) console.error('[loadImage] Error eliminando imagen anterior:', error);
                         });
                     }
-                    
+
                     try {
                         this.imageResizeService.deleteSocialImage(oldImage);
                     } catch (error) {
@@ -419,11 +425,11 @@ export class PetsServicie {
                     phoneNumber: true
                 }
             });
-            
+
             if (!user) {
                 throw new NotFoundException('User not found');
             }
-            
+
             if (user.userStatus !== UserStatus.ACTIVE) {
                 throw new BadRequestException('Usuario debe estar activo para habilitar la medalla');
             }
@@ -494,7 +500,7 @@ export class PetsServicie {
 
             // Obtener phoneNumber del usuario (no del DTO)
             const userPhoneNumber = user.phoneNumber || user.phonenumber || null;
-            
+
             // Preparar datos para actualizar/crear Medal
             // phoneNumber removido - ahora se usa del User (owner)
             const medalData: any = {
@@ -584,24 +590,24 @@ export class PetsServicie {
                     userId: userId
                 }
             });
-            
+
             if (!scannedMedal) {
                 throw new NotFoundException('No se encontró una medalla escaneada para este usuario');
             }
-            
+
             if (scannedMedal.status === MedalState.ENABLED) {
                 throw new BadRequestException('Esta medalla ya está registrada');
             }
-            
+
             // Verificar que no existe ya una Medal con este medalString
             const existingMedal = await tx.medal.findFirst({
                 where: { medalString: dto.medalString }
             });
-            
+
             if (existingMedal) {
                 throw new ConflictException('Esta medalla ya está registrada');
             }
-            
+
             // Obtener phoneNumber del usuario
             const user = await tx.user.findUnique({
                 where: { id: userId },
@@ -610,7 +616,7 @@ export class PetsServicie {
                     phonenumber: true
                 }
             });
-            
+
             // Crear Medal directamente con todos los campos
             // phoneNumber removido - ahora se usa del User (owner)
             const medal = await tx.medal.create({
@@ -625,19 +631,19 @@ export class PetsServicie {
                     image: dto.image || null
                 }
             });
-            
+
             // Actualizar VirginMedal
             await tx.virginMedal.updateMany({
                 where: { medalString: dto.medalString },
                 data: { status: MedalState.ENABLED }
             });
-            
+
             // Actualizar ScannedMedal
             await tx.scannedMedal.update({
                 where: { id: scannedMedal.id },
                 data: { status: MedalState.ENABLED }
             });
-            
+
             return medal;
         });
     }
@@ -648,7 +654,7 @@ export class PetsServicie {
             filename: medal.image,
             path: join(FILE_UPLOAD_DIR, medal.image)
         } : null;
-        
+
         await this.mailService['mailerService'].sendMail({
             to: 'info@peludosclick.com',
             from: '"PeludosClick" <info@peludosclick.com>',

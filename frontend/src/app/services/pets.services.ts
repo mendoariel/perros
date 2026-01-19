@@ -18,8 +18,8 @@ export class PetsService {
         return environment.perrosQrApi;
     }
 
-    getPets(): Observable<Pet[]> {
-        return this.http.get<Pet[]>(`${this.getApiUrl()}pets`);
+    getPets(page: number = 1, limit: number = 10): Observable<Pet[]> {
+        return this.http.get<Pet[]>(`${this.getApiUrl()}pets?page=${page}&limit=${limit}`);
     }
 
     getPetById(id: string): Observable<Pet> {

@@ -160,6 +160,37 @@
       margin: 0;
       line-height: 1.5;
     }
+
+    /* Edit Mode Button */
+    .btn-edit-mode {
+      margin-top: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      background: var(--color-create-gradient);
+      color: #006455;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(255, 229, 92, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      .material-symbols-outlined {
+        font-size: 20px;
+      }
+    }
   }
 }
 
@@ -174,12 +205,15 @@
 }
 
 .profile-form {
+
   // Ocultar cualquier label flotante o duplicado de Material
   ::ng-deep .mat-form-field-label,
   ::ng-deep .mat-form-field-label-wrapper,
   ::ng-deep .mat-floating-label {
     display: none !important;
   }
+
+
 
   .form-section {
     margin-bottom: 40px;
@@ -239,15 +273,16 @@
         font-size: 20px;
       }
     }
-    
+
     // Asegurar que no haya labels duplicados dentro del form-group
-    label + label {
+    label+label {
       display: none !important;
     }
 
     input,
     textarea {
       width: 100%;
+      box-sizing: border-box;
       padding: 14px 16px;
       border: 2px solid #e5e7eb;
       border-radius: 12px;
@@ -285,6 +320,17 @@
 
       &::placeholder {
         color: #9ca3af;
+      }
+
+      &:disabled {
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding-left: 0 !important;
+        color: #1f2937 !important;
+        cursor: default !important;
+        opacity: 1 !important;
+        font-weight: 500;
       }
     }
 
@@ -374,10 +420,12 @@
     stroke-dasharray: 1, 150;
     stroke-dashoffset: 0;
   }
+
   50% {
     stroke-dasharray: 90, 150;
     stroke-dashoffset: -35;
   }
+
   100% {
     stroke-dasharray: 90, 150;
     stroke-dashoffset: -124;
