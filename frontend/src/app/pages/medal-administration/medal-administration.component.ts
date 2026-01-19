@@ -74,7 +74,7 @@ export class MedalAdministrationComponent implements OnInit, OnDestroy {
 
   shouldShowResetButton(status: string): boolean {
     // Mostrar botón de reset para estados problemáticos
-    return ['REGISTER_PROCESS', 'PENDING_CONFIRMATION', 'INCOMPLETE'].includes(status);
+    return ['REGISTER_PROCESS', 'INCOMPLETE'].includes(status);
   }
 
   getStatusDescription(status: string): string {
@@ -83,8 +83,6 @@ export class MedalAdministrationComponent implements OnInit, OnDestroy {
         return 'Medalla nueva, lista para registrar';
       case 'REGISTER_PROCESS':
         return 'En proceso de registro - esperando confirmación por email';
-      case 'PENDING_CONFIRMATION':
-        return 'Pendiente de confirmación';
       case 'INCOMPLETE':
         return 'Registro incompleto - falta información de la mascota';
       case 'ENABLED':
@@ -93,8 +91,6 @@ export class MedalAdministrationComponent implements OnInit, OnDestroy {
         return 'Medalla deshabilitada';
       case 'DEAD':
         return 'Medalla eliminada';
-      case 'REGISTERED':
-        return 'Medalla registrada pero no activada';
       default:
         return 'Estado desconocido';
     }
@@ -106,8 +102,6 @@ export class MedalAdministrationComponent implements OnInit, OnDestroy {
         return 'text-blue-600 bg-blue-100';
       case 'REGISTER_PROCESS':
         return 'text-yellow-600 bg-yellow-100';
-      case 'PENDING_CONFIRMATION':
-        return 'text-orange-600 bg-orange-100';
       case 'INCOMPLETE':
         return 'text-purple-600 bg-purple-100';
       case 'ENABLED':
@@ -116,8 +110,6 @@ export class MedalAdministrationComponent implements OnInit, OnDestroy {
         return 'text-red-600 bg-red-100';
       case 'DEAD':
         return 'text-gray-600 bg-gray-100';
-      case 'REGISTERED':
-        return 'text-indigo-600 bg-indigo-100';
       default:
         return 'text-gray-600 bg-gray-100';
     }

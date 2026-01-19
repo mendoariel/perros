@@ -8,7 +8,16 @@ import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    skipMissingProperties: false,
+    whitelist: true,
+    forbidNonWhitelisted: false,
+    transform: true,
+    disableErrorMessages: false,
+    // Permitir multipart/form-data
+    skipNullProperties: false,
+    skipUndefinedProperties: false
+  }));
   
   app.enableCors({
     origin: '*',

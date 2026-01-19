@@ -1,5 +1,5 @@
 import { ROUTES } from 'src/app/core/constants/routes.constants';
-import { Component, OnDestroy, afterRender } from '@angular/core';
+import { Component, OnDestroy, afterRender, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,6 +15,8 @@ import { MedalInterface, RegisteredMedalInterface } from 'src/app/interface/meda
 import { PLATFORM_ID, Inject } from '@angular/core';
 import { PetsService } from 'src/app/services/pets.services';
 import { NavigationService } from 'src/app/core/services/navigation.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
 
 @Component({
   selector: 'app-add-pet',
@@ -33,7 +35,6 @@ export class AddPetComponent implements OnDestroy {
   registerHash = '';
 
   registerForm: FormGroup = new FormGroup({
-    petName: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(35)]),
     ownerEmail: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [
       Validators.required,
@@ -67,16 +68,38 @@ export class AddPetComponent implements OnDestroy {
     private authService: AuthService,
     private qrService: QrChekingService,
     @Inject(PLATFORM_ID) private platformId: Object,
-    public navigationService: NavigationService
+    public navigationService: NavigationService,
+    private _snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {
     afterRender(() => {
       this.initializeComponent();
+      
+      // Suscribirse a cambios en los campos de contraseña para actualizar la validación
+      this.password?.valueChanges.subscribe(() => {
+        this.passwordConfirm?.updateValueAndValidity({ emitEvent: false });
+        this.registerForm.updateValueAndValidity({ emitEvent: false });
+      });
+      
+      this.passwordConfirm?.valueChanges.subscribe(() => {
+        this.registerForm.updateValueAndValidity({ emitEvent: false });
+      });
     });
   }
 
   private initializeComponent() {
     if (isPlatformBrowser(this.platformId)) {
       this.medalString = this.route.snapshot.params['medalString'];
+      
+      // Asegurarse de que el spinner esté desactivado al cargar
+      this.spinner = false;
+      
+      // Verificar que tenemos un medalString válido
+      if (!this.medalString) {
+        console.error('No se encontró medalString en la ruta');
+        // Redirigir a home si no hay medalString
+        this.router.navigate(['/']);
+      }
     }
   }
 
@@ -116,7 +139,7 @@ export class AddPetComponent implements OnDestroy {
           errorMessage = 'No se pudo conectar con el servidor. Por favor, verifica tu conexión.';
         }
         
-        alert(errorMessage);
+        this.openSnackBar(errorMessage);
       }
     });
     this.addSubscription(authSubscription);
@@ -134,26 +157,99 @@ export class AddPetComponent implements OnDestroy {
   }
 
   emailValidate() {
+    if (!this.ownerEmail?.value || !this.medalString) {
+      return;
+    }
+
     this.spinner = true;
-    let subscription: Subscription = this.qrService.isThisEmailTaken(this.ownerEmail?.value).subscribe({
+    this.spinnerMessage = 'Validando email...';
+    
+    // Timeout de seguridad: si la petición tarda más de 30 segundos, desactivar spinner
+    const timeoutId = setTimeout(() => {
+      if (this.spinner) {
+        console.error('Timeout: La validación del email tardó demasiado');
+        this.spinner = false;
+        this.cdr.detectChanges();
+        this.openSnackBar('La validación del email está tardando demasiado. Por favor, intenta de nuevo.');
+      }
+    }, 30000);
+    
+    let subscription: Subscription = this.qrService.validateEmailForMedal(
+      this.ownerEmail?.value,
+      this.medalString
+    ).subscribe({
       next: (res: any)=>{
+        clearTimeout(timeoutId);
+        
+        // Log para debugging
+        console.log('[AddPetComponent] Respuesta de validateEmailForMedal:', res);
+        console.log('[AddPetComponent] emailIsTaken:', res.emailIsTaken);
+        console.log('[AddPetComponent] Email ingresado:', this.ownerEmail?.value);
+        
+        // Si el email ya tiene cuenta, informar al usuario y redirigir al login
+        if(res.emailIsTaken === true || res.emailIsTaken === 'true') {
+          console.log('[AddPetComponent] Email ya registrado, redirigiendo al login');
+          
+          // Desactivar spinner primero
+          this.spinner = false;
+          this.cdr.detectChanges();
+          
+          // Mostrar mensaje informativo con snackbar (no bloqueante)
+          this.openSnackBar('Este email ya tiene una cuenta. Serás redirigido al login para ingresar con tu contraseña.');
+          
+          // Usar setTimeout para evitar el error de Angular ExpressionChangedAfterItHasBeenCheckedError
+          // y permitir que el snackbar se muestre antes de la navegación
+          setTimeout(() => {
+            // Log para debugging
+            console.log('[AddPetComponent] Redirigiendo al login con:');
+            console.log('[AddPetComponent] email:', this.ownerEmail?.value);
+            console.log('[AddPetComponent] medalString:', this.medalString);
+            console.log('[AddPetComponent] fromMedalRegistration: true');
+            
+            // Redirigir al login con email pre-llenado y medalString
+            this.router.navigate(['/login'], {
+              queryParams: {
+                email: this.ownerEmail?.value,
+                medalString: this.medalString,
+                fromMedalRegistration: 'true'
+              }
+            });
+          }, 500); // Aumentar el delay para que el snackbar se vea mejor
+          
+          return;
+        }
+        
+        // Si no tiene cuenta, mostrar formulario de contraseña
+        console.log('[AddPetComponent] Email disponible, mostrando formulario de contraseña');
+        this.spinner = false;
         this.emailValue = this.ownerEmail?.value;
         this.validationDoIt = true;
-        this.spinner = false;
-        if(res.emailIsTaken) {
-          this.newClient = false;
-          this.password?.clearValidators();
-          this.passwordConfirm?.clearValidators();
-        } else {
-          this.newClient = true;
-        }
+        this.newClient = true;
+        this.cdr.detectChanges();
       },
       error: (error: any)=>{
-        console.error(error);
+        clearTimeout(timeoutId);
+        console.error('Error al validar email:', error);
         this.spinner = false;
-        alert('Error al validar el email. Por favor, intenta de nuevo.');
+        this.cdr.detectChanges();
+        
+        let errorMessage = 'Error al validar el email. Por favor, intenta de nuevo.';
+        
+        if (error?.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error?.message) {
+          errorMessage = error.message;
+        } else if (error?.status === 0) {
+          errorMessage = 'No se pudo conectar con el servidor. Por favor, verifica tu conexión.';
+        } else if (error?.status === 500) {
+          errorMessage = 'Error en el servidor. Por favor, intenta de nuevo más tarde.';
+        }
+        
+        this.openSnackBar(errorMessage);
       }
     });
+    
+    this.addSubscription(subscription);
   }
 
   getVisibility() {
@@ -171,22 +267,22 @@ export class AddPetComponent implements OnDestroy {
   // Nuevos métodos para el diseño moderno
   getPasswordValidationClass(field: string): string {
     if (this.password?.value.length === 0) {
-      return 'text-gray-400';
+      return 'requirement-pending';
     }
     
     switch (field) {
       case 'minlength':
-        return this.password?.hasError('minlength') ? 'text-red-500' : 'text-green-500';
+        return this.password?.hasError('minlength') ? 'requirement-error' : 'requirement-success';
       case 'maxlength':
-        return this.password?.hasError('maxlength') ? 'text-red-500' : 'text-green-500';
+        return this.password?.hasError('maxlength') ? 'requirement-error' : 'requirement-success';
       case 'capitalLetterError':
-        return this.password?.hasError('capitalLetterError') ? 'text-red-500' : 'text-green-500';
+        return this.password?.hasError('capitalLetterError') ? 'requirement-error' : 'requirement-success';
       case 'lowerCaseError':
-        return this.password?.hasError('lowerCaseError') ? 'text-red-500' : 'text-green-500';
+        return this.password?.hasError('lowerCaseError') ? 'requirement-error' : 'requirement-success';
       case 'numberError':
-        return this.password?.hasError('numberError') ? 'text-red-500' : 'text-green-500';
+        return this.password?.hasError('numberError') ? 'requirement-error' : 'requirement-success';
       default:
-        return 'text-gray-400';
+        return 'requirement-pending';
     }
   }
 
@@ -209,6 +305,41 @@ export class AddPetComponent implements OnDestroy {
       default:
         return 'none';
     }
+  }
+
+  // Verificar si se debe mostrar la sección de requisitos
+  shouldShowPasswordRequirements(): boolean {
+    const passwordValue = this.password?.value || '';
+    // Mostrar solo si hay al menos 1 carácter
+    return passwordValue.length > 0;
+  }
+
+  // Verificar si todos los requisitos están cumplidos
+  areAllPasswordRequirementsMet(): boolean {
+    if (!this.password || this.password.value.length === 0) {
+      return false;
+    }
+    
+    return !this.password.hasError('minlength') &&
+           !this.password.hasError('maxlength') &&
+           !this.password.hasError('capitalLetterError') &&
+           !this.password.hasError('lowerCaseError') &&
+           !this.password.hasError('numberError');
+  }
+
+  // Verificar si las contraseñas no coinciden
+  passwordsDoNotMatch(): boolean {
+    if (!this.passwordConfirm?.touched) {
+      return false;
+    }
+    
+    const password = this.password?.value || '';
+    const passwordConfirm = this.passwordConfirm?.value || '';
+    
+    // Solo mostrar error si ambos campos tienen valor y no coinciden
+    return password.length > 0 && 
+           passwordConfirm.length > 0 && 
+           password !== passwordConfirm;
   }
 
   // Métodos legacy para compatibilidad
@@ -248,12 +379,6 @@ export class AddPetComponent implements OnDestroy {
     return this.pwdConfirmHide ? 'password' : 'text';
   }
 
-  get petName(): FormControl | undefined {
-    if (this.registerForm.get('petName')) {
-      return this.registerForm.get('petName') as FormControl;
-    } else return undefined;
-  }
-
   get ownerEmail(): FormControl | undefined {
     if (this.registerForm.get('ownerEmail')) {
       return this.registerForm.get('ownerEmail') as FormControl;
@@ -270,6 +395,15 @@ export class AddPetComponent implements OnDestroy {
     if (this.registerForm.get('passwordConfirm')) {
       return this.registerForm.get('passwordConfirm') as FormControl;
     } else return undefined;
+  }
+
+  openSnackBar(message: string) {
+    this._snackBar.openFromComponent(MessageSnackBarComponent, {
+      duration: 4000,
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
+      data: message
+    });
   }
 
   ngOnDestroy(): void {

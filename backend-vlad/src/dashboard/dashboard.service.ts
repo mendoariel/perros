@@ -105,7 +105,7 @@ export class DashboardService {
   async updateMedalStatus(id: number, status: string) {
     const validStatuses = [
       'VIRGIN', 'ENABLED', 'DISABLED', 'DEAD', 
-      'REGISTER_PROCESS', 'PENDING_CONFIRMATION', 'INCOMPLETE', 'REGISTERED'
+      'INCOMPLETE' // ✅ Eliminado REGISTER_PROCESS
     ];
 
     if (!validStatuses.includes(status)) {

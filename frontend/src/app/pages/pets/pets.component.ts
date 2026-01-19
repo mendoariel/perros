@@ -9,16 +9,7 @@ import { Observable, map, of, catchError, Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 import { FooterComponent } from 'src/app/shared/components/footer/footer.component';
-
-interface Pet {
-  petName: string;
-  image: string;
-  status: string;
-  description: string;
-  medalString: string;
-  background?: string;
-  link?: string;
-}
+import { Pet } from 'src/app/models/pet.model';
 
 @Component({
   selector: 'app-pets',
@@ -38,7 +29,7 @@ export class PetsComponent implements OnDestroy {
   private subscription: Subscription | null = null;
   private cdr: ChangeDetectorRef;
   
-  pets: Pet[] = [];
+  pets: (Pet & { background: string; link: string })[] = [];
   loading = true;
   error: string | null = null;
   
@@ -95,7 +86,7 @@ export class PetsComponent implements OnDestroy {
     });
   }
 
-  goToPet(pet: Pet) {
+  goToPet(pet: Pet & { background?: string; link?: string }) {
     this.navigationService.navigate([`mascota-publica/${pet.medalString}`]);
   }
 

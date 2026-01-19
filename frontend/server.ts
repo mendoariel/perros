@@ -28,8 +28,9 @@ export function app(): express.Express {
     const parsedUrl = url.parse(req.url);
     
     // Configuración del backend según el entorno
-    const backendHost = process.env['BACKEND_HOST'] || 'peludosclickbackend';
-    const backendPort = process.env['BACKEND_PORT'] || '3335';
+    // Use localhost for local development, peludosclickbackend for Docker
+    const backendHost = process.env['BACKEND_HOST'] || 'localhost';
+    const backendPort = process.env['BACKEND_PORT'] || '3333';
     
     const options = {
       hostname: backendHost,
@@ -69,8 +70,9 @@ export function app(): express.Express {
     const parsedUrl = url.parse(req.url);
     
     // Configuración del backend según el entorno
-    const backendHost = process.env['BACKEND_HOST'] || 'peludosclickbackend';
-    const backendPort = process.env['BACKEND_PORT'] || '3335';
+    // Use localhost for local development, peludosclickbackend for Docker
+    const backendHost = process.env['BACKEND_HOST'] || 'localhost';
+    const backendPort = process.env['BACKEND_PORT'] || '3333';
     
     const options = {
       hostname: backendHost,
@@ -104,8 +106,9 @@ export function app(): express.Express {
     const parsedUrl = url.parse(req.url);
     
     // Configuración del backend según el entorno
-    const backendHost = process.env['BACKEND_HOST'] || 'peludosclickbackend';
-    const backendPort = process.env['BACKEND_PORT'] || '3335';
+    // Use localhost for local development, peludosclickbackend for Docker
+    const backendHost = process.env['BACKEND_HOST'] || 'localhost';
+    const backendPort = process.env['BACKEND_PORT'] || '3333';
     
     const options = {
       hostname: backendHost,
@@ -139,8 +142,9 @@ export function app(): express.Express {
     const parsedUrl = url.parse(req.url);
     
     // Configuración del backend según el entorno
-    const backendHost = process.env['BACKEND_HOST'] || 'peludosclickbackend';
-    const backendPort = process.env['BACKEND_PORT'] || '3335';
+    // Use localhost for local development, peludosclickbackend for Docker
+    const backendHost = process.env['BACKEND_HOST'] || 'localhost';
+    const backendPort = process.env['BACKEND_PORT'] || '3333';
     
     const options = {
       hostname: backendHost,
@@ -168,6 +172,20 @@ export function app(): express.Express {
 
 
 
+  // Handle CSS file requests gracefully - suppress 404 warnings for missing CSS files
+  server.get('*.css', (req, res, next) => {
+    const filePath = join(distFolder, req.path);
+    if (existsSync(filePath)) {
+      res.setHeader('Content-Type', 'text/css; charset=utf-8');
+      res.sendFile(filePath);
+    } else {
+      // Silently ignore missing CSS files - they may be inlined in the bundle
+      // Return empty CSS instead of 404 to avoid warnings
+      res.setHeader('Content-Type', 'text/css; charset=utf-8');
+      res.status(200).send('/* CSS file not found - styles are inlined in bundle */');
+    }
+  });
+
   // Serve static files from /browser
   server.get('*.*', express.static(distFolder, {
     maxAge: '1y'
@@ -177,8 +195,9 @@ export function app(): express.Express {
   async function fetchPetData(medalString: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const http = require('http');
-      const backendHost = process.env['BACKEND_HOST'] || 'peludosclickbackend';
-      const backendPort = process.env['BACKEND_PORT'] || '3335';
+      // Use localhost for local development, peludosclickbackend for Docker
+      const backendHost = process.env['BACKEND_HOST'] || 'localhost';
+      const backendPort = process.env['BACKEND_PORT'] || '3333';
       
       const options = {
         hostname: backendHost,

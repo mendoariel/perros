@@ -54,18 +54,22 @@ async function cleanUser(email) {
       console.log(`      ✅ Medalla eliminada`);
       
       // Actualizar la virginMedal correspondiente
-      const virginMedal = await prisma.virginMedal.findFirst({
-        where: { medalString: medal.medalString }
-      });
-      
-      if (virginMedal) {
-        await prisma.virginMedal.update({
-          where: { id: virginMedal.id },
-          data: { status: 'VIRGIN' }
+      try {
+        const virginMedal = await prisma.virginMedal.findFirst({
+          where: { medalString: medal.medalString }
         });
-        console.log(`      ✅ VirginMedal actualizada a estado VIRGIN`);
-      } else {
-        console.log(`      ⚠️  No se encontró virginMedal correspondiente`);
+        
+        if (virginMedal) {
+          await prisma.virginMedal.update({
+            where: { id: virginMedal.id },
+            data: { status: 'VIRGIN' }
+          });
+          console.log(`      ✅ VirginMedal actualizada a estado VIRGIN`);
+        } else {
+          console.log(`      ⚠️  No se encontró virginMedal correspondiente`);
+        }
+      } catch (error) {
+        console.log(`      ⚠️  Error al actualizar virginMedal (continuando):`, error.message);
       }
     }
 

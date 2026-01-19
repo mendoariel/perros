@@ -22,6 +22,15 @@
       </div>
       <h3>¡Medalla encontrada!</h3>
       <p>{{ processingMessage }}</p>
+      
+      <!-- Botón de cancelar si se queda colgado -->
+      <button 
+        class="btn-cancel-processing" 
+        (click)="cancelProcessing()"
+        style="margin-top: 1.5rem; padding: 0.5rem 1rem; background: white; border: 2px solid #006455; color: #006455; border-radius: 0.5rem; cursor: pointer; font-weight: 500;"
+      >
+        Cancelar
+      </button>
     </div>
   </div>
 

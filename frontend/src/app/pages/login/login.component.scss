@@ -120,6 +120,38 @@
   font-weight: 500;
 }
 
+.auth-checking {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 2rem;
+  position: relative;
+  z-index: 10;
+}
+
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.spinner-container svg {
+  color: #006455;
+  width: 48px;
+  height: 48px;
+}
+
+.spinner-text {
+  color: #006455;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
 .login-form {
   display: flex;
   flex-direction: column;
@@ -132,6 +164,61 @@
   color: #1F2937;
   text-align: center;
   margin-bottom: 1rem;
+}
+
+// Mensaje informativo cuando viene del registro de medalla
+.info-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 229, 92, 0.1) 100%);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  animation: slideInDown 0.3s ease-out;
+
+  .info-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    color: #DAA520;
+    margin-top: 2px;
+    
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .info-content {
+    flex: 1;
+    
+    .info-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #006455;
+      margin: 0 0 0.25rem 0;
+    }
+    
+    .info-text {
+      font-size: 0.875rem;
+      color: #36454F;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .form-field {

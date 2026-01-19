@@ -21,11 +21,19 @@ async function cleanMedal(medalString: string) {
       return;
     }
 
+    // Obtener nombre del animal (ahora está directamente en la medalla)
+    const animalName = medal.petName || 'Sin nombre';
+
     console.log(`✅ Medalla encontrada:`);
     console.log(`   - ID: ${medal.id}`);
-    console.log(`   - Pet Name: ${medal.petName}`);
+    console.log(`   - Animal: ${animalName}`);
     console.log(`   - Owner ID: ${medal.ownerId}`);
-    console.log(`   - Owner Email: ${medal.owner?.email}`);
+    
+    if (medal.owner) {
+      console.log(`   - Owner Email: ${medal.owner.email}`);
+    } else {
+      console.log(`   - Owner Email: NO TIENE OWNER (necesita include)`);
+    }
 
     // 2. Verificar si el usuario tiene otras medallas
     const userMedalsCount = await prisma.medal.count({

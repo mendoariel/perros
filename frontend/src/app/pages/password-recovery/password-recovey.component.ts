@@ -1,18 +1,11 @@
-import { ROUTES } from 'src/app/core/constants/routes.constants';
-import { Component, OnDestroy, OnInit, afterRender } from '@angular/core';
-import { CommonModule, NgIf } from '@angular/common';
-import { MaterialModule } from 'src/app/material/material.module';
+import { Component, OnDestroy, afterRender } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { FormControl, FormGroup, FormGroupDirective, FormsModule, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
-import { CookieService } from 'ngx-cookie-service';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import {ErrorStateMatcher} from '@angular/material/core';
-import {MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBarComponent } from 'src/app/shared/components/sanck-bar/message-snack-bar.component';
-import { FirstNavbarComponent } from 'src/app/shared/components/first-navbar/first-navbar.component';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 
 
@@ -21,24 +14,20 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   standalone: true,
   imports: [
     CommonModule,
-    MaterialModule,
-    FormsModule,
     ReactiveFormsModule,
-    FirstNavbarComponent,
-    FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, NgIf,
   ],
   templateUrl: './password-recovery.component.html',
   styleUrls: ['./password-recovery.component.scss']
 })
 export class PasswordRecoveryComponent implements OnDestroy {
   recoveryPasswordSubscription!: Subscription;
+  isLoading = false;
   passwordRecoveryForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.email, Validators.required])
   });
   constructor(
     private router: Router,
     private authService: AuthService,
-    private cookieService: CookieService,
     private _snackBar: MatSnackBar,
     private navigationService: NavigationService
   ) {
@@ -51,7 +40,16 @@ export class PasswordRecoveryComponent implements OnDestroy {
     this.navigationService.goToHome();
   }
 
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
+
   passwordRecovery() {
+    if (this.passwordRecoveryForm.invalid || this.isLoading) {
+      return;
+    }
+
+    this.isLoading = true;
     this.recoveryPasswordSubscription = this.authService.recoveryPassword(this.passwordRecoveryForm.value).subscribe({
       next: (res: any)=> {
         this._snackBar.openFromComponent(MessageSnackBarComponent,{
@@ -59,10 +57,12 @@ export class PasswordRecoveryComponent implements OnDestroy {
           verticalPosition: 'top',
           data: res.text
         });
+        this.isLoading = false;
         this.goHome();
       },
       error : (error)=> {
         console.error(error);
+        this.isLoading = false;
         this.openSnackBar();
       }
     });

@@ -16,9 +16,15 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "typeRoots": ["./node_modules/@types"],
+    "noResolve": false
   },
   "watchOptions": {
     "watchFile": "fixedPollingInterval"
-}
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

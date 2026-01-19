@@ -156,7 +156,7 @@ export class PetFromHomeComponent implements OnDestroy {
           `https://api.peludosclick.com/pets/files/${pet.image}` : 
           'https://peludosclick.com/assets/main/cat-dog-free-safe-with-medal-peldudosclick.jpeg';
         
-        this.pet.wame = `https://wa.me/${this.pet.phone}/?text=Estoy con tu mascota ${this.pet.petName}`;
+        this.pet.wame = `https://wa.me/${this.pet.phone}/?text=¡Hola! Encontré a ${this.pet.petName}. ¿Podrías contactarme, por favor?`;
         this.pet.tel = `tel: ${this.pet.phone}`;
         
         // Keep background for backward compatibility (if needed)

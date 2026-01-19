@@ -138,7 +138,7 @@ describe('Auto Verification of Medals', () => {
             update: jest.fn().mockResolvedValue({ ...mockMedal, status: MedalState.INCOMPLETE }),
           },
           virginMedal: {
-            update: jest.fn().mockResolvedValue({ status: MedalState.REGISTERED }),
+            update: jest.fn().mockResolvedValue({ status: MedalState.INCOMPLETE }),
           },
         });
       });

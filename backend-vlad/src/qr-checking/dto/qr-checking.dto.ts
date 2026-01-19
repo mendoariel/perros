@@ -11,9 +11,6 @@ export class PostMedalDto {
     @IsNotEmpty()
     @IsEmail()
     ownerEmail: string;
-
-    @IsString()
-    petName: string;
     
     @IsString()
     @IsNotEmpty()
@@ -29,4 +26,14 @@ export class GetPetDto {
     @IsNotEmpty()
     @IsString()
     stringMedal: string;
+}
+
+export class ValidateEmailDto {
+    @IsEmail()
+    @IsNotEmpty()
+    email: string;
+    
+    @IsString()
+    @IsNotEmpty()
+    medalString: string;
 }

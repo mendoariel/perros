@@ -52,9 +52,9 @@
             class="menu-button"
           >
             <svg class="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
             </svg>
-            <span class="button-text">Menú</span>
+            <span class="button-text">Mi Cuenta</span>
             <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
@@ -62,7 +62,23 @@
           
           <mat-menu #menu="matMenu" class="modern-menu">
             <div class="menu-header">
-              <div class="menu-brand">
+              <div class="menu-user-info" *ngIf="userProfile">
+                <div class="menu-user-avatar">
+                  <img *ngIf="userProfile.avatar" [src]="getAvatarUrl(userProfile.avatar)" alt="Avatar">
+                  <div *ngIf="!userProfile.avatar" class="avatar-placeholder">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="menu-user-details">
+                  <div class="menu-user-name">
+                    {{ getUserDisplayName() }}
+                  </div>
+                  <div class="menu-user-email">{{ userProfile.email }}</div>
+                </div>
+              </div>
+              <div class="menu-brand" *ngIf="!userProfile">
                 <svg class="menu-brand-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                 </svg>
@@ -76,13 +92,22 @@
             <div class="menu-items">
               <button 
                 mat-menu-item 
-                (click)="goTo('mis-mascotas')"
+                (click)="goTo('mi-perfil')"
                 class="menu-item"
               >
                 <svg class="menu-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                 </svg>
-                <span class="menu-item-text">Mis mascotas</span>
+                <span class="menu-item-text">Mi Perfil</span>
+              </button>
+              
+              <button 
+                mat-menu-item 
+                (click)="goTo('mis-mascotas')"
+                class="menu-item"
+              >
+                <span class="material-symbols-outlined menu-item-icon">pets</span>
+                <span class="menu-item-text">Mis Mascotas</span>
               </button>
               
               <button 
@@ -93,7 +118,7 @@
                 <svg class="menu-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                 </svg>
-                <span class="menu-item-text">Todas las mascotas</span>
+                <span class="menu-item-text">Todas las Mascotas</span>
               </button>
             </div>
             
@@ -108,7 +133,7 @@
                 <svg class="menu-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                 </svg>
-                <span class="menu-item-text">Cerrar sesión</span>
+                <span class="menu-item-text">Cerrar Sesión</span>
               </button>
             </div>
           </mat-menu>

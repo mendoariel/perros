@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from "@nestjs/common";
 import { QrService } from "./qr-checking.service";
 import { Public } from "src/common/decorators";
-import { PostMedalDto, QRCheckingDto } from "./dto";
+import { PostMedalDto, QRCheckingDto, ValidateEmailDto } from "./dto";
 import { MedalStatus } from "./types";
 import { of } from "rxjs";
 import { PrismaPromise } from "@prisma/client";
@@ -24,6 +24,32 @@ export class QRCheckingController {
         } catch (error) {
             const endTime = Date.now();
             console.error(`QR Check failed in ${endTime - startTime}ms for medal: ${dto.medalString}`, error);
+            throw error;
+        }
+    }
+
+    @Public()
+    @Post('validate-email')
+    @HttpCode(HttpStatus.OK)
+    async validateEmail(@Body() dto: ValidateEmailDto): Promise<any> {
+        const startTime = Date.now();
+        try {
+            const result = await this.qrService.validateEmailForMedal(dto);
+            const endTime = Date.now();
+            console.log(`Email validation completed in ${endTime - startTime}ms for email: ${dto.email}`);
+            return result;
+        } catch (error) {
+            const endTime = Date.now();
+            console.error(`Email validation failed in ${endTime - startTime}ms for email: ${dto.email}`);
+            console.error(`Error details:`, {
+                message: error?.message,
+                code: error?.code,
+                stack: error?.stack
+            });
+            // Si es un error de Prisma, proporcionar más información
+            if (error?.code === 'P2022' || error?.message?.includes('does not exist')) {
+                console.error('Prisma error - column or table does not exist');
+            }
             throw error;
         }
     }

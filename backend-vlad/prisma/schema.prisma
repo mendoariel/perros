@@ -10,39 +10,53 @@ datasource db {
 }
 
 model User {
-  id                   Int          @id @default(autoincrement())
-  email                String       @unique
+  id                   Int            @id @default(autoincrement())
+  email                String         @unique
   hash                 String
   username             String?
   role                 Role
-  hashToRegister       String       @map("hash_to_register")
-  phonenumber          String?
-  createdAt            DateTime     @default(now()) @map("created_at")
-  hashPasswordRecovery String?      @map("hash_password_recovery")
-  hashedRt             String?      @map("hashed_rt")
-  updatedAt            DateTime     @default(now()) @map("updated_at")
-  userStatus           UserStatus   @map("user_status")
+  hashToRegister       String         @map("hash_to_register")
+  phonenumber          String?        @map("phonenumber") // Mantener por compatibilidad, pero usar phoneNumber
+  phoneNumber          String?        @map("phone_number") // Teléfono principal del usuario
+  firstName            String?        @map("first_name") // Nombre
+  lastName             String?       @map("last_name") // Apellido
+  avatar               String?       // URL de foto de perfil
+  bio                  String?       // Biografía/descripción personal
+  address              String?       // Dirección (opcional)
+  city                 String?       // Ciudad (opcional)
+  country              String?       // País (opcional)
+  createdAt            DateTime       @default(now()) @map("created_at")
+  hashPasswordRecovery String?        @map("hash_password_recovery")
+  hashedRt             String?        @map("hashed_rt")
+  updatedAt            DateTime       @default(now()) @map("updated_at")
+  userStatus           UserStatus     @map("user_status")
   medalFronts          MedalFront[]
   medals               Medal[]
+  scannedMedals        ScannedMedal[]
 
   @@map("users")
 }
 
 model Medal {
-  id           Int        @id @default(autoincrement())
-  status       MedalState
-  image        String?
-  description  String?
-  medalString  String     @unique @map("medal_string")
-  petName      String     @map("pet_name")
-  registerHash String     @map("register_hash")
-  createAt     DateTime   @default(now()) @map("created_at")
-  ownerId      Int        @map("owner_id")
-  updateAt     DateTime   @default(now()) @map("updated_at")
-  owner        User       @relation(fields: [ownerId], references: [id])
+  id              Int        @id @default(autoincrement())
+  status          MedalState
+  medalString     String     @unique @map("medal_string")
+  registerHash    String     @map("register_hash")
+  createAt        DateTime   @default(now()) @map("created_at")
+  ownerId         Int        @map("owner_id")
+  updateAt        DateTime   @default(now()) @map("updated_at")
+  
+  // Campos básicos de mascota
+  petName         String     @map("pet_name") // Nombre de la mascota
+  description     String     // Descripción
+  // phoneNumber removido - ahora se usa del User (owner)
+  image           String     // URL de la imagen (requerido, se carga en el formulario)
+  
+  owner           User       @relation(fields: [ownerId], references: [id])
 
   @@index([medalString])
   @@index([status])
+  @@index([ownerId])
   @@map("medals")
 }
 
@@ -57,6 +71,46 @@ model VirginMedal {
   @@index([medalString])
   @@index([status])
   @@map("virgin_medals")
+}
+
+model ScannedMedal {
+  id           Int        @id @default(autoincrement())
+  medalString  String     @unique @map("medal_string")
+  registerHash String     @map("register_hash")
+  scannedAt    DateTime   @default(now()) @map("scanned_at")
+  status       MedalState
+  userId       Int?       @map("user_id")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @default(now()) @map("updated_at")
+
+  user                 User?                 @relation(fields: [userId], references: [id])
+  registrationAttempts RegistrationAttempt[]
+
+  @@index([medalString])
+  @@index([status])
+  @@index([userId])
+  @@map("scanned_medals")
+}
+
+model RegistrationAttempt {
+  id             Int           @id @default(autoincrement())
+  email          String        @map("email")
+  passwordHash   String        @map("password_hash")
+  medalString    String        @map("medal_string")
+  scannedMedalId Int           @map("scanned_medal_id")
+  hashToRegister String        @map("hash_to_register")
+  status         AttemptStatus @default(PENDING)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @default(now()) @map("updated_at")
+  confirmedAt    DateTime?     @map("confirmed_at")
+
+  scannedMedal ScannedMedal @relation(fields: [scannedMedalId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([medalString])
+  @@index([status])
+  @@index([hashToRegister])
+  @@map("registration_attempts")
 }
 
 model Partner {
@@ -79,7 +133,7 @@ model Partner {
   instagram        String?
   facebook         String?
   escaparate_image String?
-  urlGoogleMap     String?        @map("url_google_map")
+  urlGoogleMap     String?          @map("url_google_map")
   articles         Article[]
   catalog          Catalog?
   comments         Comment[]
@@ -209,9 +263,7 @@ enum MedalState {
   DISABLED
   DEAD
   REGISTER_PROCESS
-  PENDING_CONFIRMATION
   INCOMPLETE
-  REGISTERED
 }
 
 enum UserStatus {
@@ -233,3 +285,11 @@ enum PartnerStatus {
   INACTIVE
   PENDING
 }
+
+enum AttemptStatus {
+  PENDING
+  CONFIRMED
+  EXPIRED
+  CANCELLED
+}
+

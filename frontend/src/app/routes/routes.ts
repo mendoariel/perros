@@ -24,6 +24,7 @@ import { TermsOfServiceComponent } from "../pages/terms-of-service/terms-of-serv
 import { TokenTestComponent } from "../pages/token-test/token-test.component";
 import { MedalAdministrationComponent } from "../pages/medal-administration/medal-administration.component";
 import { AdminResetComponent } from "../pages/admin-reset/admin-reset.component";
+import { UserProfileComponent } from "../pages/user-profile/user-profile.component";
 
 export const routes: Route[] = [
     {
@@ -131,6 +132,10 @@ export const routes: Route[] = [
     {
         path: 'admin-reset',
         component: AdminResetComponent
+    },
+    {
+        path: 'mi-perfil',
+        component: UserProfileComponent
     },
     {
         path: 'pagina-no-encontrada',

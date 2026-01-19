@@ -2,6 +2,7 @@ section.main-box {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    background: var(--color-dashboard-gradient);
     background-size: cover;
     background-position: center;
     width: 100%;

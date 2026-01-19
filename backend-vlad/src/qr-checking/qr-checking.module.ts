@@ -17,6 +17,7 @@ import { QrService } from './qr-checking.service';
     RtStrategy,
     MailService,
     UtilService
-  ]
+  ],
+  exports: [QrService] // Export QrService so it can be used in other modules
 })
 export class QrCheckingModule {}

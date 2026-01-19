@@ -59,9 +59,17 @@
   }
 }
 
+// Container principal
+.partner-detail-container {
+  min-height: 100vh;
+  background: var(--color-partner-gradient);
+  position: relative;
+  overflow: hidden;
+}
+
 // Estilos para el hero section
 .hero-section {
-  background: linear-gradient(135deg, #006455 0%, #008066 100%);
+  background: var(--color-partner-gradient);
 }
 
 // Estilos para los badges de estado

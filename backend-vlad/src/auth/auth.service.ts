@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthDto } from './dto';
 import { Message, Tokens } from './types';
@@ -6,9 +6,10 @@ import { JwtService } from '@nestjs/jwt';
 import { PasswordRecoveryDto, NewPasswordDto, ConfirmAccountDto, ConfirmMedalto, AuthSignInDto } from './dto';
 import { MailService } from '../mail/mail.service';
 import { UtilService } from '../services/util.service';
-import { Prisma, UserStatus, MedalState, Role } from '@prisma/client';
+import { Prisma, UserStatus, MedalState, Role, AttemptStatus } from '@prisma/client';
 
 var bcrypt = require('bcryptjs');
+var createHash = require('hash-generator');
 @Injectable()
 export class AuthService {
     constructor(
@@ -37,23 +38,34 @@ export class AuthService {
     // }
 
     async signinLocal(dto: AuthSignInDto): Promise<Tokens> {
-        const user = await this.prisma.user.findFirst({
-            where: {
-                email: dto.email.toLocaleLowerCase(),
-                userStatus: UserStatus.ACTIVE
+        try {
+            const user = await this.prisma.user.findFirst({
+                where: {
+                    email: dto.email.toLocaleLowerCase(),
+                    userStatus: UserStatus.ACTIVE
+                }
+            });
+            if(!user) throw new ForbiddenException("Access Denied"); 
+
+            const passwordMatcheds = await bcrypt.compareSync(dto.password, user.hash);
+
+            if(!passwordMatcheds) throw new ForbiddenException("Access Denied"); 
+
+            const tokens = await this.getToken(user.id, user.email, user.role);
+
+            await this.updateRtHash(user.id, tokens.refresh_token);
+
+            return tokens;
+        } catch (error) {
+            console.error('[signinLocal] Error durante el login:', error);
+            // Si es un error de Prisma relacionado con columnas faltantes, lanzar un error más descriptivo
+            if (error?.code === 'P2022' || error?.message?.includes('does not exist')) {
+                console.error('[signinLocal] Error de base de datos - columna o tabla no existe');
+                throw new InternalServerErrorException('Error de configuración de base de datos');
             }
-        });
-        if(!user) throw new ForbiddenException("Access Denied"); 
-
-        const passwordMatcheds = await bcrypt.compareSync(dto.password, user.hash);
-
-        if(!passwordMatcheds) throw new ForbiddenException("Access Denied"); 
-
-        const tokens = await this.getToken(user.id, user.email, user.role);
-
-        await this.updateRtHash(user.id, tokens.refresh_token);
-
-        return tokens;
+            // Re-lanzar otros errores
+            throw error;
+        }
     }
     
     async logout(userId: number) {
@@ -79,67 +91,86 @@ export class AuthService {
     }
 
     async confirmAccount(dto: ConfirmAccountDto) {
-        return await this.prisma.$transaction(async (tx) => {
-            // Verificar usuario y hash
-            const user = await tx.user.findFirst({
+        // Generar hash antes de iniciar la transacción (para evitar problemas)
+        const newHashToRegister = await this.createHashNotUsedToUser();
+        
+        const result = await this.prisma.$transaction(async (tx) => {
+            // ⚠️ CAMBIO IMPORTANTE: Buscar RegistrationAttempt, no User
+            const registrationAttempt = await tx.registrationAttempt.findFirst({
                 where: {
-                    email: dto.email.toLocaleLowerCase()
-                },
-                include: {
-                    medals: true
+                    email: dto.email.toLowerCase(),
+                    medalString: dto.medalString,
+                    hashToRegister: dto.userRegisterHash,
+                    status: AttemptStatus.PENDING
                 }
             });
-
-            if(!user) throw new NotFoundException('sin registro');
-            if(user.hashToRegister !== dto.userRegisterHash) throw new NotFoundException('fail key');
-
-            // Actualizar usuario
-            await tx.user.update({
-                where: {
-                    email: user.email
-                },
-                data: {
-                    userStatus: UserStatus.ACTIVE
-                }
-            });
-
-            // Obtener la medalla para verificar si está completa
-            const medal = await tx.medal.findUnique({
-                where: {
-                    medalString: dto.medalString
-                }
-            });
-
-            if (!medal) throw new NotFoundException('Medalla no encontrada');
-
-            // Verificar si la medalla está completa
-            const isComplete = this.isMedalComplete(medal);
             
-            // Actualizar medalla según su estado de completitud
-            await tx.medal.update({
-                where: {
-                    medalString: dto.medalString
-                },
+            if (!registrationAttempt) {
+                throw new NotFoundException('Intento de registro no encontrado o ya confirmado');
+            }
+            
+            // ⚠️ CAMBIO IMPORTANTE: Crear el User por primera vez aquí
+            const userCreated = await tx.user.create({
                 data: {
-                    status: isComplete ? MedalState.ENABLED : MedalState.INCOMPLETE
+                    email: registrationAttempt.email,
+                    hash: registrationAttempt.passwordHash, // Password ya hasheado del RegistrationAttempt
+                    userStatus: UserStatus.ACTIVE, // ⚠️ Directamente ACTIVE, no PENDING
+                    role: Role.VISITOR,
+                    hashToRegister: newHashToRegister // Nuevo hash para futuros usos
                 }
             });
-
-            // Actualizar virgin medal
-            await tx.virginMedal.update({
-                where: {
-                    medalString: dto.medalString
-                },
+            
+            // Actualizar RegistrationAttempt
+            await tx.registrationAttempt.update({
+                where: { id: registrationAttempt.id },
                 data: {
-                    status: isComplete ? MedalState.ENABLED : MedalState.REGISTERED
+                    status: AttemptStatus.CONFIRMED,
+                    confirmedAt: new Date()
                 }
             });
-
-            return {
-                message: isComplete ? "user registered, medal enabled" : "user registered, medal incomplete",
-                code: 5001
-            };
+            
+            // ✅ CAMBIO: Actualizar ScannedMedal con el userId del usuario recién creado
+            // NO cambiar el estado, mantener en VIRGIN hasta que se complete la mascota
+            const scannedMedal = await tx.scannedMedal.findFirst({
+                where: { medalString: dto.medalString }
+            });
+            
+            if (scannedMedal) {
+                await tx.scannedMedal.update({
+                    where: { id: scannedMedal.id },
+                    data: {
+                        userId: userCreated.id // Ahora sí asignamos el userId
+                        // ✅ NO cambiar status, mantener en VIRGIN
+                    }
+                });
+            }
+            
+            return userCreated;
         });
+        
+        // Generar tokens DESPUÉS de la transacción (fuera de ella)
+        const tokens = await this.getToken(result.id, result.email, result.role);
+        await this.updateRtHash(result.id, tokens.refresh_token);
+        
+        return {
+            message: "Cuenta confirmada. Ahora puedes completar la información de tu mascota.",
+            code: 5001,
+            redirectTo: `/formulario-mi-mascota/${dto.medalString}`,
+            tokens: tokens // Tokens para login automático
+        };
+    }
+
+    async createHashNotUsedToUser(): Promise<string> {
+        const hash = createHash(36);
+
+        const hashUsed = await this.prisma.user.findFirst({
+            where: {
+                hashToRegister: hash
+            }
+        });
+
+        if(!hashUsed) return hash;
+        return this.createHashNotUsedToUser();
     }
 
     async confirmMedal(dto: ConfirmMedalto) {
@@ -211,13 +242,42 @@ export class AuthService {
         return message;
     }
     async newPassword(dto: NewPasswordDto): Promise<Message> {
+        // Debug: verificar qué valores se están recibiendo
+        console.log('🔍 Debug - Valores recibidos en backend:');
+        console.log('  Email recibido:', dto.email);
+        console.log('  Hash recibido:', dto.hash);
+        console.log('  Hash recibido length:', dto.hash?.length);
+        
         const user = await this.prisma.user.findUnique({
             where: {
-                email: dto.email.toLocaleLowerCase()
+                email: dto.email.toLowerCase()
             }
         });
-        if(!user) throw new ForbiddenException("Access Denied"); 
-        if(user.hashPasswordRecovery !== dto.hash) throw new ForbiddenException("Access Denied");
+        
+        if(!user) {
+            console.log('❌ Usuario no encontrado');
+            throw new ForbiddenException("Usuario no encontrado o enlace inválido");
+        }
+        
+        console.log('✅ Usuario encontrado');
+        console.log('  Hash en BD:', user.hashPasswordRecovery || '(null)');
+        console.log('  Hash en BD length:', user.hashPasswordRecovery?.length || 0);
+        console.log('  Hashes coinciden?', user.hashPasswordRecovery === dto.hash);
+        
+        // Verificar que el hash de recuperación existe y coincide
+        if(!user.hashPasswordRecovery) {
+            console.log('❌ Hash en BD es null');
+            throw new ForbiddenException("Este enlace ya fue utilizado o ha expirado. Por favor, solicita un nuevo enlace de recuperación.");
+        }
+        
+        if(user.hashPasswordRecovery !== dto.hash) {
+            console.log('❌ Hashes NO coinciden');
+            console.log('  BD:', user.hashPasswordRecovery);
+            console.log('  Recibido:', dto.hash);
+            throw new ForbiddenException("El enlace de recuperación no es válido. Por favor, solicita un nuevo enlace.");
+        }
+        
+        console.log('✅ Hash válido, procediendo a actualizar contraseña');
 
         const hash = await this.hashData(dto.password);
 
@@ -231,7 +291,7 @@ export class AuthService {
             }
         })
 
-        let message: Message = { text: 'Datos de tu cuenta actulizados puedes ingresar con el nuevo password'};
+        let message: Message = { text: 'Datos de tu cuenta actualizados. Puedes ingresar con el nuevo password'};
 
         return message;
     }
@@ -266,16 +326,22 @@ export class AuthService {
     }
 
     async updateRtHash(userId: number, rt: string) {
-        const hash = await this.hashData(rt);
+        try {
+            const hash = await this.hashData(rt);
 
-        await this.prisma.user.update({
-            where: {
-                id: userId
-            },
-            data: {
-                hashedRt: hash
-            }
-        });
+            await this.prisma.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    hashedRt: hash
+                }
+            });
+        } catch (error) {
+            console.error('[updateRtHash] Error actualizando refresh token hash:', error);
+            // No lanzar error aquí para no romper el login si solo falla la actualización del hash
+            // El token ya fue generado, así que el login puede continuar
+        }
     }
 
     hashData(data: string) {

@@ -16,14 +16,22 @@ export const AuthInterceptor: HttpInterceptorFn = (request: HttpRequest<unknown>
     if (isPlatformBrowser(platformId)) {
       const token = localStorage.getItem('access_token');
       if (token) {
+        console.log('[AuthInterceptor] Agregando token a petición:', request.url);
         request = addToken(request, token);
+      } else {
+        console.warn('[AuthInterceptor] No hay token disponible para:', request.url);
       }
+    } else {
+      console.warn('[AuthInterceptor] No estamos en el navegador (SSR), no se puede agregar token a:', request.url);
     }
+  } else {
+    console.log('[AuthInterceptor] Petición pública, no se agrega token:', request.url);
   }
 
   return next(request).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401 && !isPublicRequest(request.url)) {
+        console.error('[AuthInterceptor] Error 401 en petición:', request.url);
         return handle401Error(request, next, authService);
       }
       return throwError(() => error);
@@ -40,6 +48,23 @@ function addToken(request: HttpRequest<unknown>, token: string): HttpRequest<unk
 }
 
 function isPublicRequest(url: string): boolean {
+  // PRIMERO: Verificar endpoints privados (que requieren autenticación)
+  // Estos NO son públicos, así que retornamos false inmediatamente
+  const privateEndpoints = [
+    '/pets/mine', // Mis mascotas - requiere autenticación
+    '/pets/my/', // Mascota específica - requiere autenticación
+    '/pets/update-medal', // Actualizar medalla - requiere autenticación
+    '/pets/profile-picture', // Subir foto - requiere autenticación
+    '/pets/pending-scanned-medals', // Medallas pendientes - requiere autenticación
+    '/pets/create-medal-for-existing-user' // Crear medalla para usuario existente - requiere autenticación
+  ];
+
+  if (privateEndpoints.some(endpoint => url.includes(endpoint))) {
+    console.log('[AuthInterceptor] Endpoint privado detectado:', url);
+    return false; // NO es público, requiere autenticación
+  }
+
+  // SEGUNDO: Verificar endpoints públicos explícitos
   const publicEndpoints = [
     '/auth/local/signin',
     '/auth/local/signup',
@@ -47,14 +72,35 @@ function isPublicRequest(url: string): boolean {
     '/auth/new-password',
     '/auth/confirm-account',
     '/auth/confirm-medal',
-    '/auth/refresh'
+    '/auth/refresh',
+    '/qr/checking', // Endpoint público para verificar QR
+    '/qr/validate-email', // Endpoint público para validar email
+    '/qr/pet' // Endpoint público para registro inicial (sin autenticación)
   ];
 
-  return publicEndpoints.some(endpoint => url.includes(endpoint));
+  if (publicEndpoints.some(endpoint => url.includes(endpoint))) {
+    return true; // Es público
+  }
+
+  // TERCERO: Verificar /pets sin sufijos (solo GET /pets es público)
+  // Esto debe ir al final para no interferir con los endpoints privados
+  if (url.includes('/pets') && 
+      !url.includes('/pets/mine') && 
+      !url.includes('/pets/my/') && 
+      !url.includes('/pets/update-medal') && 
+      !url.includes('/pets/profile-picture') && 
+      !url.includes('/pets/pending-scanned-medals') &&
+      !url.includes('/pets/create-medal-for-existing-user') &&
+      !url.includes('/pets/files/')) {
+    // Solo /pets (sin sufijos) es público para obtener todas las mascotas
+    return true;
+  }
+
+  // Por defecto, si no está en ninguna lista, requiere autenticación
+  return false;
 }
 
 function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, authService: AuthService): Observable<any> {
-  const platformId = inject(PLATFORM_ID);
   if (!isRefreshing) {
     isRefreshing = true;
     refreshTokenSubject.next(null);
@@ -65,7 +111,7 @@ function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, auth
         refreshTokenSubject.next(tokens.access_token);
         
         // Actualizar tokens en localStorage solo en el navegador
-        if (isPlatformBrowser(platformId)) {
+        if (typeof window !== 'undefined' && window.localStorage) {
           localStorage.setItem('access_token', tokens.access_token);
           localStorage.setItem('refresh_token', tokens.refresh_token);
         }
@@ -77,7 +123,7 @@ function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, auth
         isRefreshing = false;
         
         // Si el refresh falla, limpiar tokens y redirigir al login
-        if (isPlatformBrowser(platformId)) {
+        if (typeof window !== 'undefined' && window.localStorage) {
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
         }
@@ -101,9 +147,8 @@ function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, auth
 }
 
 function refreshToken(authService: AuthService): Observable<any> {
-  const platformId = inject(PLATFORM_ID);
-  
-  if (!isPlatformBrowser(platformId)) {
+  // Verificar que estamos en el navegador
+  if (typeof window === 'undefined' || !window.localStorage) {
     return throwError(() => new Error('Refresh token not available in SSR'));
   }
   

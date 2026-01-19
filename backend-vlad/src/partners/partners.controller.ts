@@ -17,7 +17,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { Response } from 'express';
 import { PartnersService } from './partners.service';
 import { 
@@ -261,7 +261,7 @@ export class PartnersController {
   @UseGuards(AtGuard)
   @UseInterceptors(FileInterceptor('image', {
     storage: diskStorage({
-      destination: '/alberto/backend/src/app/public/images/partners',
+      destination: join(process.cwd(), 'public', 'images', 'partners'),
       filename: (req, file, cb) => {
         const randomName = Array(32).fill(null)
           .map(() => Math.round(Math.random() * 16).toString(16)).join('');
@@ -299,7 +299,7 @@ export class PartnersController {
   @UseGuards(AtGuard)
   @UseInterceptors(FileInterceptor('image', {
     storage: diskStorage({
-      destination: '/alberto/backend/src/app/public/images/partners',
+      destination: join(process.cwd(), 'public', 'images', 'partners'),
       filename: (req, file, cb) => {
         const randomName = Array(32).fill(null)
           .map(() => Math.round(Math.random() * 16).toString(16)).join('');
@@ -336,7 +336,7 @@ export class PartnersController {
   @Get('images/:filename')
   @Public()
   serveImage(@Param('filename') filename: string, @Res() res: Response) {
-    return res.sendFile(filename, { root: '/alberto/backend/src/app/public/images/partners' });
+    return res.sendFile(filename, { root: join(process.cwd(), 'public', 'images', 'partners') });
   }
 
   // Gallery endpoints
@@ -344,7 +344,7 @@ export class PartnersController {
   @UseGuards(AtGuard)
   @UseInterceptors(FileInterceptor('image', {
     storage: diskStorage({
-      destination: '/alberto/backend/src/app/public/images/partners/gallery',
+      destination: join(process.cwd(), 'public', 'images', 'partners', 'gallery'),
       filename: (req, file, cb) => {
         const randomName = Array(32).fill(null)
           .map(() => Math.round(Math.random() * 16).toString(16)).join('');

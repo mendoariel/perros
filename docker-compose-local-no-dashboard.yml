@@ -1,0 +1,95 @@
+version: "3.8"
+services:
+  frontend-perros:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: mi-perro-qr-frontend-perros-1
+    command: npm run start-ssr
+    ports:
+      - '4100:4100'
+      - '9876:9876'
+    environment:
+      - NODE_ENV=development
+      - PORT=4100
+      - HOST=0.0.0.0
+      - BACKEND_URL=http://localhost:3333
+      - CHROME_BIN=/usr/bin/chromium
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend-perros
+    networks:
+      - app-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  backend-perros:
+    build: 
+      context: ./backend-vlad
+      dockerfile: Dockerfile
+      target: development
+    container_name: backend-perros
+    volumes:
+      - ./backend-vlad:/alberto/backend/src/app
+      - /alberto/backend/src/app/node_modules/
+      - ./backend-vlad/prisma:/alberto/backend/src/app/prisma/
+    command: >
+      sh -c "npx prisma generate &&
+             # npx prisma migrate deploy &&  # Comentado temporalmente - migración aplicada manualmente
+             npm run start:dev"
+    ports:
+      - '3333:3333'
+      - '5555:5555'
+      - '9229:9229'
+    depends_on: 
+      postgres:
+        condition: service_healthy
+    env_file: "./backend-vlad/.my-env-local"
+    networks:
+      - app-network
+  postgres:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: mendoariel
+      POSTGRES_PASSWORD: casadesara
+      POSTGRES_DB: peludosclick
+    ports:
+      -  5432:5432  
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mendoariel -d peludosclick"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+  # The Postgres Admin tool if we want to run some custom queries and so on against our Database
+  postgres_admin-perros:
+    image: dpage/pgadmin4:8.7
+    depends_on: 
+       - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - 5050:80
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+    name: postgres_data_local
+  pgadmin_data:
+    name: pgadmin_data_local
+
+networks:
+  app-network:
+    driver: bridge
+

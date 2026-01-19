@@ -6,6 +6,50 @@
 // Import global variables
 @import './styles/variables.scss';
 
+// ============================================
+// 🎨 SISTEMA DE COLORES - PeludosClick
+// ============================================
+:root {
+  // 🟢 CATEGORÍA: AUTENTICACIÓN/SEGURIDAD
+  --color-auth-gradient: linear-gradient(135deg, #006455 0%, #008066 50%, #FFD700 100%);
+  --color-auth-start: #006455;
+  --color-auth-mid: #008066;
+  --color-auth-end: #FFD700;
+  
+  // 🟡 CATEGORÍA: CREACIÓN/REGISTRO
+  --color-create-gradient: linear-gradient(135deg, #FFFDD0 0%, #FFE55C 100%);
+  --color-create-cream: #FFFDD0;
+  --color-create-yellow: #FFE55C;
+  --color-create-gold: #FFD700;
+  
+  // 🟣 CATEGORÍA: EXPLORACIÓN/PÚBLICO
+  --color-explore-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --color-explore-start: #667eea;
+  --color-explore-end: #764ba2;
+  
+  // ⚪ CATEGORÍA: GESTIÓN PERSONAL/DASHBOARD
+  --color-dashboard-gradient: linear-gradient(135deg, #FFFDD0 0%, #ffffff 50%, #f8f9fa 100%);
+  --color-dashboard-cream: #FFFDD0;
+  --color-dashboard-white: #ffffff;
+  --color-dashboard-gray: #f8f9fa;
+  
+  // 🔵 CATEGORÍA: PARTNERS
+  --color-partner-gradient: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 50%, #e0f0e0 100%);
+  --color-partner-light: #e8f5e8;
+  --color-partner-mid: #f0f8f0;
+  --color-partner-dark: #e0f0e0;
+  
+  // ⚫ CATEGORÍA: LEGAL/NEUTRA
+  --color-neutral: #f8f9fa;
+  --color-neutral-dark: #e9ecef;
+  --color-neutral-darker: #6c757d;
+  
+  // 🔵 CATEGORÍA: ENTRADA/PRESENTACIÓN (variado, usar según sección)
+  --color-welcome-cream: linear-gradient(135deg, #FFFDD0 0%, #FFF8DC 50%, #F5F5DC 100%);
+  --color-welcome-green: linear-gradient(135deg, #E8F5E8 0%, #F0F8F0 50%, #E0F0E0 100%);
+  --color-welcome-blue: linear-gradient(135deg, #E6F3FF 0%, #F0F8FF 50%, #E0F0FF 100%);
+}
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 

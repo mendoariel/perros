@@ -1,9 +1,8 @@
 mat-toolbar {
-    background-color:rgb(37, 242, 10) !important;
+    background-color: var(--color-create-gold) !important;
 }
 main {
-
-    background-color: darkgreen;
+    background: var(--color-create-gradient);
     min-width: 100vw;
     min-height: 100vh;
     display: flex;

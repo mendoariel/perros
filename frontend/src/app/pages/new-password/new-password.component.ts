@@ -70,7 +70,10 @@ export class NewPasswordComponent implements OnDestroy {
     afterRender(() => {
       this.activatedRote.queryParams.subscribe(params => {
         this.email = params['email'];
-        this.hash = params['hash'];
+        // Decodificar el hash por si viene codificado en la URL
+        this.hash = params['hash'] ? decodeURIComponent(params['hash']) : params['hash'];
+        console.log('🔍 Hash leído de URL:', this.hash);
+        console.log('🔍 Hash raw de params:', params['hash']);
       });
       this.checkAuth();
     });
@@ -81,6 +84,13 @@ export class NewPasswordComponent implements OnDestroy {
   }
 
   newPassword() {
+    // Debug: verificar qué valores se están enviando
+    console.log('🔍 Debug - Valores a enviar:');
+    console.log('  Email:', this.email);
+    console.log('  Hash desde URL:', this.hash);
+    console.log('  Hash length:', this.hash?.length);
+    console.log('  Password length:', this.password?.value?.length);
+    
     let newPassword: NewPasswordInterface = { email: this.email, hash: this.hash, password: this.password?.value};
 
     this.newPasswordSubscription = this.authService.newPassword(newPassword).subscribe({

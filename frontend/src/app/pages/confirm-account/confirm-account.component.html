@@ -1,10 +1,116 @@
-<main>
-    <section class="checking" *ngIf="spinner">
-        <h1>Processo Confirmacion de cuenta</h1>
-        <mat-spinner></mat-spinner>
-    </section>
-    <section class="no-found" *ngIf="!spinner">
-        <h1>{{ message }}</h1>
-        <button *ngIf="accountConfirmed" mat-raised-button color="primary" (click)="navigateToMyPets()">Mis mascotas</button>
-    </section>
-</main>
+<div class="min-h-screen bg-gradient-to-br from-[#FFFDD0] to-[#FFE55C]">
+  <!-- Loading Spinner -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" *ngIf="spinner">
+    <div class="bg-white rounded-2xl p-8 shadow-2xl text-center max-w-md mx-4">
+      <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-[#006455] mx-auto mb-4"></div>
+      <h2 class="text-xl font-semibold text-[#006455] mb-2">Confirmando tu cuenta</h2>
+      <p class="text-[#36454F]">Por favor espera un momento...</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-4 py-8" *ngIf="!spinner">
+    <div class="max-w-2xl mx-auto">
+      <!-- Header Section -->
+      <div class="text-center mb-8">
+        <div class="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4 shadow-lg border-2 border-[#006455]">
+          <svg class="w-10 h-10 text-[#006455]" fill="none" stroke="currentColor" viewBox="0 0 24 24" *ngIf="!accountConfirmed && !message">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" *ngIf="accountConfirmed">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" *ngIf="message && !accountConfirmed">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <h1 class="text-3xl font-bold text-[#006455] mb-2">Confirmación de Cuenta</h1>
+        <p class="text-[#36454F] text-lg">PeludosClick</p>
+      </div>
+
+      <!-- Success Card -->
+      <div *ngIf="accountConfirmed" class="bg-white rounded-2xl shadow-xl p-8">
+        <div class="text-center mb-6">
+          <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-[#006455] mb-2">¡Cuenta Confirmada!</h2>
+          <p class="text-[#36454F] text-lg mb-4">
+            Tu cuenta ha sido confirmada exitosamente.
+          </p>
+        </div>
+
+        <div class="bg-blue-50 border-l-4 border-[#006455] p-4 rounded-r-lg mb-6">
+          <p class="text-sm text-[#36454F] mb-2">
+            <strong>Próximo paso:</strong>
+          </p>
+          <p class="text-sm text-[#36454F]">
+            Completa la información de tu mascota (nombre, foto, descripción) para activar tu medalla y poder usarla.
+          </p>
+        </div>
+
+        <button 
+          type="button"
+          (click)="navigateToPetForm()" 
+          class="w-full btn-primary"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          </svg>
+          Completar Información de Mascota
+        </button>
+      </div>
+
+      <!-- Error Card -->
+      <div *ngIf="message && !accountConfirmed" class="bg-white rounded-2xl shadow-xl p-8">
+        <div class="text-center mb-6">
+          <div class="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-[#006455] mb-2">Error al Confirmar</h2>
+          <p class="text-[#36454F] text-lg mb-6">
+            {{ message }}
+          </p>
+        </div>
+
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg mb-6">
+          <p class="text-sm text-[#36454F]">
+            <strong>Posibles causas:</strong>
+          </p>
+          <ul class="list-disc list-inside text-sm text-[#36454F] mt-2 space-y-1">
+            <li>El enlace de confirmación ya fue utilizado</li>
+            <li>El enlace de confirmación expiró</li>
+            <li>Los parámetros de confirmación son inválidos</li>
+          </ul>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button 
+            type="button"
+            (click)="navigationService.goToWelcome()" 
+            class="flex-1 btn-secondary"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            </svg>
+            Ir al Inicio
+          </button>
+          <button 
+            type="button"
+            (click)="navigationService.goToLogin()" 
+            class="flex-1 btn-primary"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+            </svg>
+            Iniciar Sesión
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

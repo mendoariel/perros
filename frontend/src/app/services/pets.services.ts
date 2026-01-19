@@ -46,6 +46,10 @@ export class PetsService {
         return this.http.get<Pet[]>(`${this.getApiUrl()}pets/mine`);
     }
 
+    getPendingScannedMedals(): Observable<Array<{ medalString: string; scannedAt: string }>> {
+        return this.http.get<Array<{ medalString: string; scannedAt: string }>>(`${this.getApiUrl()}pets/pending-scanned-medals`);
+    }
+
     updateMedal(body: any): Observable<any> {
         return this.http.put<any>(`${this.getApiUrl()}pets/update-medal`, body);
     }

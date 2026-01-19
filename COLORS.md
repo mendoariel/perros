@@ -281,5 +281,46 @@ module.exports = {
 
 ---
 
+## 🎨 Sistema de Colores Implementado
+
+### Variables CSS Globales
+
+Todas las variables están definidas en `frontend/src/styles.scss`:
+
+```scss
+:root {
+  // 🟢 AUTENTICACIÓN/SEGURIDAD
+  --color-auth-gradient: linear-gradient(135deg, #006455 0%, #008066 50%, #FFD700 100%);
+  
+  // 🟡 CREACIÓN/REGISTRO
+  --color-create-gradient: linear-gradient(135deg, #FFFDD0 0%, #FFE55C 100%);
+  
+  // 🟣 EXPLORACIÓN/PÚBLICO
+  --color-explore-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  
+  // ⚪ GESTIÓN PERSONAL/DASHBOARD
+  --color-dashboard-gradient: linear-gradient(135deg, #FFFDD0 0%, #ffffff 50%, #f8f9fa 100%);
+  
+  // 🔵 PARTNERS
+  --color-partner-gradient: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 50%, #e0f0e0 100%);
+  
+  // ⚫ LEGAL/NEUTRA
+  --color-neutral: #f8f9fa;
+}
+```
+
+### Componentes Actualizados
+
+- ✅ `pet-form.component.scss` - Cambiado de lila a amarillo/dorado
+- ✅ `pets.component.scss` - Asignado color lila/púrpura
+- ✅ `confirm-medal.component.scss` - Asignado color amarillo/dorado
+- ✅ `register.component.scss` - Asignado color verde-dorado
+- ✅ `new-password.component.scss` - Asignado color verde-dorado
+- ✅ `partners.component.scss` - Asignado color verde claro
+- ✅ `partner-detail.component.scss` - Asignado color verde claro
+- ✅ `home.component.scss` - Asignado color crema/blanco
+
+---
+
 *Última actualización: Enero 2025*
-*Versión: 1.0* 
+*Versión: 2.0 - Sistema Implementado* 

@@ -32,6 +32,6 @@ export class UserService {
     }
 
     getUserProfile() {
-        return this.http.get<UserInterface>(`${environment.perrosQrApi}users/me`, this.getHeaders());
+        return this.http.get<any>(`${environment.perrosQrApi}users/me`, this.getHeaders());
     }
 }

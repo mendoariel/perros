@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "src/environments/environment";
 
@@ -7,8 +7,12 @@ export class UploadFileService {
     constructor(private http: HttpClient) {}
 
     uploadProfileServie(form: FormData) {
-        let token = localStorage.getItem('access_token');
-        let header = new HttpHeaders().set('Authorization',`Bearer ${token}`);
-        return this.http.post(`${environment.perrosQrApi}pets/profile-picture`, form, {headers: header});    
+        // El interceptor de autenticación se encargará de agregar el token automáticamente
+        return this.http.post(`${environment.perrosQrApi}pets/profile-picture`, form);    
+    }
+
+    uploadUserAvatar(form: FormData) {
+        // El interceptor de autenticación se encargará de agregar el token automáticamente
+        return this.http.post(`${environment.perrosQrApi}users/me/avatar`, form);    
     }
 }

@@ -17,6 +17,9 @@ export const ROUTES = {
     ADD_PET: 'agregar-mascota',
     MASCOTA_CHECKING: 'mascota-checking',
     
+    // User profile routes
+    USER_PROFILE: 'mi-perfil',
+    
     // Error routes
     ERROR: 'pagina-no-encontrada'
 } as const;

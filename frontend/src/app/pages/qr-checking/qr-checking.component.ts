@@ -1,4 +1,4 @@
-import { Component, OnDestroy, afterRender, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, afterRender, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material/material.module';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -33,7 +33,8 @@ export class QrCheckingComponent implements OnDestroy {
     private router: Router,
     private qrService: QrChekingService,
     private _snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {
     afterRender(() => {
       this.loadData();
@@ -117,59 +118,127 @@ export class QrCheckingComponent implements OnDestroy {
           this.isProcessing = true;
           this.processingMessage = 'Redirigiendo al registro de mascota...';
           this.cdr.detectChanges();
-          this.goToAddPet(res.medalString);
+          
+          // Redirigir dentro de la zona de Angular para evitar warnings
+          this.ngZone.run(() => {
+            setTimeout(() => {
+              this.goToAddPet(res.medalString);
+            }, 500);
+          });
         } else if (res.status === 'REGISTER_PROCESS') {
           this.isProcessing = true;
           this.processingMessage = 'Esta medalla está en proceso de registro...';
           this.cdr.detectChanges();
           this.openSnackBar('Esta medalla está en proceso de registro.');
-          this.goToMedalAdministration(res.medalString);
+          this.ngZone.run(() => {
+            setTimeout(() => this.goToMedalAdministration(res.medalString), 500);
+          });
         } else if (res.status === 'ENABLED') {
           this.isProcessing = true;
           this.processingMessage = 'Redirigiendo a la información de la mascota...';
           this.cdr.detectChanges();
-          this.goPet(res.medalString);
+          this.ngZone.run(() => {
+            setTimeout(() => this.goPet(res.medalString), 500);
+          });
         } else if (res.status === 'INCOMPLETE') {
           this.isProcessing = true;
           this.processingMessage = 'Completando información de la mascota...';
           this.cdr.detectChanges();
-          this.goToMedalAdministration(res.medalString);
+          this.ngZone.run(() => {
+            setTimeout(() => this.goToMedalAdministration(res.medalString), 500);
+          });
         } else {
           // Para otros estados, mostrar mensaje genérico
           this.isProcessing = true;
           this.processingMessage = 'Procesando estado de la medalla...';
           this.cdr.detectChanges();
-          this.goToMedalAdministration(res.medalString);
+          this.ngZone.run(() => {
+            setTimeout(() => this.goToMedalAdministration(res.medalString), 500);
+          });
         }
       },
       error: (error: any) => {
-        // Solo mostrar error si la petición no se completó exitosamente
-        if (!this.isRequestCompleted && !this.hasFoundMedal) {
-          this.message = 'Medalla sin registro';
-          this.isProcessing = false;
-          this.isSuccess = false;
-          this.isRequestCompleted = true;
-          this.showError = true;
-          this.cdr.detectChanges();
-        }
+        // Siempre manejar errores, incluso si la petición se completó parcialmente
+        console.error('Error en checkingQr:', error);
+        this.message = error?.error?.message || error?.message || 'Error al verificar la medalla';
+        this.isProcessing = false;
+        this.isSuccess = false;
+        this.isRequestCompleted = true;
+        this.showError = true;
+        this.cdr.detectChanges();
       }
     });
   }
 
   goToAddPet(medalString: string) {
-    this.router.navigate([`/agregar-mascota/${medalString}`]);
+    // Navegar dentro de la zona de Angular
+    this.ngZone.run(() => {
+      // Limpiar estados antes de navegar
+      this.isProcessing = false;
+      this.cdr.detectChanges();
+      
+      // Navegar inmediatamente
+      this.router.navigate([`/agregar-mascota/${medalString}`]).then(() => {
+        // Navegación exitosa
+        console.log('Navegación exitosa a agregar-mascota');
+      }).catch(err => {
+        console.error('Error navegando a agregar-mascota:', err);
+        // Si falla la navegación, limpiar estados y mostrar error
+        this.isProcessing = false;
+        this.isSuccess = false;
+        this.showError = true;
+        this.message = 'Error al redirigir. Por favor, intenta de nuevo.';
+        this.cdr.detectChanges();
+      });
+    });
+  }
+  
+  cancelProcessing() {
+    // Cancelar el procesamiento y limpiar estados
+    this.ngZone.run(() => {
+      this.isProcessing = false;
+      this.isSuccess = false;
+      this.hasFoundMedal = false;
+      this.isRequestCompleted = false;
+      this.showError = false;
+      this.message = '';
+      this.cdr.detectChanges();
+      
+      // Redirigir a home
+      this.goHome();
+    });
   }
 
   goPet(medalString: string) {
-    this.router.navigate([`/mascota/${medalString}`]);
+    this.ngZone.run(() => {
+      this.router.navigate([`/mascota/${medalString}`]).catch(err => {
+        console.error('Error navegando a mascota:', err);
+        this.isProcessing = false;
+        this.showError = true;
+        this.message = 'Error al redirigir. Por favor, intenta de nuevo.';
+        this.cdr.detectChanges();
+      });
+    });
   }
 
   goToMedalAdministration(medalString: string) {
-    this.router.navigate([`/administracion-medalla/${medalString}`]);
+    this.ngZone.run(() => {
+      this.router.navigate([`/administracion-medalla/${medalString}`]).catch(err => {
+        console.error('Error navegando a administracion-medalla:', err);
+        this.isProcessing = false;
+        this.showError = true;
+        this.message = 'Error al redirigir. Por favor, intenta de nuevo.';
+        this.cdr.detectChanges();
+      });
+    });
   }
 
   goHome() {
-    this.router.navigate(['/']);
+    this.ngZone.run(() => {
+      this.router.navigate(['/']).catch(err => {
+        console.error('Error navegando a home:', err);
+      });
+    });
   }
 
   retryChecking() {

@@ -23,9 +23,12 @@ export function app(): express.Express {
   // Health check endpoint for backend
   server.get('/health/backend', async (req, res) => {
     const http = require('http');
+    // Use localhost for local development, backend-perros for Docker
+    const backendHost = process.env['BACKEND_HOST'] || 'localhost';
+    const backendPort = parseInt(process.env['BACKEND_PORT'] || '3333', 10);
     const options = {
-      hostname: 'backend-perros',
-      port: 3333,
+      hostname: backendHost,
+      port: backendPort,
       path: '/health',
       method: 'GET',
       timeout: 5000
@@ -48,14 +51,17 @@ export function app(): express.Express {
     const url = require('url');
     
     const parsedUrl = url.parse(req.url);
+    // Use localhost for local development, backend-perros for Docker
+    const backendHost = process.env['BACKEND_HOST'] || 'localhost';
+    const backendPort = parseInt(process.env['BACKEND_PORT'] || '3333', 10);
     const options = {
-      hostname: 'backend-perros',
-      port: 3333,
+      hostname: backendHost,
+      port: backendPort,
       path: parsedUrl.path,
       method: req.method,
       headers: {
         ...req.headers,
-        host: 'backend-perros:3333'
+        host: `${backendHost}:${backendPort}`
       },
       timeout: 10000 // 10 second timeout
     };
@@ -105,14 +111,17 @@ export function app(): express.Express {
     const url = require('url');
     
     const parsedUrl = url.parse(req.url);
+    // Use localhost for local development, backend-perros for Docker
+    const backendHost = process.env['BACKEND_HOST'] || 'localhost';
+    const backendPort = parseInt(process.env['BACKEND_PORT'] || '3333', 10);
     const options = {
-      hostname: 'backend-perros', // Use the local Docker service name
-      port: 3333,
+      hostname: backendHost,
+      port: backendPort,
       path: `/pets/files${parsedUrl.path}`,
       method: req.method,
       headers: {
         ...req.headers,
-        host: 'backend-perros:3333'
+        host: `${backendHost}:${backendPort}`
       }
     };
 
@@ -135,14 +144,17 @@ export function app(): express.Express {
     const url = require('url');
     
     const parsedUrl = url.parse(req.url);
+    // Use localhost for local development, backend-perros for Docker
+    const backendHost = process.env['BACKEND_HOST'] || 'localhost';
+    const backendPort = parseInt(process.env['BACKEND_PORT'] || '3333', 10);
     const options = {
-      hostname: 'backend-perros', // Use the local Docker service name
-      port: 3333,
+      hostname: backendHost,
+      port: backendPort,
       path: `/images/partners${parsedUrl.path}`,
       method: req.method,
       headers: {
         ...req.headers,
-        host: 'backend-perros:3333'
+        host: `${backendHost}:${backendPort}`
       }
     };
 
@@ -157,6 +169,21 @@ export function app(): express.Express {
     });
 
     req.pipe(proxyReq, { end: true });
+  });
+
+  // Handle CSS file requests gracefully - suppress 404 warnings for missing CSS files
+  // This must be BEFORE express.static to intercept CSS requests
+  server.get('*.css', (req, res, next) => {
+    const filePath = join(distFolder, req.path);
+    if (existsSync(filePath)) {
+      res.setHeader('Content-Type', 'text/css; charset=utf-8');
+      res.sendFile(filePath);
+    } else {
+      // Silently ignore missing CSS files - they may be inlined in the bundle
+      // Return empty CSS instead of 404 to avoid warnings
+      res.setHeader('Content-Type', 'text/css; charset=utf-8');
+      res.status(200).send('/* CSS file not found - styles are inlined in bundle */');
+    }
   });
 
   // Serve static files from /browser with proper MIME types

@@ -87,6 +87,9 @@ export class MyPetsComponent implements OnInit, OnDestroy {
 
           if (this.myPets.length === 1 && this.myPets[0].status === 'INCOMPLETE') {
             this.goToMyPetForm(this.myPets[0].medalString);
+          } else if (this.myPets.length === 0) {
+            // ✅ Si no hay mascotas, verificar si hay ScannedMedal pendientes
+            this.checkPendingScannedMedals();
           }
         } else {
           this.error = 'No se pudieron cargar las mascotas';
@@ -99,6 +102,22 @@ export class MyPetsComponent implements OnInit, OnDestroy {
         this.error = error?.error?.message || 'Error al cargar las mascotas';
         this.myPets = [];
         this.cdr.detectChanges();
+      }
+    });
+  }
+
+  checkPendingScannedMedals() {
+    this.petsServices.getPendingScannedMedals().subscribe({
+      next: (pendingMedals: Array<{ medalString: string; scannedAt: string }>) => {
+        if (pendingMedals && pendingMedals.length > 0) {
+          // ✅ Redirigir automáticamente al formulario con el primer ScannedMedal pendiente
+          const firstPendingMedal = pendingMedals[0];
+          this.goToMyPetForm(firstPendingMedal.medalString);
+        }
+      },
+      error: (error: any) => {
+        // Si hay error, no hacer nada (el usuario verá la pantalla de "No tienes mascotas")
+        console.error('Error al verificar ScannedMedal pendientes:', error);
       }
     });
   }
