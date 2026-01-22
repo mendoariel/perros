@@ -23,7 +23,10 @@ export class PetsServicie {
 
     async allPet(page: number = 1, limit: number = 10) {
         try {
-            const skip = (page - 1) * limit;
+            const pageNum = isNaN(Number(page)) ? 1 : Number(page);
+            const limitNum = isNaN(Number(limit)) ? 10 : Number(limit);
+            const skip = (pageNum - 1) * limitNum;
+
 
             const medals = await this.prisma.medal.findMany({
                 where: {
@@ -65,8 +68,8 @@ export class PetsServicie {
                 select: {
                     id: true,
                     email: true,
-                    phoneNumber: true,
                     phonenumber: true,
+
                     medals: {
                         select: {
                             id: true,
@@ -89,8 +92,9 @@ export class PetsServicie {
 
             return owner.medals.map(medal => ({
                 ...medal,
-                phone: owner.phoneNumber || owner.phonenumber || null
+                phone: owner.phonenumber || null
             }));
+
         } catch (error: any) {
             console.error('[getMyPets] Error:', error.message);
             throw new NotFoundException('Error al obtener mascotas: ' + error.message);

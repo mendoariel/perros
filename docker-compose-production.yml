@@ -19,7 +19,6 @@ services:
       target: production
     mem_limit: 3g
     volumes:
-      - ./frontend:/alberto/frontend/src/app
       - /alberto/src/app/node_modules
     ports:
       - "9002:9002"
@@ -38,20 +37,19 @@ services:
     networks:
       - internal
       - web
-  
+
   peludosclick_backend:
-    build: 
+    build:
       context: ./backend-vlad
       dockerfile: production-dist.Dockerfile
       target: production
     container_name: peludosclickbackend
     volumes:
-      - ./backend-vlad/dist:/alberto/backend/src/app/dist
       - ./backend-vlad/public:/alberto/backend/src/app/public
     command: node dist/src/main.js
     ports:
       - '3335:3335'
-    depends_on: 
+    depends_on:
       - postgres
     env_file: "./backend-vlad/.my-env-production"
     labels:
@@ -95,8 +93,8 @@ services:
   # The Postgres Admin tool if we want to run some custom queries and so on against our Database
   postgresadmin:
     image: dpage/pgadmin4:4.28
-    depends_on: 
-       - postgres
+    depends_on:
+      - postgres
     environment:
       PGADMIN_DEFAULT_EMAIL: albertdesarrolloweb@gmail.com
       PGADMIN_DEFAULT_PASSWORD: Yamaha600

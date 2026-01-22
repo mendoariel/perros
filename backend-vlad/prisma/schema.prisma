@@ -16,7 +16,7 @@ model User {
   username             String?
   role                 Role
   hashToRegister       String         @map("hash_to_register")
-  phonenumber          String?        @map("phonenumber") // Mantener por compatibilidad, pero usar phoneNumber
+  phonenumber          String?        @map("phonenumber") // Campo legacy - mantener por compatibilidad
   phoneNumber          String?        @map("phone_number") // Teléfono principal del usuario
   firstName            String?        @map("first_name") // Nombre
   lastName             String?       @map("last_name") // Apellido
@@ -48,9 +48,9 @@ model Medal {
   
   // Campos básicos de mascota
   petName         String     @map("pet_name") // Nombre de la mascota
-  description     String     // Descripción
+  description     String?    // Descripción
   // phoneNumber removido - ahora se usa del User (owner)
-  image           String     // URL de la imagen (requerido, se carga en el formulario)
+  image           String?    // URL de la imagen (requerido, se carga en el formulario)
   
   owner           User       @relation(fields: [ownerId], references: [id])
 

@@ -8,7 +8,7 @@ export class UsersService {
   constructor(
     private prisma: PrismaService,
     private imageResizeService: ImageResizeService
-  ) {}
+  ) { }
 
   async getProfile(userId: number) {
     const user = await this.prisma.user.findUnique({
@@ -17,15 +17,8 @@ export class UsersService {
         id: true,
         email: true,
         username: true,
-        firstName: true,
-        lastName: true,
+        phonenumber: true,
         phoneNumber: true,
-        phonenumber: true, // Mantener por compatibilidad
-        avatar: true,
-        bio: true,
-        address: true,
-        city: true,
-        country: true,
         role: true,
         userStatus: true,
         createdAt: true,
@@ -42,13 +35,9 @@ export class UsersService {
       throw new NotFoundException('Usuario no encontrado');
     }
 
-    // Usar phoneNumber si existe, sino usar phonenumber (compatibilidad)
-    const phone = user.phoneNumber || user.phonenumber;
-
     return {
       ...user,
-      phoneNumber: phone,
-      phonenumber: undefined // No exponer el campo antiguo
+      phoneNumber: user.phoneNumber || user.phonenumber // Usar phoneNumber si existe, sino phonenumber
     };
   }
 
@@ -64,20 +53,32 @@ export class UsersService {
     // Preparar datos para actualizar
     const updateData: any = {};
 
-    if (dto.firstName !== undefined) updateData.firstName = dto.firstName;
-    if (dto.lastName !== undefined) updateData.lastName = dto.lastName;
     if (dto.phoneNumber !== undefined) {
       updateData.phoneNumber = dto.phoneNumber;
-      // También actualizar phonenumber por compatibilidad
+      // También actualizar phonenumber para mantener compatibilidad
       updateData.phonenumber = dto.phoneNumber;
     }
-    if (dto.bio !== undefined) updateData.bio = dto.bio;
-    if (dto.address !== undefined) updateData.address = dto.address;
-    if (dto.city !== undefined) updateData.city = dto.city;
-    if (dto.country !== undefined) updateData.country = dto.country;
-    if (dto.avatar !== undefined) updateData.avatar = dto.avatar;
+    if (dto.firstName !== undefined) {
+      updateData.firstName = dto.firstName;
+    }
+    if (dto.lastName !== undefined) {
+      updateData.lastName = dto.lastName;
+    }
+    if (dto.bio !== undefined) {
+      updateData.bio = dto.bio;
+    }
+    if (dto.address !== undefined) {
+      updateData.address = dto.address;
+    }
+    if (dto.city !== undefined) {
+      updateData.city = dto.city;
+    }
+    if (dto.country !== undefined) {
+      updateData.country = dto.country;
+    }
 
     updateData.updatedAt = new Date();
+
 
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
@@ -86,10 +87,10 @@ export class UsersService {
         id: true,
         email: true,
         username: true,
+        phonenumber: true,
+        phoneNumber: true,
         firstName: true,
         lastName: true,
-        phoneNumber: true,
-        avatar: true,
         bio: true,
         address: true,
         city: true,
@@ -100,7 +101,10 @@ export class UsersService {
       }
     });
 
-    return updatedUser;
+    return {
+      ...updatedUser,
+      phoneNumber: updatedUser.phoneNumber || updatedUser.phonenumber
+    };
   }
 
   async uploadAvatar(userId: number, filename: string) {

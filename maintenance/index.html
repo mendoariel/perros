@@ -1,64 +1,116 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PeludosClick - Mantenimiento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #c5a059;
+            --dark: #001809;
+            --text: #ffffff;
+            --glass: rgba(0, 24, 9, 0.7);
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f5f5f5;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            color: #333;
+            color: var(--text);
+            overflow: hidden;
         }
-        .maintenance-container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+        .container {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 3rem;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
-            max-width: 600px;
-            margin: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 1.2s ease-out;
         }
-        .logo {
-            max-width: 200px;
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-placeholder {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            letter-spacing: -1px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(197, 160, 89, 0.2);
+            color: var(--primary);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border: 1px solid var(--primary);
             margin-bottom: 2rem;
         }
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-        }
-        p {
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-        .status {
-            background-color: #f8f9fa;
-            padding: 1rem;
-            border-radius: 5px;
-            margin: 1rem 0;
-        }
-        .estimated-time {
-            font-weight: bold;
-            color: #e74c3c;
+
+        .footer {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 2rem;
         }
     </style>
 </head>
+
 <body>
-    <div class="maintenance-container">
-        <img src="https://peludosclick.com/assets/logo.png" alt="PeludosClick Logo" class="logo">
-        <h1>Mantenimiento en Progreso</h1>
-        <p>Estamos realizando mejoras en nuestro sistema para brindarte un mejor servicio.</p>
-        <div class="status">
-            <p>Estado: <span class="estimated-time">Actualización en curso</span></p>
-            <p>Estamos actualizando nuestra plataforma con nuevas características y mejoras de rendimiento.</p>
+    <div class="container">
+        <div class="logo-placeholder">PeludosClick</div>
+        <div class="status-badge">MODO EMERGENCIA ACTIVO</div>
+        <h1>Caído por mantenimiento</h1>
+        <p>Estamos trabajando arduamente para que el servicio vuelva a estar disponible lo antes posible. Gracias por tu
+            paciencia y lealtad.</p>
+        <div class="footer">
+            &copy; 2025 PeludosClick - Equipo de Soporte
         </div>
-        <p>Por favor, vuelve a intentarlo en unos minutos. Gracias por tu paciencia.</p>
     </div>
 </body>
-</html> 
+
+</html>

@@ -11,7 +11,7 @@ import { FILE_UPLOAD_DIR } from '../constans';
 @Controller('users')
 @UseGuards(AtGuard)
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private usersService: UsersService) { }
 
   @Get('me')
   async getProfile(@GetCurrentUserId() userId: number) {
@@ -47,13 +47,16 @@ export class UsersController {
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
-          new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif)$/ })
         ]
       })
     ) file: Express.Multer.File
   ) {
     if (!file) {
       throw new Error('No se recibió el archivo');
+    }
+
+    if (!file.mimetype.startsWith('image/')) {
+      throw new Error('File is not an image');
     }
 
     return this.usersService.uploadAvatar(userId, file.filename);

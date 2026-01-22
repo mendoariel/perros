@@ -14,11 +14,19 @@ export class PetsController {
     @Public()
     @Get('')
     allPets(
-        @Query('page') page: number = 1,
-        @Query('limit') limit: number = 10
+        @Query('page') page?: string,
+        @Query('limit') limit?: string
     ) {
-        return this.petService.allPet(Number(page), Number(limit));
+        const pageNumber = page ? Number(page) : 1;
+        const limitNumber = limit ? Number(limit) : 10;
+
+        // Final safety check to avoid NaN
+        return this.petService.allPet(
+            isNaN(pageNumber) ? 1 : pageNumber,
+            isNaN(limitNumber) ? 10 : limitNumber
+        );
     }
+
 
     @Get('mine')
     @HttpCode(HttpStatus.OK)

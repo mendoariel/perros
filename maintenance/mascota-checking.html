@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeludosClick - Identificación de Mascota</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c5a059;
+            --dark: #001809;
+            --text: #ffffff;
+            --glass: rgba(0, 24, 9, 0.85);
+            --error: #ff4d4d;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('bg.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 2rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            color: var(--text);
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 2.5rem;
+            border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(197, 160, 89, 0.15);
+            color: var(--primary);
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.8rem;
+            border: 1px solid var(--primary);
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pet-image-container {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .pet-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pet-image-placeholder {
+            font-size: 4rem;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin: 0 0 0.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .description {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+        }
+
+        .contact-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .contact-label {
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .contact-value {
+            font-size: 1.2rem;
+            font-weight: 500;
+            display: block;
+        }
+
+        .btn-call {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--dark);
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 10px 20px -5px rgba(197, 160, 89, 0.4);
+        }
+
+        .btn-call:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -5px rgba(197, 160, 89, 0.5);
+        }
+
+        .loading,
+        .error {
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-title {
+            color: var(--error);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo">PeludosClick</div>
+        <div class="status-badge">Sistema de Emergencia</div>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Buscando información de la mascota...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="error hidden">
+            <h2 class="error-title">¡Ups! Algo salió mal</h2>
+            <p id="error-message">No pudimos encontrar la información de esta medalla.</p>
+            <p>Por favor, intenta escanear el código QR nuevamente o contacta a soporte.</p>
+        </div>
+
+        <!-- Content State -->
+        <div id="content" class="hidden">
+            <div class="pet-image-container">
+                <img id="pet-image" class="pet-image" src="" alt="Mascota"
+                    onerror="this.classList.add('hidden'); document.getElementById('pet-placeholder').classList.remove('hidden');">
+                <div id="pet-placeholder" class="pet-image-placeholder hidden">🐾</div>
+            </div>
+
+            <h1 id="pet-name">Nombre</h1>
+            <p id="pet-description" class="description">Cargando descripción...</p>
+
+            <div class="contact-info">
+                <span class="contact-label">Dueño / Contacto de Emergencia</span>
+                <span id="owner-name" class="contact-value">Cargando...</span>
+
+                <div style="margin-top: 1rem;">
+                    <span class="contact-label">Teléfono</span>
+                    <span id="owner-phone" class="contact-value">Cargando...</span>
+                </div>
+            </div>
+
+            <a id="call-link" href="#" class="btn-call">Llamar al Dueño</a>
+        </div>
+
+        <div
+            style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.4); margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+            &copy; 2025 PeludosClick - Soporte de Emergencia
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const medalString = urlParams.get('medalString');
+
+            if (!medalString) {
+                showError('No se ha proporcionado un código de medalla válido.');
+                return;
+            }
+
+            fetchPetData(medalString);
+        });
+
+        async function fetchPetData(id) {
+            try {
+                const response = await fetch(`/api/pet/${id}`);
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('La medalla no está activa o no existe en nuestra base de datos de emergencia.');
+                    }
+                    throw new Error('Error al conectar con el servidor de emergencia.');
+                }
+
+                const data = await response.json();
+                displayPet(data);
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        function displayPet(data) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('content').classList.remove('hidden');
+
+            document.getElementById('pet-name').textContent = data.pet_name;
+            document.getElementById('pet-description').textContent = data.description || 'Sin descripción disponible.';
+
+            document.getElementById('owner-name').textContent = data.owner_name || 'Dueño de la mascota';
+
+
+            const phone = data.phone_number || 'No disponible';
+            document.getElementById('owner-phone').textContent = phone;
+
+            if (data.image) {
+                document.getElementById('pet-image').src = data.image;
+            } else {
+                document.getElementById('pet-image').classList.add('hidden');
+                document.getElementById('pet-placeholder').classList.remove('hidden');
+            }
+
+            if (data.phone_number) {
+                document.getElementById('call-link').href = `tel:${data.phone_number}`;
+            } else {
+                document.getElementById('call-link').style.display = 'none';
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error-message').textContent = msg;
+        }
+    </script>
+</body>
+
+</html>
