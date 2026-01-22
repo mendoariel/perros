@@ -49,7 +49,7 @@ export class UsersController {
           new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
         ]
       })
-    ) file: Express.Multer.File
+    ) file: any
   ) {
     if (!file) {
       throw new Error('No se recibió el archivo');
