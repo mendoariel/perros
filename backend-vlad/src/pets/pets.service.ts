@@ -502,7 +502,21 @@ export class PetsServicie {
                 MedalStateMachine.validateTransition(currentMedal.status, MedalState.ENABLED);
             }
 
-            // Obtener phoneNumber del usuario (no del DTO)
+            // Si viene phoneNumber en el DTO, actualizar el usuario
+            if (medalUpdate.phoneNumber) {
+                await tx.user.update({
+                    where: { id: user.id },
+                    data: {
+                        phoneNumber: medalUpdate.phoneNumber,
+                        phonenumber: medalUpdate.phoneNumber // Mantener compatibilidad con ambos campos si existen
+                    }
+                });
+                // Actualizar objeto user local para usarlo abajo
+                user.phoneNumber = medalUpdate.phoneNumber;
+                user.phonenumber = medalUpdate.phoneNumber;
+            }
+
+            // Obtener phoneNumber del usuario (ya actualizado o existente)
             const userPhoneNumber = user.phoneNumber || user.phonenumber || null;
 
             // Preparar datos para actualizar/crear Medal

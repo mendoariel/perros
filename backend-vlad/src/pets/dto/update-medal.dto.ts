@@ -1,8 +1,11 @@
 import { IsNotEmpty, IsString, IsOptional } from "class-validator";
 
 export class UpdateMedalDto {
-    // phoneNumber removido - ahora se usa del User (owner)
-    
+    @IsString()
+    @IsOptional()
+    phoneNumber?: string;
+
+
     @IsString()
     @IsNotEmpty()
     description: string;

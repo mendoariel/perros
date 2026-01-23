@@ -99,28 +99,27 @@
             </div>
           </div>
 
-          <!-- Información de Teléfono -->
-          <div class="form-group info-box" *ngIf="userPhoneNumber">
-            <div class="info-content">
-              <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-              </svg>
-              <div class="info-text">
-                <strong>Teléfono de contacto:</strong> {{ userPhoneNumber }}
-                <p class="info-hint">Se usará el teléfono de tu perfil. Puedes actualizarlo en <a (click)="goToProfile()" class="profile-link">Mi Perfil</a></p>
-              </div>
+          <!-- Teléfono (Nuevo Campo) -->
+          <div class="form-group">
+            <label for="phoneNumber">
+              <span class="material-symbols-outlined label-icon">phone</span>
+              Teléfono de contacto
+            </label>
+            <div class="input-wrapper">
+              <input 
+                type="tel" 
+                id="phoneNumber"
+                formControlName="phoneNumber" 
+                placeholder="Ej: 11 1234 5678"
+                [class.error]="phoneNumber?.invalid && phoneNumber?.touched"
+              >
             </div>
-          </div>
-
-          <div class="form-group warning-box" *ngIf="!userPhoneNumber">
-            <div class="warning-content">
-              <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-              </svg>
-              <div class="warning-text">
-                <strong>No tienes teléfono configurado</strong>
-                <p>Para que otros puedan contactarte cuando escaneen el QR, configura tu teléfono en <a (click)="goToProfile()" class="profile-link">Mi Perfil</a></p>
-              </div>
+            <p class="field-hint">Este teléfono se guardará en tu perfil para que te contacten si encuentran a tu mascota.</p>
+            <div class="error-message" *ngIf="phoneNumber?.invalid && phoneNumber?.touched">
+              <span *ngIf="phoneNumber?.hasError('required')">El teléfono es requerido</span>
+              <span *ngIf="phoneNumber?.hasError('invalidPhone')">{{ phoneNumber?.errors?.['invalidPhone']?.message }}</span>
+              <span *ngIf="phoneNumber?.hasError('invalidPhoneLength')">{{ phoneNumber?.errors?.['invalidPhoneLength']?.message }}</span>
+              <span *ngIf="phoneNumber?.hasError('invalidPhoneFormat')">{{ phoneNumber?.errors?.['invalidPhoneFormat']?.message }}</span>
             </div>
           </div>
 
