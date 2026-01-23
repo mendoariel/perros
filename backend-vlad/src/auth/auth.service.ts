@@ -107,6 +107,7 @@ export class AuthService {
 
             // Si no se encuentra como PENDING, buscar como CONFIRMED (Idempotencia)
             if (!registrationAttempt) {
+                console.log('[confirmAccount] Registration not PENDING. Checking CONFIRMED...');
                 const confirmedAttempt = await tx.registrationAttempt.findFirst({
                     where: {
                         email: dto.email.toLowerCase(),
@@ -116,17 +117,23 @@ export class AuthService {
                     }
                 });
 
+                console.log('[confirmAccount] Found CONFIRMED attempt?', !!confirmedAttempt);
+
                 if (confirmedAttempt) {
+                    console.log('[confirmAccount] Attempt confirmed. Finding User...');
                     // Si ya está confirmado, buscar el usuario asociado para devolver tokens
                     const existingUser = await tx.user.findFirst({
                         where: { email: confirmedAttempt.email }
                     });
+
+                    console.log('[confirmAccount] User found?', !!existingUser);
 
                     if (existingUser) {
                         return existingUser; // Devolver usuario existente para generar tokens y redirigir
                     }
                 }
 
+                console.log('[confirmAccount] No PENDING or CONFIRMED attempt found. Throwing NotFound.');
                 throw new NotFoundException('Intento de registro no encontrado o ya confirmado');
             }
 
