@@ -758,7 +758,16 @@ export class QrService {
      */
     invalidatePetCache(medalString: string): void {
         this.petCache.delete(medalString);
-        console.log(`[QrService] Cache invalidado para medalla: ${medalString}`);
+        console.log(`[QrService] Pet cache invalidado para medalla: ${medalString}`);
+    }
+
+    /**
+     * Invalidar el caché de QR checking para una medalla específica
+     * Se debe llamar cuando cambia el estado de una medalla para evitar mostrar datos obsoletos
+     */
+    invalidateMedalCache(medalString: string): void {
+        this.medalCache.delete(medalString);
+        console.log(`[QrService] Medal cache invalidado para medalla: ${medalString}`);
     }
 
     // ✅ NUEVO: Método para limpiar registros expirados

@@ -580,8 +580,9 @@ export class PetsServicie {
         // Invalidar caché de la mascota para que los cambios se reflejen inmediatamente
         try {
             this.qrService.invalidatePetCache(medalUpdate.medalString);
+            this.qrService.invalidateMedalCache(medalUpdate.medalString);
         } catch (error) {
-            console.error('Error invalidating pet cache (no crítico):', error);
+            console.error('Error invalidating cache (no crítico):', error);
             // No lanzamos error para no afectar la actualización
         }
 
@@ -600,7 +601,7 @@ export class PetsServicie {
         userId: number,
         dto: CreateMedalForExistingUserDto
     ) {
-        return await this.prisma.$transaction(async (tx) => {
+        const medal = await this.prisma.$transaction(async (tx) => {
             // Verificar que existe ScannedMedal relacionada con el usuario
             const scannedMedal = await tx.scannedMedal.findFirst({
                 where: {
@@ -664,6 +665,16 @@ export class PetsServicie {
 
             return medal;
         });
+
+        // Invalidar caché para que los cambios se reflejen inmediatamente
+        try {
+            this.qrService.invalidatePetCache(dto.medalString);
+            this.qrService.invalidateMedalCache(dto.medalString);
+        } catch (error) {
+            console.error('Error invalidating cache (no crítico):', error);
+        }
+
+        return medal;
     }
 
     private async sendMedalUpdateNotification(email: string, user: any, medal: any) {
