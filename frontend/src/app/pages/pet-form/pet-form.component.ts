@@ -572,45 +572,46 @@ export class PetFormComponent implements OnDestroy {
     return this.petForm.get('petName') as FormControl;
   }
 
+  get description(): FormControl | undefined {
     return this.petForm.get('description') as FormControl;
   }
 
   get phoneNumber(): FormControl | undefined {
-  return this.petForm.get('phoneNumber') as FormControl;
-}
+    return this.petForm.get('phoneNumber') as FormControl;
+  }
 
-openDialog(data: any): void {
-  this.dialog.open(DialogOverviewExampleDialog, {
-    width: '250px',
-    data: data
-  });
-}
+  openDialog(data: any): void {
+    this.dialog.open(DialogOverviewExampleDialog, {
+      width: '250px',
+      data: data
+    });
+  }
 
-openSnackBar() {
-  this._snackBar.openFromComponent(MessageSnackBarComponent, {
-    duration: 5000,
-    verticalPosition: 'top',
-    horizontalPosition: 'center',
-    data: 'Mascota actualizada correctamente'
-  });
-}
+  openSnackBar() {
+    this._snackBar.openFromComponent(MessageSnackBarComponent, {
+      duration: 5000,
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
+      data: 'Mascota actualizada correctamente'
+    });
+  }
 
-ngOnDestroy(): void {
-  if(this.petsSubscription) {
-  this.petsSubscription.unsubscribe();
-}
-if (this.isLoginSubscription) {
-  this.isLoginSubscription.unsubscribe();
-}
-if (this.uploadSubscription) {
-  this.uploadSubscription.unsubscribe();
-}
-if (this.userProfileSubscription) {
-  this.userProfileSubscription.unsubscribe();
-}
-if (this.medalUpdateSubscription) {
-  this.medalUpdateSubscription.unsubscribe();
-}
+  ngOnDestroy(): void {
+    if (this.petsSubscription) {
+      this.petsSubscription.unsubscribe();
+    }
+    if (this.isLoginSubscription) {
+      this.isLoginSubscription.unsubscribe();
+    }
+    if (this.uploadSubscription) {
+      this.uploadSubscription.unsubscribe();
+    }
+    if (this.userProfileSubscription) {
+      this.userProfileSubscription.unsubscribe();
+    }
+    if (this.medalUpdateSubscription) {
+      this.medalUpdateSubscription.unsubscribe();
+    }
   }
 }
 
