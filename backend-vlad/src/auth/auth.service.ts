@@ -13,16 +13,16 @@ var createHash = require('hash-generator');
 @Injectable()
 export class AuthService {
     constructor(
-            private prisma: PrismaService,
-            private jwtService: JwtService,
-            private mailService: MailService,
-            private utilService: UtilService
-        ) {}
-    
+        private prisma: PrismaService,
+        private jwtService: JwtService,
+        private mailService: MailService,
+        private utilService: UtilService
+    ) { }
+
     // async signupLocal(dto: AuthDto): Promise<Tokens> {
     //     const hash = await this.hashData(dto.password);
     //     const newUser = await this.prisma.user.create({
-            
+
     //         data: {
     //             email: dto.email,
     //             hash,
@@ -45,11 +45,11 @@ export class AuthService {
                     userStatus: UserStatus.ACTIVE
                 }
             });
-            if(!user) throw new ForbiddenException("Access Denied"); 
+            if (!user) throw new ForbiddenException("Access Denied");
 
             const passwordMatcheds = await bcrypt.compareSync(dto.password, user.hash);
 
-            if(!passwordMatcheds) throw new ForbiddenException("Access Denied"); 
+            if (!passwordMatcheds) throw new ForbiddenException("Access Denied");
 
             const tokens = await this.getToken(user.id, user.email, user.role);
 
@@ -67,7 +67,7 @@ export class AuthService {
             throw error;
         }
     }
-    
+
     async logout(userId: number) {
         const user = await this.prisma.user.findFirst({
             where: {
@@ -93,10 +93,10 @@ export class AuthService {
     async confirmAccount(dto: ConfirmAccountDto) {
         // Generar hash antes de iniciar la transacción (para evitar problemas)
         const newHashToRegister = await this.createHashNotUsedToUser();
-        
+
         const result = await this.prisma.$transaction(async (tx) => {
             // ⚠️ CAMBIO IMPORTANTE: Buscar RegistrationAttempt, no User
-            const registrationAttempt = await tx.registrationAttempt.findFirst({
+            let registrationAttempt = await tx.registrationAttempt.findFirst({
                 where: {
                     email: dto.email.toLowerCase(),
                     medalString: dto.medalString,
@@ -104,11 +104,32 @@ export class AuthService {
                     status: AttemptStatus.PENDING
                 }
             });
-            
+
+            // Si no se encuentra como PENDING, buscar como CONFIRMED (Idempotencia)
             if (!registrationAttempt) {
+                const confirmedAttempt = await tx.registrationAttempt.findFirst({
+                    where: {
+                        email: dto.email.toLowerCase(),
+                        medalString: dto.medalString,
+                        hashToRegister: dto.userRegisterHash,
+                        status: AttemptStatus.CONFIRMED
+                    }
+                });
+
+                if (confirmedAttempt) {
+                    // Si ya está confirmado, buscar el usuario asociado para devolver tokens
+                    const existingUser = await tx.user.findFirst({
+                        where: { email: confirmedAttempt.email }
+                    });
+
+                    if (existingUser) {
+                        return existingUser; // Devolver usuario existente para generar tokens y redirigir
+                    }
+                }
+
                 throw new NotFoundException('Intento de registro no encontrado o ya confirmado');
             }
-            
+
             // ⚠️ CAMBIO IMPORTANTE: Crear el User por primera vez aquí
             const userCreated = await tx.user.create({
                 data: {
@@ -119,7 +140,7 @@ export class AuthService {
                     hashToRegister: newHashToRegister // Nuevo hash para futuros usos
                 }
             });
-            
+
             // Actualizar RegistrationAttempt
             await tx.registrationAttempt.update({
                 where: { id: registrationAttempt.id },
@@ -128,13 +149,13 @@ export class AuthService {
                     confirmedAt: new Date()
                 }
             });
-            
+
             // ✅ CAMBIO: Actualizar ScannedMedal con el userId del usuario recién creado
             // NO cambiar el estado, mantener en VIRGIN hasta que se complete la mascota
             const scannedMedal = await tx.scannedMedal.findFirst({
                 where: { medalString: dto.medalString }
             });
-            
+
             if (scannedMedal) {
                 await tx.scannedMedal.update({
                     where: { id: scannedMedal.id },
@@ -144,14 +165,14 @@ export class AuthService {
                     }
                 });
             }
-            
+
             return userCreated;
         });
-        
+
         // Generar tokens DESPUÉS de la transacción (fuera de ella)
         const tokens = await this.getToken(result.id, result.email, result.role);
         await this.updateRtHash(result.id, tokens.refresh_token);
-        
+
         return {
             message: "Cuenta confirmada. Ahora puedes completar la información de tu mascota.",
             code: 5001,
@@ -169,7 +190,7 @@ export class AuthService {
             }
         });
 
-        if(!hashUsed) return hash;
+        if (!hashUsed) return hash;
         return this.createHashNotUsedToUser();
     }
 
@@ -202,18 +223,18 @@ export class AuthService {
         });
     }
 
-    async refreshTokens(userId: number, rt: string ) {
+    async refreshTokens(userId: number, rt: string) {
         const user = await this.prisma.user.findUnique({
             where: {
                 id: userId
             }
         });
-        
-        if(!user || !user.hashedRt) throw new ForbiddenException("Access Denied");
-        
-        const rtMatches = await bcrypt.compareSync(rt, user.hashedRt); 
-        
-        if(!rtMatches) throw new ForbiddenException("Access Denied");
+
+        if (!user || !user.hashedRt) throw new ForbiddenException("Access Denied");
+
+        const rtMatches = await bcrypt.compareSync(rt, user.hashedRt);
+
+        if (!rtMatches) throw new ForbiddenException("Access Denied");
 
         const tokens = await this.getToken(user.id, user.email, user.role);
 
@@ -230,14 +251,14 @@ export class AuthService {
                 email: dto.email.toLocaleLowerCase()
             }
         });
-        if(!user) throw new ForbiddenException("Access Denied"); 
+        if (!user) throw new ForbiddenException("Access Denied");
 
-        
+
         let passwordRecoveryHash = this.utilService.makeid(30);
-        const pr = await this.updatePasswordRecoveryUser(dto.email, passwordRecoveryHash); 
+        const pr = await this.updatePasswordRecoveryUser(dto.email, passwordRecoveryHash);
         await this.sendEmailRecovery(dto.email, passwordRecoveryHash);
 
-        let message: Message = { text: 'Le hemos enviado un email al correo registrado, siga las intrucciones para recuperar su cuenta.'};
+        let message: Message = { text: 'Le hemos enviado un email al correo registrado, siga las intrucciones para recuperar su cuenta.' };
 
         return message;
     }
@@ -247,36 +268,36 @@ export class AuthService {
         console.log('  Email recibido:', dto.email);
         console.log('  Hash recibido:', dto.hash);
         console.log('  Hash recibido length:', dto.hash?.length);
-        
+
         const user = await this.prisma.user.findUnique({
             where: {
                 email: dto.email.toLowerCase()
             }
         });
-        
-        if(!user) {
+
+        if (!user) {
             console.log('❌ Usuario no encontrado');
             throw new ForbiddenException("Usuario no encontrado o enlace inválido");
         }
-        
+
         console.log('✅ Usuario encontrado');
         console.log('  Hash en BD:', user.hashPasswordRecovery || '(null)');
         console.log('  Hash en BD length:', user.hashPasswordRecovery?.length || 0);
         console.log('  Hashes coinciden?', user.hashPasswordRecovery === dto.hash);
-        
+
         // Verificar que el hash de recuperación existe y coincide
-        if(!user.hashPasswordRecovery) {
+        if (!user.hashPasswordRecovery) {
             console.log('❌ Hash en BD es null');
             throw new ForbiddenException("Este enlace ya fue utilizado o ha expirado. Por favor, solicita un nuevo enlace de recuperación.");
         }
-        
-        if(user.hashPasswordRecovery !== dto.hash) {
+
+        if (user.hashPasswordRecovery !== dto.hash) {
             console.log('❌ Hashes NO coinciden');
             console.log('  BD:', user.hashPasswordRecovery);
             console.log('  Recibido:', dto.hash);
             throw new ForbiddenException("El enlace de recuperación no es válido. Por favor, solicita un nuevo enlace.");
         }
-        
+
         console.log('✅ Hash válido, procediendo a actualizar contraseña');
 
         const hash = await this.hashData(dto.password);
@@ -291,7 +312,7 @@ export class AuthService {
             }
         })
 
-        let message: Message = { text: 'Datos de tu cuenta actualizados. Puedes ingresar con el nuevo password'};
+        let message: Message = { text: 'Datos de tu cuenta actualizados. Puedes ingresar con el nuevo password' };
 
         return message;
     }
@@ -304,21 +325,21 @@ export class AuthService {
         const [at, rt] = await Promise.all([
             this.jwtService.signAsync({
                 sub: userId,
-                email: email, 
+                email: email,
                 role: role
-             },{
+            }, {
                 secret: 'at-secret',
                 expiresIn: parseInt(accessTokenExpiresIn),
-             }),
-             this.jwtService.signAsync({
+            }),
+            this.jwtService.signAsync({
                 sub: userId,
-                email: email 
-             },{
+                email: email
+            }, {
                 secret: 'rt-secret',
                 expiresIn: parseInt(refreshTokenExpiresIn),
-             })
+            })
         ]);
-        
+
         return {
             access_token: at,
             refresh_token: rt
@@ -356,7 +377,7 @@ export class AuthService {
             data: {
                 hashPasswordRecovery: hash
             }
-         })
+        })
     }
 
 
@@ -372,7 +393,7 @@ export class AuthService {
                 email: email
             }
         });
-        if(!user) throw new ForbiddenException("Access Denied"); 
+        if (!user) throw new ForbiddenException("Access Denied");
         return user.role === 'FRIAS_EDITOR' ? true : false;
     }
 
@@ -383,9 +404,9 @@ export class AuthService {
      */
     private isMedalComplete(medal: any): boolean {
         return !!(
-            medal.petName && 
-            medal.description && 
-            medal.medalString && 
+            medal.petName &&
+            medal.description &&
+            medal.medalString &&
             medal.registerHash &&
             medal.petName.trim() !== '' &&
             medal.description.trim() !== ''
