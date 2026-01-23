@@ -1,12 +1,12 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
-  Query, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
   UseGuards,
   ParseIntPipe,
   HttpStatus,
@@ -20,12 +20,12 @@ import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { Response } from 'express';
 import { PartnersService } from './partners.service';
-import { 
-  CreatePartnerDto, 
-  UpdatePartnerDto, 
-  CreateArticleDto, 
-  CreateServiceDto, 
-  CreateOfferDto, 
+import {
+  CreatePartnerDto,
+  UpdatePartnerDto,
+  CreateArticleDto,
+  CreateServiceDto,
+  CreateOfferDto,
   CreateCommentDto,
   CreatePartnerImageDto
 } from './dto';
@@ -35,7 +35,7 @@ import { Public } from '../common/decorators';
 
 @Controller('partners')
 export class PartnersController {
-  constructor(private readonly partnersService: PartnersService) {}
+  constructor(private readonly partnersService: PartnersService) { }
 
   // Partner CRUD endpoints
   @Post()
@@ -76,7 +76,7 @@ export class PartnersController {
   @Patch(':id')
   @UseGuards(AtGuard)
   update(
-    @Param('id', ParseIntPipe) id: number, 
+    @Param('id', ParseIntPipe) id: number,
     @Body() updatePartnerDto: UpdatePartnerDto
   ) {
     return this.partnersService.updatePartner(id, updatePartnerDto);
@@ -85,7 +85,7 @@ export class PartnersController {
   @Patch(':id/status')
   @UseGuards(AtGuard)
   updateStatus(
-    @Param('id', ParseIntPipe) id: number, 
+    @Param('id', ParseIntPipe) id: number,
     @Body('status') status: PartnerStatus
   ) {
     return this.partnersService.updatePartnerStatus(id, status);
@@ -280,18 +280,18 @@ export class PartnersController {
   }))
   async uploadProfileImage(
     @Param('id', ParseIntPipe) partnerId: number,
-    @UploadedFile() file: Express.Multer.File
+    @UploadedFile() file: any
   ) {
     console.log('Upload profile image - partnerId:', partnerId);
     console.log('Upload profile image - file:', file);
-    
+
     if (!file) {
       throw new Error('No file uploaded');
     }
-    
+
     const imagePath = `/images/partners/${file.filename}`;
     console.log('Upload profile image - imagePath:', imagePath);
-    
+
     return this.partnersService.updatePartner(partnerId, { profileImage: imagePath });
   }
 
@@ -318,18 +318,18 @@ export class PartnersController {
   }))
   async uploadCoverImage(
     @Param('id', ParseIntPipe) partnerId: number,
-    @UploadedFile() file: Express.Multer.File
+    @UploadedFile() file: any
   ) {
     console.log('Upload cover image - partnerId:', partnerId);
     console.log('Upload cover image - file:', file);
-    
+
     if (!file) {
       throw new Error('No file uploaded');
     }
-    
+
     const imagePath = `/images/partners/${file.filename}`;
     console.log('Upload cover image - imagePath:', imagePath);
-    
+
     return this.partnersService.updatePartner(partnerId, { coverImage: imagePath });
   }
 
@@ -363,20 +363,20 @@ export class PartnersController {
   }))
   async uploadGalleryImage(
     @Param('id', ParseIntPipe) partnerId: number,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
     @Body() body: { altText?: string; order?: number }
   ) {
     if (!file) {
       throw new Error('No file uploaded');
     }
-    
+
     const imagePath = `/images/partners/gallery/${file.filename}`;
     const createImageDto: CreatePartnerImageDto = {
       imageUrl: imagePath,
       altText: body.altText,
       order: body.order ? parseInt(body.order.toString()) : 0
     };
-    
+
     return this.partnersService.addGalleryImage(partnerId, createImageDto);
   }
 

@@ -60,7 +60,7 @@ export class PetsController {
     @HttpCode(HttpStatus.OK)
     loadProfilePicture(
         @GetCurrentUser() user: any,
-        @UploadedFile() file: Express.Multer.File,
+        @UploadedFile() file: any,
         @Req() req: any,
         @Body(new ValidationPipe({ transform: false, whitelist: false, skipMissingProperties: true })) body: any
     ) {
