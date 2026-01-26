@@ -23,6 +23,6 @@ export class UpdateMedalDto {
     petName: string;
 
     @IsString()
-    @IsOptional()
-    image?: string;
+    @IsNotEmpty()
+    image: string;
 }

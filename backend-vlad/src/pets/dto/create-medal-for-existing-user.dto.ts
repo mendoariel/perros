@@ -16,7 +16,7 @@ export class CreateMedalForExistingUserDto {
     // phoneNumber removido - ahora se usa del User (owner)
 
     @IsString()
-    @IsOptional()
-    image?: string;
+    @IsNotEmpty()
+    image: string;
 }
 
