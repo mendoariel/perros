@@ -361,6 +361,16 @@ export class PetsServicie {
                 throw new NotFoundException('El archivo no se guardó correctamente');
             }
 
+            // --- OPTIMIZATION START ---
+            // Optimizar la imagen antes de guardarla en la BD y procesarla para redes sociales
+            try {
+                await this.imageResizeService.optimizeImage(filename);
+            } catch (error) {
+                console.error('[loadImage] Error optimizando la imagen original (no crítico):', error);
+                // Continuamos aunque falle la optimización para no bloquear la subida
+            }
+            // --- OPTIMIZATION END ---
+
             // Buscar la medalla y actualizar la imagen
             const medal = await this.prisma.medal.findFirst({
                 where: {

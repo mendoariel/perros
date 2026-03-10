@@ -10,6 +10,47 @@ export class ImageResizeService {
   private readonly SOCIAL_IMAGE_HEIGHT = 630;
   private readonly SOCIAL_IMAGE_QUALITY = 85;
 
+  private readonly OPTIMIZED_IMAGE_WIDTH = 800; // Ancho máximo para imágenes regulares
+  private readonly OPTIMIZED_IMAGE_QUALITY = 80;
+
+  /**
+   * Resizes and compresses an image in place 
+   * @param filename Filename within FILE_UPLOAD_DIR or relative to it (e.g. 'users/avatars/img.jpg')
+   * @returns Boolean indicating success
+   */
+  async optimizeImage(filename: string): Promise<boolean> {
+    const filePath = path.join(FILE_UPLOAD_DIR, filename);
+
+    if (!fs.existsSync(filePath)) {
+      console.warn(`[optimizeImage] File not found: ${filePath}`);
+      return false;
+    }
+
+    try {
+      const tempPath = `${filePath}.temp`;
+      
+      // Optimize and save to a temporary file
+      await sharp(filePath)
+        .resize(this.OPTIMIZED_IMAGE_WIDTH, null, {
+          withoutEnlargement: true, // Only scale down
+          fit: 'inside'
+        })
+        .jpeg({ quality: this.OPTIMIZED_IMAGE_QUALITY, force: false }) // force false keeps original format if better
+        .png({ quality: this.OPTIMIZED_IMAGE_QUALITY, force: false })
+        .webp({ quality: this.OPTIMIZED_IMAGE_QUALITY, force: false })
+        .toFile(tempPath);
+
+      // Overwrite original file
+      fs.unlinkSync(filePath);
+      fs.renameSync(tempPath, filePath);
+
+      return true;
+    } catch (error) {
+      console.error(`Error optimizing image ${filename}:`, error);
+      return false;
+    }
+  }
+
   /**
    * Resize image for social media sharing
    * @param originalFilename Original image filename

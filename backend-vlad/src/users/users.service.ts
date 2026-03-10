@@ -125,6 +125,14 @@ export class UsersService {
 
     const avatarUrl = `users/avatars/${filename}`;
 
+    // --- OPTIMIZATION START ---
+    try {
+      await this.imageResizeService.optimizeImage(avatarUrl);
+    } catch (error) {
+      console.error('[uploadAvatar] Error optimizando el avatar (no crítico):', error);
+    }
+    // --- OPTIMIZATION END ---
+
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: {
