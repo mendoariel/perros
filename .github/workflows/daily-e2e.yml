@@ -1,0 +1,45 @@
+name: Daily E2E Health Check
+
+on:
+  schedule:
+    # Run every day at 08:00 UTC (05:00 AM Argentina Time)
+    - cron: '0 8 * * *'
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  test-and-notify:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: ./e2e-tests
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        working-directory: ./e2e-tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        id: run-tests
+        working-directory: ./e2e-tests
+        run: npx playwright test
+        # Let the workflow continue even if tests fail so we can send the email
+        continue-on-error: true
+
+      - name: Send Notification via Webhook
+        env:
+          REPORT_STATUS: ${{ steps.run-tests.outcome }}
+        run: |
+          curl -X POST "https://api.peludosclick.com/mail/test-report" \
+          -H "Content-Type: application/json" \
+          -d "{\"status\": \"$REPORT_STATUS\"}"
+
