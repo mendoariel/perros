@@ -119,6 +119,14 @@ upload_files_to_server() {
         log_info "Subiendo archivo de configuración..."
         rsync -avz "$LOCAL_BACKEND_DIR/.my-env-production" "$SERVER_USER@$SERVER_IP:$BACKEND_PATH/.env"
     fi
+
+    # Subir default-pet.png (Force sync single file)
+    log_info "Subiendo default-pet.png..."
+    rsync -avz "$LOCAL_BACKEND_DIR/public/files/default-pet.png" "$SERVER_USER@$SERVER_IP:$BACKEND_PATH/public/files/"
+    
+    # Subir backend scripts
+    log_info "Subiendo backend scripts..."
+    rsync -avz "$LOCAL_BACKEND_DIR/scripts/" "$SERVER_USER@$SERVER_IP:$BACKEND_PATH/scripts/"
     
     log_success "Archivos subidos exitosamente"
 }
