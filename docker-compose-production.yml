@@ -46,6 +46,7 @@ services:
     container_name: peludosclickbackend
     volumes:
       - ./backend-vlad/public:/alberto/backend/src/app/public
+      - ./backend-vlad/scripts:/alberto/backend/src/app/scripts
     command: node dist/src/main.js
     ports:
       - '3335:3335'
