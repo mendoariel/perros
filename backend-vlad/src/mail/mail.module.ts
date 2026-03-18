@@ -8,9 +8,9 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.office365.com',
-        port: 587,
-        secure: false,
+        host: process.env.SMTP_HOST || 'smtp.office365.com',
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
         auth: {
             user: process.env.MODULE_MAIL_USER,
             pass: process.env.MODULE_MAIL_PASS

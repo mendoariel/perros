@@ -4,8 +4,14 @@ FRONTEND_URL="https://www.peludosclick.com"
 
 BACKPORT=3335
 
-MODULE_MAIL_USER=info@peludosclick.com
-MODULE_MAIL_PASS=Yamaha600
+# Configuración de Gmail SMTP
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+
+# Reemplaza 'TU_CORREO_AQUI@gmail.com' por el correo con el que generaste la clave
+MODULE_MAIL_USER=mendoariel@gmail.com
+MODULE_MAIL_PASS=zyghgvoniyvugutp
 
 ENVIRONMENT=production
 

@@ -41,7 +41,7 @@ export class AppController {
     try {
       await this.mailService['mailerService'].sendMail({
         to: 'albertdesarrolloweb@gmail.com',
-        from: '"Peludos Click Bot" <no-reply@peludosclick.com>',
+        from: '"Peludos Click Bot" <info@peludosclick.com>',
         subject: `[Peludos Click] Reporte Diario de Testing E2E - ${status.toUpperCase()}`,
         html: emailHtml,
       });

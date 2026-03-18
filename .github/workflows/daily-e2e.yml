@@ -39,7 +39,7 @@ jobs:
         env:
           REPORT_STATUS: ${{ steps.run-tests.outcome }}
         run: |
-          curl -X POST "https://api.peludosclick.com/mail/test-report" \
+          curl -X POST "https://api.peludosclick.com/api/test-report" \
           -H "Content-Type: application/json" \
           -d "{\"status\": \"$REPORT_STATUS\"}"
 
