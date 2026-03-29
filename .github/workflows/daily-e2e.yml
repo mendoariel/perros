@@ -31,7 +31,7 @@ jobs:
       - name: Run Playwright tests
         id: run-tests
         working-directory: ./e2e-tests
-        run: npx playwright test
+        run: npx playwright test tests/daily.spec.ts
         # Let the workflow continue even if tests fail so we can send the email
         continue-on-error: true
 
