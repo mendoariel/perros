@@ -22,3 +22,7 @@ DASHBOARD_PASSWORD=admin123
 # JWT Token Configuration - Production Environment
 ACCESS_TOKEN_EXPIRES_IN=900
 REFRESH_TOKEN_EXPIRES_IN=2592000
+
+# Test Report Email Configuration
+TEST_REPORT_EMAIL=albertdesarrolloweb@gmail.com
+MAIL_FROM_NAME=Peludos Click Bot

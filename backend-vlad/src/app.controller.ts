@@ -30,25 +30,26 @@ export class AppController {
   async receiveTestReport(@Body() body: { status: string }) {
     const { status } = body;
     const isSuccess = status === 'success';
+    const reportEmail = process.env.TEST_REPORT_EMAIL || 'albertdesarrolloweb@gmail.com';
+    
     const emailHtml = `
       <h2>Peludos Click - Test Report (E2E)</h2>
       <p>El flujo automático diario de verificación de la plataforma (E2E) ha finalizado.</p>
       <p><strong>Resultado Global:</strong> <span style="color: ${isSuccess ? 'green' : 'red'};">${status.toUpperCase()}</span></p>
+      <p><strong>Timestamp:</strong> ${new Date().toLocaleString('es-ES')}</p>
       <p>Revisa la pestaña de Actions en GitHub para más detalles de los pasos ejecutados.</p>
     `;
 
-    // We cast to access the underlying mailerService since it's private in MailService
     try {
-      await this.mailService['mailerService'].sendMail({
-        to: 'albertdesarrolloweb@gmail.com',
-        from: '"Peludos Click Bot" <info@peludosclick.com>',
-        subject: `[Peludos Click] Reporte Diario de Testing E2E - ${status.toUpperCase()}`,
-        html: emailHtml,
+      const result = await this.mailService.sendTestReport({
+        status,
+        recipientEmail: reportEmail,
+        htmlContent: emailHtml,
       });
-      return { success: true, message: 'Report email sent successfully' };
+      return result;
     } catch (error) {
-      console.error('Failed to send test report email:', error);
-      return { success: false, error: 'Failed to send email' };
+      console.error('Failed to send test report email:', error.message);
+      return { success: false, error: 'Failed to send email', details: error.message };
     }
   }
 } 

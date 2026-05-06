@@ -103,4 +103,29 @@ export class MailService {
                   }
               });
           }
+
+          async sendTestReport(data: {
+              status: string;
+              recipientEmail: string;
+              htmlContent: string;
+          }) {
+              const { status, recipientEmail, htmlContent } = data;
+              const displayName = process.env.MAIL_FROM_NAME || 'Peludos Click Bot';
+              
+              Logger.log(`Sending test report email to ${recipientEmail}`);
+              
+              try {
+                  await this.mailerService.sendMail({
+                      to: recipientEmail,
+                      from: `"${displayName}" <info@peludosclick.com>`,
+                      subject: `[Peludos Click] Reporte Diario de Testing E2E - ${status.toUpperCase()}`,
+                      html: htmlContent,
+                  });
+                  Logger.log(`✓ Test report email sent successfully to ${recipientEmail}`);
+                  return { success: true, message: 'Report email sent successfully' };
+              } catch (error) {
+                  Logger.error(`✗ Failed to send test report email to ${recipientEmail}:`, error.message);
+                  throw error;
+              }
+          }
 }
