@@ -23,6 +23,7 @@ services:
     ports:
       - "9002:9002"
     command: npm run serve:ssr
+    restart: always
     environment:
       - BACKEND_HOST=peludosclickbackend
       - BACKEND_PORT=3335
@@ -50,6 +51,7 @@ services:
     command: node dist/src/main.js
     ports:
       - '3335:3335'
+    restart: always
     depends_on:
       - postgres
     env_file: "./backend-vlad/.my-env-production"
