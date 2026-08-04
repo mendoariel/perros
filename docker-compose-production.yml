@@ -28,9 +28,11 @@ services:
       - BACKEND_HOST=peludosclickbackend
       - BACKEND_PORT=3335
     labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
       - traefik.http.routers.peludosclick_frontend_service.rule=Host(`www.peludosclick.com`,`peludosclick.com`)
       - traefik.http.routers.peludosclick_frontend_service.tls=true
-      - traefik.http.routers.peludosclick_frontend_service.tls.certresolver=lets-encrypt
+      - traefik.http.routers.peludosclick_frontend_service.tls.certresolver=letsencrypt
       - traefik.port=9002
       - traefik.http.services.peludosclick_frontend_service.loadbalancer.server.port=9002
       - traefik.http.middlewares.peludosclick_frontend_timeout.headers.customrequestheaders.X-Forwarded-Proto=https
@@ -42,7 +44,7 @@ services:
   peludosclick_backend:
     build:
       context: ./backend-vlad
-      dockerfile: production-dist.Dockerfile
+      dockerfile: production.Dockerfile
       target: production
     container_name: peludosclickbackend
     volumes:
@@ -56,21 +58,23 @@ services:
       - postgres
     env_file: "./backend-vlad/.my-env-production"
     labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
       - traefik.http.routers.peludosclick_backend.rule=Host(`api.peludosclick.com`)
       - traefik.http.routers.peludosclick_backend.tls=true
-      - traefik.http.routers.peludosclick_backend.tls.certresolver=lets-encrypt
+      - traefik.http.routers.peludosclick_backend.tls.certresolver=letsencrypt
       - traefik.port=3335
       - traefik.http.routers.peludosclick_backend_api.rule=Host(`peludosclick.com`) && PathPrefix(`/api`)
       - traefik.http.routers.peludosclick_backend_api.tls=true
-      - traefik.http.routers.peludosclick_backend_api.tls.certresolver=lets-encrypt
+      - traefik.http.routers.peludosclick_backend_api.tls.certresolver=letsencrypt
       - traefik.http.routers.peludosclick_backend_api.service=peludosclick_backend
       - traefik.http.routers.peludosclick_backend_images.rule=Host(`peludosclick.com`) && PathPrefix(`/images`)
       - traefik.http.routers.peludosclick_backend_images.tls=true
-      - traefik.http.routers.peludosclick_backend_images.tls.certresolver=lets-encrypt
+      - traefik.http.routers.peludosclick_backend_images.tls.certresolver=letsencrypt
       - traefik.http.routers.peludosclick_backend_images.service=peludosclick_backend
       - traefik.http.routers.peludosclick_backend_pets.rule=Host(`peludosclick.com`) && PathPrefix(`/pets`)
       - traefik.http.routers.peludosclick_backend_pets.tls=true
-      - traefik.http.routers.peludosclick_backend_pets.tls.certresolver=lets-encrypt
+      - traefik.http.routers.peludosclick_backend_pets.tls.certresolver=letsencrypt
       - traefik.http.routers.peludosclick_backend_pets.service=peludosclick_backend
     networks:
       - internal
@@ -88,6 +92,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     labels:
       - traefik.enable=true
+      - traefik.docker.network=web
     networks:
       - internal
       - web
@@ -106,24 +111,8 @@ services:
     labels:
       - traefik.http.routers.postgresadmin.rule=Host(`pgadmin.peludosclick.com`)
       - traefik.http.routers.postgresadmin.tls=true
-      - traefik.http.routers.postgresadmin.tls.certresolver=lets-encrypt
+      - traefik.http.routers.postgresadmin.tls.certresolver=letsencrypt
       - traefik.port=5050
     networks:
       - internal
       - web
-
-  # Add this new service
-  backup:
-    build:
-      context: ./backups
-      dockerfile: Dockerfile
-    environment:
-      - TZ=America/Argentina/Buenos_Aires
-    volumes:
-      - ./backups:/var/backups/peludosclick
-      - ./backups/logs:/var/log/peludosclick
-    depends_on:
-      - postgres
-    networks:
-      - internal
-    restart: always

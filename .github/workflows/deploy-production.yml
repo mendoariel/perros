@@ -1,0 +1,43 @@
+name: Deploy to Hetzner Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Sync files to Hetzner via Rsync
+        uses: easingthemes/ssh-deploy@v5.1.0
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.HETZNER_SSH_KEY }}
+          ARGS: "-avzr --delete"
+          SOURCE: "/"
+          REMOTE_HOST: ${{ secrets.HETZNER_HOST }}
+          REMOTE_USER: ${{ secrets.HETZNER_USER }}
+          TARGET: "/root/apps/2025/peludosclick_app/perros"
+          # Excluimos la configuración de git, y sobretodo los archivos .env para que no se sobreescriban los secretos de producción
+          EXCLUDE: "/.git/, /node_modules/, /dist/, .env, .my-env-production, .my-env-local, .my-env-local-deploy, .my-env-local-prod"
+          
+      - name: Restart Docker Containers
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          script: |
+            cd /root/apps/2025/peludosclick_app/perros
+            
+            # Reconstruir las imagenes con los nuevos cambios si es necesario
+            docker compose -f docker-compose-production.yml build peludosclick_backend
+            docker compose -f docker-compose-production.yml build peludosclick_frontend_service
+            
+            # Levantar contenedores actualizados
+            docker compose -f docker-compose-production.yml up -d
