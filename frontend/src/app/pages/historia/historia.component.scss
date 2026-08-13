@@ -1,0 +1,26 @@
+// Estilos específicos para la sección de Historia
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Aplicar animación de entrada al contenedor principal
+main {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+// Estilos de tarjetas explicativas con transiciones suaves
+.flex.gap-4 {
+  transition: transform 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateX(4px);
+  }
+}
