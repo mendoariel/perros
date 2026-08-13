@@ -25,6 +25,7 @@ import { TokenTestComponent } from "../pages/token-test/token-test.component";
 import { MedalAdministrationComponent } from "../pages/medal-administration/medal-administration.component";
 import { AdminResetComponent } from "../pages/admin-reset/admin-reset.component";
 import { UserProfileComponent } from "../pages/user-profile/user-profile.component";
+import { HistoriaComponent } from "../pages/historia/historia.component";
 
 export const routes: Route[] = [
     {
@@ -136,6 +137,15 @@ export const routes: Route[] = [
     {
         path: 'mi-perfil',
         component: UserProfileComponent
+    },
+    {
+        path: 'historia',
+        component: HistoriaComponent
+    },
+    {
+        path: 'nuestra-historia',
+        redirectTo: 'historia',
+        pathMatch: 'full'
     },
     {
         path: 'pagina-no-encontrada',

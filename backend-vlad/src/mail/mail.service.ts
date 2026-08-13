@@ -6,16 +6,24 @@ export class MailService {
     constructor(private mailerService: MailerService) {}
 
     async sendPasswordRecovery(email: string, url) {
-        Logger.log('before send email')
-        await this.mailerService.sendMail({
-            from: '"PeludosClick" <info@peludosclick.com>',
-            to: email,
-            subject: 'Recuperación de cuenta Peludosclick',
-            template: './recovery-password',
-            context: {
-                url: url
-            }
-        });
+        Logger.log('before send email');
+        Logger.log('====================================');
+        Logger.log('🔗 ENLACE DE RECUPERACIÓN (Solo Local):');
+        Logger.log(url);
+        Logger.log('====================================');
+        try {
+            await this.mailerService.sendMail({
+                from: '"PeludosClick" <info@peludosclick.com>',
+                to: email,
+                subject: 'Recuperación de cuenta Peludosclick',
+                template: './recovery-password',
+                context: {
+                    url: url
+                }
+            });
+        } catch (error) {
+            Logger.warn('No se pudo enviar el correo porque Google bloqueó la IP local, pero puedes usar el enlace de arriba.', 'MailService');
+        }
     }
 
     async sendConfirmAccount(email: string, url) {
