@@ -144,9 +144,10 @@ export const medalService = {
       
       for (let i = 0; i < batches; i++) {
         const batchSize = Math.min(MAX_BATCH_SIZE, quantity - (i * MAX_BATCH_SIZE));
-        console.log(`📦 Lote ${i + 1}/${batches}: ${batchSize} medallas`);
+        const skip = i * MAX_BATCH_SIZE;
+        console.log(`📦 Lote ${i + 1}/${batches}: ${batchSize} medallas (skip: ${skip})`);
         
-        const requestData = { quantity: batchSize };
+        const requestData = { quantity: batchSize, skip };
         console.log('📤 Request data:', requestData);
         
         const response = await api.post('/dashboard/virgin-medals/get-virgin-for-qr', requestData);

@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
       target: development
     container_name: mi-perro-qr-frontend-perros-1
-    command: npm run start-ssr
+    command: npm run start
     ports:
       - '4100:4100'
       - '9876:9876'

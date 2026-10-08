@@ -174,13 +174,14 @@ export class DashboardService {
   }
 
   // Obtener medallas virgin por cantidad para generar QR
-  async getVirginMedalsForQR(quantity: number) {
+  async getVirginMedalsForQR(quantity: number, skip: number = 0) {
     try {
       const medals = await this.prisma.virginMedal.findMany({
         where: {
           status: 'VIRGIN'
         },
         take: quantity,
+        skip: skip,
         orderBy: {
           createdAt: 'asc'
         },

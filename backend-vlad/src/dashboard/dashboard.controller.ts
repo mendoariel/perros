@@ -99,15 +99,15 @@ export class DashboardController {
 
   // Obtener medallas virgin por cantidad para generar QR
   @Post('virgin-medals/get-virgin-for-qr')
-  async getVirginMedalsForQR(@Body() body: { quantity: number }) {
+  async getVirginMedalsForQR(@Body() body: { quantity: number, skip?: number }) {
     try {
-      const { quantity } = body;
+      const { quantity, skip = 0 } = body;
       
       if (!quantity || quantity < 1 || quantity > 100) {
         throw new HttpException('Cantidad debe estar entre 1 y 100', HttpStatus.BAD_REQUEST);
       }
 
-      return await this.dashboardService.getVirginMedalsForQR(quantity);
+      return await this.dashboardService.getVirginMedalsForQR(quantity, skip);
     } catch (error) {
       if (error instanceof HttpException) throw error;
       throw new HttpException(`Error al obtener medallas virgin: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
